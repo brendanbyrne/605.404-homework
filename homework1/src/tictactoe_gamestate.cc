@@ -11,13 +11,13 @@ TicTacToeGameState::TicTacToeGameState() {
 }
 
 
-void TicTacToeGameState::printboard( std::ostream& output_stream ) {  
+void TicTacToeGameState::PrintBoard( std::ostream& output_stream ) {  
   for (int row = 0; row < kBoardSize-1; row++){
     for (int col = 0; col < kBoardSize-1; col++){
-      output_stream << " " << board[row][col] << " |";
+      output_stream << GridToStr(row, col) << "|";
     }
     
-    output_stream << " " << board[row][kBoardSize-1] << std::endl;
+    output_stream << GridToStr(row, kBoardSize-1) << std::endl;
     
     for (int i = 0; i < kBoardSize*4-1; i++){
       output_stream << "-";
@@ -26,7 +26,11 @@ void TicTacToeGameState::printboard( std::ostream& output_stream ) {
   }
   
   for (int col = 0; col < kBoardSize-1; col++){
-    output_stream << " " << board[kBoardSize-1][col] << " |";
+    output_stream << GridToStr(kBoardSize-1, col) << "|";
   }
-  output_stream << " " << board[kBoardSize-1][kBoardSize-1] << std::endl;
+  output_stream << GridToStr(kBoardSize-1, kBoardSize-1) << std::endl;
+}
+
+std::string TicTacToeGameState::GridToStr(int row, int col) {
+  return " " + std::to_string(gs2cm[board[row][col]]) + " ";
 }

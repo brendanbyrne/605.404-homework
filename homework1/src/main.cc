@@ -5,6 +5,6 @@
 int main()
 {  
   TicTacToeGameState *game_ptr = new TicTacToeGameState();
-  game_ptr->printboard(std::cout);
+  game_ptr->PrintBoard(std::cout);
   return 0;  
 }
