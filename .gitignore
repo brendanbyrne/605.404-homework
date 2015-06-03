@@ -31,4 +31,7 @@
 *~
 
 # build stuff
-*/build/*
+build/
+
+# Non source stuff
+docs/
