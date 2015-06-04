@@ -27,8 +27,8 @@ include_directories(include ${Boost_INCLUDE_DIRS})
 #########################################
 # build
 #########################################
-add_executable(board_test src/main.cc src/tile.cc src/gameboard.cc)
-target_link_libraries(board_test ${Boost_LIBRARIES})
+add_executable(game_test src/main.cc src/tile.cc src/gameboard.cc src/tictactoe.cc)
+target_link_libraries(game_test ${Boost_LIBRARIES})
 
 #########################################
 # installation

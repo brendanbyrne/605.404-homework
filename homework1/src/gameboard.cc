@@ -26,9 +26,14 @@ int Gameboard::GetSize()
 }
 
 // Should this return a pointer?
-std::vector<std::vector<Tile>> Gameboard::GetBoard()
+std::vector<std::vector<Tile>>* Gameboard::GetBoard()
 {
-  return this->board;
+  return &this->board;
+}
+
+void Gameboard::SetTile(int row, int col, Tile::State new_state)
+{
+  this->board[row][col].SetState(new_state);
 }
 
 std::string TileToString(Tile tile)
@@ -58,6 +63,23 @@ void Gameboard::print(std::ostream& output_stream)
 
 std::vector<std::pair<int,int>> Gameboard::GetOpenTiles()
 {
-  //int row = 0;
-  //std::for_each(this->board.begin(), this->board.end(), LoopTilesInRow(
+  std::vector<std::pair<int,int>> open_tiles;
+  open_tiles.resize( this->board.size() * this->board.size() );
+  
+  int row_num = 0;
+  for (auto &row : this->board)
+  {
+    int col_num = 0;
+    for (auto &tile : row)
+    {
+      if (tile.GetState() == Tile::State::kEmpty)
+      {
+	std::pair<int,int> coordinate = {row_num, col_num};
+	open_tiles.push_back(coordinate);
+      }
+      ++col_num;
+    }
+    ++row_num;
+  }
+  return open_tiles;
 }

@@ -9,14 +9,15 @@
 
 class Gameboard {
 public:
-  std::vector<std::vector<Tile>> GetBoard();
+  std::vector<std::vector<Tile>>* GetBoard();
   
-  Gameboard(int size);
+  Gameboard(int);
   int GetSize();
+  void SetTile(int, int, Tile::State);
   std::vector<std::pair<int,int>> GetOpenTiles();
+  std::vector<std::pair<int,int>> TestOpenTiles();
   
-  void print(std::ostream& output_stream);
-  
+  void print(std::ostream&);  
   
 private:
   std::vector< std::vector<Tile> > board;
