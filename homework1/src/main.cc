@@ -1,13 +1,18 @@
 #include <iostream>
 
-#include "gridspace.h"
-#include "gameboard.h"
+#include "gridspace.hpp"
+#include "gameboard.hpp"
 
 int main()
-{  
-  Gameboard *board_ptr = new Gameboard(3);
+{ 
+  int board_size = 3;
+  
+  Gameboard *board_ptr = new Gameboard(board_size);
   board_ptr->print(std::cout);
   std::cout<<std::endl;
+  
+  
+  
   delete board_ptr;
   
   return 0;

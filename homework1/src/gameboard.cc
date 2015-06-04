@@ -4,7 +4,7 @@
 
 #include <boost/algorithm/string/join.hpp>
 
-#include "gameboard.h"
+#include "gameboard.hpp"
 
 Gameboard::Gameboard(int boardsize)
 {
@@ -15,7 +15,7 @@ Gameboard::Gameboard(int boardsize)
     row.resize(this->board.size());
     for (auto &square : row)
     {
-      square.SetState(Gridspace::State::kCross);//Empty); <== this is for testing only
+      square.SetState(Gridspace::State::kEmpty);
     }
   }
 }
@@ -49,7 +49,12 @@ void Gameboard::print(std::ostream& output_stream)
 {
   std::vector<std::string> rows_str (this->board.size());
   std::transform(this->board.begin(), this->board.end(), rows_str.begin(), ExtractRowString);
-  std::string delimiter = "\n" + std::string(this->board.size()*4-1, '=') + "\n";
+  std::string delimiter = "\n" + std::string(this->board.size()*4-1, '-') + "\n";
   
   output_stream << boost::algorithm::join(rows_str, delimiter);
+}
+
+std::vector<std::pair<int,int>> Gameboard::GetOpenGrids()
+{
+  
 }

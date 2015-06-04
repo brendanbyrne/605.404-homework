@@ -23,8 +23,7 @@ endif()
 #########################################
 find_package(Boost)
 
-include_directories(src ${Boost_INCLUDE_DIRS})
-
+include_directories(include ${Boost_INCLUDE_DIRS})
 #########################################
 # build
 #########################################

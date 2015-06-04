@@ -1,4 +1,4 @@
-#include "gridspace.h"
+#include "gridspace.hpp"
 
 Gridspace::State Gridspace::GetState()
 {

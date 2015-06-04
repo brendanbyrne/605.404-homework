@@ -1,5 +1,5 @@
-#ifndef GRIDSPACE_H_
-#define GRIDSPACE_H_
+#ifndef GRIDSPACE_HPP_
+#define GRIDSPACE_HPP_
 
 #include <ostream>
 #include <map>
@@ -17,4 +17,4 @@ private:
 };
   
 
-#endif //GRIDSPACE_H_
+#endif //GRIDSPACE_HPP_
