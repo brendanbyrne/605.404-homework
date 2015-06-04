@@ -15,7 +15,7 @@ Gameboard::Gameboard(int boardsize)
     row.resize(this->board.size());
     for (auto &square : row)
     {
-      square.SetState(Gridspace::State::kEmpty);
+      square.SetState(Tile::State::kEmpty);
     }
   }
 }
@@ -26,35 +26,38 @@ int Gameboard::GetSize()
 }
 
 // Should this return a pointer?
-std::vector<std::vector<Gridspace>> Gameboard::GetBoard()
+std::vector<std::vector<Tile>> Gameboard::GetBoard()
 {
   return this->board;
 }
 
-std::string GridspaceToString(Gridspace gs)
+std::string TileToString(Tile tile)
 {
   std::stringstream ss;
-  gs.print(ss);
+  tile.print(ss);
   return ss.str();
 }
 
-std::string ExtractRowString(std::vector<Gridspace> row)
+std::string ExtractRowString(std::vector<Tile> row)
 {
-  std::vector<std::string> grid_str (row.size());
-  std::transform(row.begin(), row.end(), grid_str.begin(), GridspaceToString);
-  return boost::algorithm::join(grid_str, "|");
+  std::vector<std::string> tiles_str (row.size());
+  std::transform(row.begin(), row.end(), tiles_str.begin(), TileToString);
+  return boost::algorithm::join(tiles_str, "|");
 }
 
 void Gameboard::print(std::ostream& output_stream)
 {
+  int pretty_print_multiplier = 4; //found experimentally
+  
   std::vector<std::string> rows_str (this->board.size());
   std::transform(this->board.begin(), this->board.end(), rows_str.begin(), ExtractRowString);
-  std::string delimiter = "\n" + std::string(this->board.size()*4-1, '-') + "\n";
+  std::string delimiter = "\n" + std::string(this->board.size()*pretty_print_multiplier-1, '-') + "\n";
   
   output_stream << boost::algorithm::join(rows_str, delimiter);
 }
 
-std::vector<std::pair<int,int>> Gameboard::GetOpenGrids()
+std::vector<std::pair<int,int>> Gameboard::GetOpenTiles()
 {
-  
+  //int row = 0;
+  //std::for_each(this->board.begin(), this->board.end(), LoopTilesInRow(
 }

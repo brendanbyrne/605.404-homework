@@ -1,10 +1,10 @@
-#ifndef GRIDSPACE_HPP_
-#define GRIDSPACE_HPP_
+#ifndef TILE_HPP_
+#define TILE_HPP_
 
 #include <ostream>
 #include <map>
 
-class Gridspace {
+class Tile {
 public:
   enum State {kEmpty, kCross, kCircle};
   State GetState();
@@ -13,8 +13,8 @@ public:
 
 private:
   State state = kEmpty;
-  std::map<State, const char> gs2c_map = {{kEmpty,' '}, {kCross,'X'}, {kCircle,'O'}};
+  std::map<State, const char> ts2c_map = {{kEmpty,' '}, {kCross,'X'}, {kCircle,'O'}};
 };
   
 
-#endif //GRIDSPACE_HPP_
+#endif //TILE_HPP_

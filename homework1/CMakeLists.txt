@@ -27,7 +27,7 @@ include_directories(include ${Boost_INCLUDE_DIRS})
 #########################################
 # build
 #########################################
-add_executable(board_test src/main.cc src/gridspace.cc src/gameboard.cc)
+add_executable(board_test src/main.cc src/tile.cc src/gameboard.cc)
 target_link_libraries(board_test ${Boost_LIBRARIES})
 
 #########################################

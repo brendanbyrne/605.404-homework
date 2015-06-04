@@ -1,6 +1,6 @@
 #include <iostream>
+#include <utility>
 
-#include "gridspace.hpp"
 #include "gameboard.hpp"
 
 int main()
@@ -9,9 +9,8 @@ int main()
   
   Gameboard *board_ptr = new Gameboard(board_size);
   board_ptr->print(std::cout);
-  std::cout<<std::endl;
-  
-  
+  //std::vector<std::pair<int,int>> opentiles;
+  //opentiles = board_ptr->GetOpenTiles();
   
   delete board_ptr;
   

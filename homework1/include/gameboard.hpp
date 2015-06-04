@@ -5,21 +5,21 @@
 #include <ostream>
 #include <utility>
 
-#include "gridspace.hpp"
+#include "tile.hpp"
 
 class Gameboard {
 public:
-  std::vector<std::vector<Gridspace>> GetBoard();
+  std::vector<std::vector<Tile>> GetBoard();
   
   Gameboard(int size);
   int GetSize();
-  std::vector<std::pair<int,int>> GetOpenGrids();
+  std::vector<std::pair<int,int>> GetOpenTiles();
   
   void print(std::ostream& output_stream);
   
   
 private:
-  std::vector< std::vector<Gridspace> > board;
+  std::vector< std::vector<Tile> > board;
 };
 
 #endif // GAMEBOARD_HPP_
