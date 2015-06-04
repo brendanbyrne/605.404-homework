@@ -6,24 +6,23 @@
 
 #include "gameboard.h"
 
-Gameboard::Gameboard(int size):
-  size(size) 
+Gameboard::Gameboard(int boardsize)
 {
-  this->board.resize(size);
+  this->board.resize(boardsize);
   
   for (auto &row : this->board)
   {
-    row.resize(size);
+    row.resize(this->board.size());
     for (auto &square : row)
     {
-      square.SetState(Gridspace::State::kEmpty);
+      square.SetState(Gridspace::State::kCross);//Empty); <== this is for testing only
     }
   }
 }
 
 int Gameboard::GetSize()
 {
-  return this->size;
+  return this->board.size();
 }
 
 // Should this return a pointer?
@@ -32,20 +31,25 @@ std::vector<std::vector<Gridspace>> Gameboard::GetBoard()
   return this->board;
 }
 
-std::string gs2s (Gridspace gs)
+std::string GridspaceToString(Gridspace gs)
 {
   std::stringstream ss;
-  gs.str(ss); 
+  gs.print(ss);
   return ss.str();
 }
 
-void Gameboard::str(std::ostream& output_stream)
+std::string ExtractRowString(std::vector<Gridspace> row)
 {
-  std::vector<std::string> rows_str (this->size);
+  std::vector<std::string> grid_str (row.size());
+  std::transform(row.begin(), row.end(), grid_str.begin(), GridspaceToString);
+  return boost::algorithm::join(grid_str, "|");
+}
+
+void Gameboard::print(std::ostream& output_stream)
+{
+  std::vector<std::string> rows_str (this->board.size());
+  std::transform(this->board.begin(), this->board.end(), rows_str.begin(), ExtractRowString);
+  std::string delimiter = "\n" + std::string(this->board.size()*4-1, '=') + "\n";
   
-  for (auto &row : this->board)
-  {
-    std::vector<std::string> grid_str (this->size);
-    std::transform(row.begin(), row.end(), grid_str.begin(), gs2s);
-  }
+  output_stream << boost::algorithm::join(rows_str, delimiter);
 }

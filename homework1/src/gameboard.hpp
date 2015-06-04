@@ -7,15 +7,14 @@
 #include "gridspace.h"
 
 class Gameboard {
-private:
-  std::vector< std::vector<Gridspace> > board;
-  const int size;
-  
 public:
-  Gameboard(int);
+  Gameboard(int size);
   int GetSize();
   std::vector<std::vector<Gridspace>> GetBoard();
-  void str(std::ostream& output_stream);
+  void print(std::ostream& output_stream);
+  
+private:
+  std::vector< std::vector<Gridspace> > board;
 };
 
 #endif // GAMEBOARD_H_
