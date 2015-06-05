@@ -51,9 +51,9 @@ void Gameboard::print(std::ostream& output_stream)
   
   std::vector<std::string> rows_str (this->board.size());
   std::transform(this->board.begin(), this->board.end(), rows_str.begin(), ExtractRowString);
-  std::string delimiter = "\n" + std::string(this->board.size()*pretty_print_multiplier-1, '-') + "\n";
+  std::string row_delimiter = "\n"+std::string(this->board.size()*pretty_print_multiplier-1,'-')+"\n";
   
-  output_stream << boost::algorithm::join(rows_str, delimiter);
+  output_stream << boost::algorithm::join(rows_str, row_delimiter);
 }
 
 std::vector<std::pair<int,int>> Gameboard::GetOpenTiles()

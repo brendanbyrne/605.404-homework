@@ -2,12 +2,16 @@
 #define TICTACTOE_HPP_
 
 #include <ostream>
+#include <map>
 
 #include "gameboard.hpp"
+#include "tile.hpp"
 
 class TicTacToe
 {
 public:
+  using Coordinate = std::pair<int,int>;
+  
   enum State {kInitialized, kPlaying, kP1Wins, kP2Wins, kTie};
   enum Player {kPlayerOne=1, kPlayerTwo};
   
@@ -23,6 +27,9 @@ public:
 private:
   Gameboard* board_ptr;
   State state;
+  Player current_player;
+  std::map<Player, Tile::State> player_symbol = {{kPlayerOne, Tile::State::kCross},
+						 {kPlayerTwo, Tile::State::kCircle}};
 };
 
 #endif //TICTACTOE_HPP_
