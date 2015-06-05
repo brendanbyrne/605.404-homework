@@ -46,7 +46,7 @@ bool IsInBounds(const int candidate, int size)
   }
 }
 
-bool IsValidUserInput(const std::string& user_input, Coordinate& coordinate, const int board_size)
+bool IsValidUserInput(const std::string& user_input, std::pair<int,int>& coordinate, const int board_size)
 {
   const std::string delimiters = " ";
 
@@ -76,14 +76,14 @@ bool IsValidUserInput(const std::string& user_input, Coordinate& coordinate, con
     }
   }
 
-  coordinate = Coordinate(valid_inputs[0]-1, valid_inputs[1]-1);
+  coordinate = std::pair<int,int>(valid_inputs[0]-1, valid_inputs[1]-1);
   return true;    
 }
 
-Coordinate GetPlayerInput(const TicTacToe::Player current_player, const int board_size)
+std::pair<int,int> GetPlayerInput(const TicTacToe::Player current_player, const int board_size)
 {
   
-  Coordinate coordinate;
+  std::pair<int,int> coordinate;
   std::cout << "\nPlayer " << current_player << std::endl;
 
   std::string user_input;
@@ -112,7 +112,7 @@ void TicTacToe::StartGame()
     this->board_ptr->print(std::cout);
     
     //Player input
-    Coordinate coordinate = GetPlayerInput(this->current_player, this->board_ptr->GetSize());
+    std::pair<int,int> coordinate = GetPlayerInput(this->current_player, this->board_ptr->GetSize());
 
     //Apply selection
     this->board_ptr->SetTile(coordinate.first,
@@ -122,7 +122,7 @@ void TicTacToe::StartGame()
     //check for win condition
     
     //switch player
-    current_player = 
+    //current_player = 
   }
   //Print board
 }

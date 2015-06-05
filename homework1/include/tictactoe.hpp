@@ -10,8 +10,6 @@
 class TicTacToe
 {
 public:
-  using Coordinate = std::pair<int,int>;
-  
   enum State {kInitialized, kPlaying, kP1Wins, kP2Wins, kTie};
   enum Player {kPlayerOne=1, kPlayerTwo};
   
