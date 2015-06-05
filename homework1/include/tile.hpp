@@ -7,9 +7,12 @@
 class Tile {
 public:
   enum State {kEmpty, kCross, kCircle};
+
+  Tile();
+  Tile(State);
   State GetState();
-  void SetState( State state );
-  void print( std::ostream& output_stream );
+  void SetState( State );
+  void print( std::ostream& );
 
 private:
   State state = kEmpty;

@@ -8,17 +8,19 @@
 class TicTacToe
 {
 public:
-  enum State {kContinue, kP1Wins, kP2Wins, kTie};
+  enum State {kInitialized, kPlaying, kP1Wins, kP2Wins, kTie};
+  enum Player {kPlayerOne=1, kPlayerTwo};
   
-  TicTacToe(std::ostream&, int);
+  TicTacToe(int);
   ~TicTacToe();
   void StartGame();
   
+  Gameboard* GetBoardPtr();
+  void SetBoardPtr(Gameboard*);
   State GetState();
   void SetState(State); 
 
 private:
-  std::ostream& output_stream;
   Gameboard* board_ptr;
   State state;
 };

@@ -6,18 +6,13 @@
 
 #include "gameboard.hpp"
 
-Gameboard::Gameboard(int boardsize)
+Gameboard::Gameboard(int board_size)
 {
-  this->board.resize(boardsize);
+  Tile tile;
+  tile.SetState(Tile::State::kEmpty);
+  std::vector<Tile> row(board_size, tile);
   
-  for (auto &row : this->board)
-  {
-    row.resize(this->board.size());
-    for (auto &square : row)
-    {
-      square.SetState(Tile::State::kEmpty);
-    }
-  }
+  this->board.assign(board_size, row);
 }
 
 int Gameboard::GetSize()
@@ -64,7 +59,7 @@ void Gameboard::print(std::ostream& output_stream)
 std::vector<std::pair<int,int>> Gameboard::GetOpenTiles()
 {
   std::vector<std::pair<int,int>> open_tiles;
-  open_tiles.resize( this->board.size() * this->board.size() );
+  open_tiles.reserve( this->board.size() * this->board.size() );
   
   int row_num = 0;
   for (auto &row : this->board)

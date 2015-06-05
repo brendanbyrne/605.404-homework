@@ -1,5 +1,12 @@
 #include "tile.hpp"
 
+Tile::Tile(){}
+
+Tile::Tile(State state)
+{
+  this->state = state;
+}
+
 Tile::State Tile::GetState()
 {
   return this->state;
