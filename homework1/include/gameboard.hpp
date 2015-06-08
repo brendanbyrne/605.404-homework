@@ -4,6 +4,7 @@
 #include <vector>
 #include <ostream>
 #include <utility>
+#include <string>
 
 #include "tile.hpp"
 
@@ -11,15 +12,16 @@ class Gameboard {
 public:
   std::vector<std::vector<Tile>>* GetBoard();
   
-  Gameboard(int);
-  int GetSize();
-  void SetTile(int, int, Tile::State);
-  std::vector<std::pair<int,int>> GetOpenTiles();
-  std::vector<std::pair<int,int>> TestOpenTiles();
-  
-  void print(std::ostream&);  
-  
+  Gameboard(const int);
+  void setTileState(const int, const int, const Tile::State);
+  Tile::State getTileState(const int, const int);
+  std::vector<std::pair<int,int>> getOpenTiles();  
+  bool rowHasWin(const int);
+  void printTo(std::ostream&);  
+  int getSize();
+
 private:
+  const static int PRETTY_PRINT_FACTOR = 4; // found experimentally
   std::vector< std::vector<Tile> > board;
 };
 

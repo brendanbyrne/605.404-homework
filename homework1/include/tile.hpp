@@ -3,20 +3,21 @@
 
 #include <ostream>
 #include <map>
+#include <string>
 
 class Tile {
 public:
-  enum State {kEmpty, kCross, kCircle};
-
+  enum State {EMPTY, CROSS, CIRCLE};
+  
   Tile();
   Tile(State);
-  State GetState();
-  void SetState( State );
-  void print( std::ostream& );
+  State getState();
+  void setState(State);
+  std::string str();
 
 private:
-  State state = kEmpty;
-  std::map<State, const char> ts2c_map = {{kEmpty,' '}, {kCross,'X'}, {kCircle,'O'}};
+  State state;
+  std::map<State, const char*> ts2c_map = {{EMPTY, " "}, {CROSS, "X"}, {CIRCLE, "O"}};
 };
   
 

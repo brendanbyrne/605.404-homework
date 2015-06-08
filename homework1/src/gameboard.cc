@@ -1,4 +1,3 @@
-#include <string>
 #include <algorithm>
 #include <sstream>
 
@@ -6,70 +5,54 @@
 
 #include "gameboard.hpp"
 
-Gameboard::Gameboard(int board_size)
+Gameboard::Gameboard(const int board_size)
 {
-  Tile tile;
-  tile.SetState(Tile::State::kEmpty);
+  Tile tile(Tile::State::EMPTY);
   std::vector<Tile> row(board_size, tile);
   
   this->board.assign(board_size, row);
 }
 
-int Gameboard::GetSize()
+void Gameboard::setTileState(const int row, const int col, const Tile::State new_state)
 {
-  return this->board.size();
+  this->board[row][col].setState(new_state);
 }
 
-// Should this return a pointer?
-std::vector<std::vector<Tile>>* Gameboard::GetBoard()
+Tile::State Gameboard::getTileState(const int row, const int col)
 {
-  return &this->board;
+  return this->board[row][col].getState();
 }
 
-void Gameboard::SetTile(int row, int col, Tile::State new_state)
-{
-  this->board[row][col].SetState(new_state);
-}
-
-std::string TileToString(Tile tile)
-{
-  std::stringstream ss;
-  tile.print(ss);
-  return ss.str();
-}
-
-std::string ExtractRowString(std::vector<Tile> row)
+std::string buildRowString(const std::vector<Tile> row)
 {
   std::vector<std::string> tiles_str (row.size());
-  std::transform(row.begin(), row.end(), tiles_str.begin(), TileToString);
+  std::transform(row.begin(), row.end(), tiles_str.begin(), [](Tile t){return t.str();} );
   return boost::algorithm::join(tiles_str, "|");
 }
 
-void Gameboard::print(std::ostream& output_stream)
-{
-  int pretty_print_multiplier = 4; //found experimentally
-  
+void Gameboard::printTo(std::ostream& output_stream)
+{  
   std::vector<std::string> rows_str (this->board.size());
-  std::transform(this->board.begin(), this->board.end(), rows_str.begin(), ExtractRowString);
-  std::string row_delimiter = "\n"+std::string(this->board.size()*pretty_print_multiplier-1,'-')+"\n";
+  std::transform(this->board.begin(), this->board.end(), rows_str.begin(), buildRowString);
+  std::string row_delimiter = "\n" + std::string(this->board.size() * this->PRETTY_PRINT_FACTOR - 1, '-') + "\n";
   
-  output_stream << boost::algorithm::join(rows_str, row_delimiter);
+  output_stream << boost::algorithm::join(rows_str, row_delimiter) << "\n";
 }
 
-std::vector<std::pair<int,int>> Gameboard::GetOpenTiles()
+std::vector<std::pair<int, int>> Gameboard::getOpenTiles()
 {
-  std::vector<std::pair<int,int>> open_tiles;
+  std::vector<std::pair<int, int>> open_tiles;
   open_tiles.reserve( this->board.size() * this->board.size() );
   
   int row_num = 0;
-  for (auto &row : this->board)
+  for (auto& row : this->board)
   {
     int col_num = 0;
-    for (auto &tile : row)
+    for (auto& tile : row)
     {
-      if (tile.GetState() == Tile::State::kEmpty)
+      if (tile.getState() == Tile::State::EMPTY)
       {
-	std::pair<int,int> coordinate = {row_num, col_num};
+	std::pair<int, int> coordinate = {row_num, col_num};
 	open_tiles.push_back(coordinate);
       }
       ++col_num;
@@ -77,4 +60,9 @@ std::vector<std::pair<int,int>> Gameboard::GetOpenTiles()
     ++row_num;
   }
   return open_tiles;
+}
+
+int Gameboard::getSize()
+{
+  return this->board.size();
 }

@@ -8,18 +8,51 @@
 
 #include "tictactoe.hpp"
 
-TicTacToe::TicTacToe(int size)
+TicTacToe::TicTacToe(int size):
+  gameboard(size)
 {
-  this->board_ptr = new Gameboard(size);
-  this->state = kInitialized;
+
 }
 
-TicTacToe::~TicTacToe()
-{
-  delete this->board_ptr;
+void TicTacToe::StartGame()
+{  
+
+  this->gameboard.printTo(std::cout);
+  this->current_player = PLAYER_ONE;
+
+  //Print board
+  Player winner;
+  std::pair<int, int> coordinate;  
+  do
+  {   
+    //Player input
+    coordinate = getPlayerInput();
+
+    //Apply selection
+    this->gameboard.setTileState(coordinate.first,
+				 coordinate.second,
+				 player_to_state[this->current_player]);
+    
+    this->gameboard.printTo(std::cout);
+
+    //switch player
+    this->current_player = this->current_player == PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;    
+    
+  }
+  while ( isGameOver(winner, coordinate) != true );
+  
+  if (winner == NOONE)
+  {
+    std::cout << "Tie Game" << std::endl;
+  }
+  else 
+  {
+    std::cout << "Player " << winner << " has won!" << std::endl;
+  }    
+  
 }
 
-bool IsValidInt(const std::string& str, int& candidate)
+bool TicTacToe::isValidInt(const std::string& str, int& candidate)
 {
   try
   {
@@ -33,41 +66,66 @@ bool IsValidInt(const std::string& str, int& candidate)
   return true;
 }
 
-bool IsInBounds(const int candidate, int size)
+bool TicTacToe::isInBounds(const int candidate)
 {
-  if (1 <= candidate && candidate <= size)
+  if (1 <= candidate && candidate <= this->gameboard.getSize())
   {
     return true;
   }
   else
   {
-    std::cout << "An input is too large or small" << std::endl;
     return false;
   }
 }
 
-bool IsValidUserInput(const std::string& user_input, std::pair<int,int>& coordinate, const int board_size)
+std::pair<int, int> TicTacToe::getPlayerInput()
+{
+  
+  std::pair<int, int> coordinate;
+  std::cout << "\nPlayer " << this->current_player << std::endl;
+
+  std::string user_input;
+  
+  // do while input is invalid
+  do
+  {
+    // Prompt user
+    std::cout << "Input desired row and column location ex. \"1 1\": ";
+    getline(std::cin, user_input);
+  
+  } while(isValidUserInput(user_input, coordinate) != true);
+
+  return coordinate;
+}
+
+bool TicTacToe::isValidUserInput(const std::string& user_input, std::pair<int, int>& coordinate)
 {
   const std::string delimiters = " ";
 
   std::vector<std::string> tokens;
   boost::split(tokens, user_input, boost::is_any_of(delimiters));
 
-  int num_dimensions = 2;
-  if (tokens.size() != num_dimensions)
+  if (tokens.size() != this->DIMENSIONS)
   {
     std::cout << "Incorrect number of inputs" << std::endl;
     return false;
   }
 
   std::vector<int> valid_inputs;
-  
   for (auto& str : tokens)
-  {    
+  {
     int candidate;
-    if (IsValidInt(str, candidate) && IsInBounds(candidate, board_size))
+    if (isValidInt(str, candidate))
     {
-      valid_inputs.push_back(candidate);
+      if (isInBounds(candidate))
+      {
+	valid_inputs.push_back(candidate);
+      }
+      else
+      {
+	std::cout << "An input is too large or small" << std::endl;
+	return false;
+      }
     }
     else
     {
@@ -75,74 +133,204 @@ bool IsValidUserInput(const std::string& user_input, std::pair<int,int>& coordin
       return false;
     }
   }
-
-  coordinate = std::pair<int,int>(valid_inputs[0]-1, valid_inputs[1]-1);
-  return true;    
-}
-
-std::pair<int,int> GetPlayerInput(const TicTacToe::Player current_player, const int board_size)
-{
   
-  std::pair<int,int> coordinate;
-  std::cout << "\nPlayer " << current_player << std::endl;
-
-  std::string user_input;
   
-  // do while input is invalid  
-  do
+  coordinate = std::pair<int,int>(valid_inputs[0]-1, valid_inputs[1]-1); //minus 1 because collection starts at 0 not 1
+  
+  if (this->gameboard.getTileState(coordinate.first, coordinate.second) != Tile::State::EMPTY)
   {
-    // Prompt user
-    std::cout << "Input desired row and col location ex. \"1 1\": ";
-    getline(std::cin, user_input);
-  }// check if input is valid
-  while (IsValidUserInput(user_input, coordinate, board_size) != true);
-  // return coordinate as pair
-  return coordinate;
-}
-
-void TicTacToe::StartGame()
-{
-  
-  this->current_player = kPlayerOne;
-  this->state = kPlaying;
-  
-  while(this->state == kPlaying)
-  {
-    //Print board
-    this->board_ptr->print(std::cout);
-    
-    //Player input
-    std::pair<int,int> coordinate = GetPlayerInput(this->current_player, this->board_ptr->GetSize());
-
-    //Apply selection
-    this->board_ptr->SetTile(coordinate.first,
-			     coordinate.second,
-			     player_symbol[this->current_player]);
-
-    //check for win condition
-    
-    //switch player
-    //current_player = 
+    std::cout << "Space already taken" << std::endl;
+    return false;
   }
-  //Print board
+
+  return true;
 }
 
-Gameboard* TicTacToe::GetBoardPtr()
+bool sequenceHasWin(const std::vector<Tile::State>& sequence)
 {
-  return this->board_ptr;
+  Tile::State target = sequence[0];
+  for (auto& state : sequence)
+  {
+    if (state == Tile::State::EMPTY)
+    {
+      return false;
+    }
+    else if (state == target)
+    {
+      continue;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  return true;
 }
 
-void TicTacToe::SetBoardPtr(Gameboard* board_ptr)
+bool TicTacToe::isGameOver(Player& winner, std::pair<int, int> coordinate)
 {
-  this->board_ptr = board_ptr;
+  const int size = this->gameboard.getSize();
+  std::vector<Tile::State> sequence;
+  sequence.reserve(size);
+  
+  // check column
+  int row = coordinate.first;
+  for (int col = 0; col < size; col++)
+  {
+    sequence.push_back(gameboard.getTileState(row, col));
+  }
+  
+  if (sequenceHasWin(sequence))
+  {
+    winner = state_to_player[this->gameboard.getTileState(coordinate.first, coordinate.second)];
+    return true;
+  }
+
+  sequence.clear();
+  sequence.reserve(size);
+
+  // check row
+  int col = coordinate.second;
+  for (int row = 0; row < size; row++)
+  {
+    sequence.push_back(gameboard.getTileState(row, col));
+  }
+  
+  if (sequenceHasWin(sequence))
+  {
+    winner = state_to_player[this->gameboard.getTileState(coordinate.first, coordinate.second)];
+    return true;
+  }
+  
+  sequence.clear();
+  sequence.reserve(size);
+
+  // top left to bottom right diagonal
+  if (coordinate.first == coordinate.second)
+  {
+    for (int i = 0; i < size; i++)
+    {
+      sequence.push_back(gameboard.getTileState(i, i));
+    }
+    
+    if (sequenceHasWin(sequence))
+    {
+      winner = state_to_player[this->gameboard.getTileState(coordinate.first, coordinate.second)];
+      return true;
+    }
+
+  }
+  
+  sequence.clear();
+  sequence.reserve(size);
+  
+  // bottom left to top right diagonal
+  int offset = 1;
+  if ( (coordinate.first + coordinate.second + 2) == 2*(size - offset))
+  {
+    for (int i = 0; i < size; i++)
+    {
+      sequence.push_back(gameboard.getTileState(size - i - 1, i));
+    }
+
+    if (sequenceHasWin(sequence))
+    {
+      winner = state_to_player[this->gameboard.getTileState(coordinate.first, coordinate.second)];
+      return true;
+    }
+
+  }
+  
+  // tie
+  int empty_tiles = 0;
+  for (int row = 0; row < size; row++)
+  {
+    for (int col = 0; col < size; col++)
+    {
+      if (this->gameboard.getTileState(row,col) == Tile::State::EMPTY)
+      {
+	empty_tiles++;
+      }
+    }
+  }
+  
+  if (empty_tiles == 0)
+  {
+    winner = NOONE;
+    return true;
+  }
+
+  return false;
 }
 
-TicTacToe::State TicTacToe::GetState()
+bool TicTacToe::isGameOver(Player& winner)
 {
-  return this->state;
-}
+  
+  const int size = this->gameboard.getSize();
+  std::vector<Tile::State> sequence;
+  sequence.reserve(size);
+  
+  // check rows
+  for (int row = 0; row < size; row++)
+  {
+    for (int col = 0; col < size; col++)
+    {
+      sequence.push_back(gameboard.getTileState(row, col));
+    }
+  
+    if (sequenceHasWin(sequence))
+    {
+      return true;
+    }
+    
+    sequence.clear();
+    sequence.reserve(size);
+    
+  }
+   
+  // check columns
+  for (int col = 0; col < size; col++)
+  {
+    for (int row = 0; row < size; row++)
+    {
+      sequence.push_back(gameboard.getTileState(row, col));
+    }
+  
+    if (sequenceHasWin(sequence))
+    {
+      return true;
+    }
 
-void TicTacToe::SetState(State state)
-{
-  this->state = state;
+    sequence.clear();
+    sequence.reserve(size);
+    
+  }
+  
+  // check diagonals
+  for (int i = 0; i < size; i++)
+  {
+    sequence.push_back(gameboard.getTileState(i, i));
+  }
+  
+  
+  if (sequenceHasWin(sequence))
+  {
+    return true;
+  }
+
+  sequence.clear();
+  sequence.reserve(size);
+  
+  for (int i = 0; i < size; i++)
+  {
+    sequence.push_back(gameboard.getTileState(size - i - 1, i));
+  }
+  
+
+  if (sequenceHasWin(sequence))
+  {
+    return true;
+  }
+
+  return false;
 }

@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "tile.hpp"
 
 Tile::Tile(){}
@@ -7,17 +9,19 @@ Tile::Tile(State state)
   this->state = state;
 }
 
-Tile::State Tile::GetState()
+Tile::State Tile::getState()
 {
   return this->state;
 }
 
-void Tile::SetState(State state)
+void Tile::setState(State state)
 {
   this->state = state;
 }
 
-void Tile::print(std::ostream& output_stream)
+std::string Tile::str()
 {
-  output_stream << " " << this->ts2c_map[this->state] << " ";
+  std::stringstream ss;
+  ss << " " << this->ts2c_map[this->state] << " ";
+  return ss.str();
 }

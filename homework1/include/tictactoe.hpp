@@ -10,24 +10,27 @@
 class TicTacToe
 {
 public:
-  enum State {kInitialized, kPlaying, kP1Wins, kP2Wins, kTie};
-  enum Player {kPlayerOne=1, kPlayerTwo};
+  enum Player {NOONE, PLAYER_ONE, PLAYER_TWO};
   
   TicTacToe(int);
-  ~TicTacToe();
   void StartGame();
-  
-  Gameboard* GetBoardPtr();
-  void SetBoardPtr(Gameboard*);
-  State GetState();
-  void SetState(State); 
 
 private:
-  Gameboard* board_ptr;
-  State state;
+  const static int DIMENSIONS = 2;
+  Gameboard gameboard;
   Player current_player;
-  std::map<Player, Tile::State> player_symbol = {{kPlayerOne, Tile::State::kCross},
-						 {kPlayerTwo, Tile::State::kCircle}};
+  std::map<Player, Tile::State> player_to_state = {{PLAYER_ONE, Tile::State::CROSS},
+						 {PLAYER_TWO, Tile::State::CIRCLE}};
+  std::map<Tile::State, Player> state_to_player = {{Tile::State::CROSS, PLAYER_ONE},
+						 {Tile::State::CIRCLE, PLAYER_TWO}};
+  
+  bool isValidInt(const std::string&, int&);
+  bool isInBounds(const int);
+  bool isValidUserInput(const std::string&, std::pair<int, int>&);
+  bool isGameOver(Player&);
+  bool isGameOver(Player&, std::pair<int, int>);
+  std::pair<int, int> getPlayerInput();
+  
 };
 
 #endif //TICTACTOE_HPP_

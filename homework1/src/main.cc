@@ -9,7 +9,7 @@
 int main()
 {
   int board_size = 3;
-  
+
   TicTacToe game(board_size);
   game.StartGame();  
   
