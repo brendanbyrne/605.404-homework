@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <sstream>
 
 #include <boost/algorithm/string/join.hpp>
@@ -18,7 +17,7 @@ void Gameboard::setTileState(const int row, const int col, const Tile::State new
   this->board[row][col].setState(new_state);
 }
 
-Tile::State Gameboard::getTileState(const int row, const int col)
+Tile::State Gameboard::getTileState(const int row, const int col) const
 {
   return this->board[row][col].getState();
 }
@@ -30,7 +29,7 @@ std::string buildRowString(const std::vector<Tile> row)
   return boost::algorithm::join(tiles_str, "|");
 }
 
-void Gameboard::printTo(std::ostream& output_stream)
+void Gameboard::printTo(std::ostream& output_stream) const
 {  
   std::vector<std::string> rows_str (this->board.size());
   std::transform(this->board.begin(), this->board.end(), rows_str.begin(), buildRowString);
@@ -39,11 +38,11 @@ void Gameboard::printTo(std::ostream& output_stream)
   output_stream << boost::algorithm::join(rows_str, row_delimiter) << "\n";
 }
 
-std::vector<std::pair<int, int>> Gameboard::getOpenTiles()
+std::vector<std::pair<int, int>> Gameboard::getOpenTiles() const
 {
   std::vector<std::pair<int, int>> open_tiles;
   open_tiles.reserve( this->board.size() * this->board.size() );
-  
+
   int row_num = 0;
   for (auto& row : this->board)
   {
@@ -62,7 +61,7 @@ std::vector<std::pair<int, int>> Gameboard::getOpenTiles()
   return open_tiles;
 }
 
-int Gameboard::getSize()
+int Gameboard::getSize() const
 {
   return this->board.size();
 }

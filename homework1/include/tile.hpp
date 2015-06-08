@@ -1,8 +1,6 @@
 #ifndef TILE_HPP_
 #define TILE_HPP_
 
-#include <ostream>
-#include <map>
 #include <string>
 
 class Tile {
@@ -11,13 +9,12 @@ public:
   
   Tile();
   Tile(State);
-  State getState();
+  State getState() const;
   void setState(State);
-  std::string str();
+  std::string str() const;
 
 private:
   State state;
-  std::map<State, const char*> ts2c_map = {{EMPTY, " "}, {CROSS, "X"}, {CIRCLE, "O"}};
 };
   
 
