@@ -1,12 +1,17 @@
+// Opponent.hpp
+//
 #ifndef OPPONENT_HPP_
 #define OPPONENT_HPP_
 
 #include <utility>
 #include <string>
 
-#include "gameboard.hpp"
-#include "tile.hpp"
+#include "Gameboard.hpp"
+#include "Tile.hpp"
 
+namespace hw1
+{
+  
 class Opponent
 {
 public:
@@ -16,7 +21,6 @@ public:
   const std::string getName();
   
 private:
-  const static int DIMENSIONS = 2;
   const std::string name;
   Tile::State symbol;
   const bool isAI;
@@ -29,4 +33,7 @@ private:
   bool isInBounds(const int);
 		    
 };
+
+} // namespace hw1
+
 #endif //OPPONENT_HPP_
