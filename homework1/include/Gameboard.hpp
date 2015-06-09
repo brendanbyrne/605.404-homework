@@ -16,7 +16,7 @@ namespace hw1
 class Gameboard
 {
 public:
-  const static int NUM_DIMENSIONS = 2;
+  const static int NUM_DIMENSIONS = 2; // the game board has two dimensions
   
   std::vector<std::vector<Tile>>* GetBoard();
   
@@ -29,8 +29,9 @@ public:
   int getSize() const;
 
 private:
-  const static int PRETTY_PRINT_FACTOR = 4; // found experimentally
-  std::vector< std::vector<Tile> > board;
+  const static int PRETTY_PRINT_FACTOR = 4; // found experimentally, used to format the output
+  std::vector< std::vector<Tile> > board;  // the state of the tictactoe board
+                                           // it will always be a square
 };
 
 } // hw1

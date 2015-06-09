@@ -101,27 +101,32 @@ void Opponent::getHumanInput(std::pair<int, int>& coordinate)
 // bool isValidInput(const std::string& input, std::pair<int,int>& coordinate)
 // Purpose: check to see if the received human input is valid
 // Input: the human input and a container to receive the validated location
-// Output: Nothing returned, validated location is return via the reference
+// Output: a bool that is true if the input is vaild
 //******************************************************************
 bool Opponent::isValidInput(const std::string& input, std::pair<int, int>& coordinate)
 {
   const std::string delimiters = " ";
   
+  // split input up by spaces
   std::vector<std::string> tokens;
   boost::split(tokens, input, boost::is_any_of(delimiters));
 
+  // make sure there are enough inputs
   if (tokens.size() != Gameboard::NUM_DIMENSIONS)
   {
     std::cout << "Incorrect number of inputs" << std::endl;
     return false;
   }
 
+  // check all the parsed tokens
   std::vector<int> valid_inputs;
   for (auto& str : tokens)
   {
+    // if the token is an int
     int candidate;
     if (this->isValidInt(str, candidate))
     {
+      // and is within the range of the gameboard
       if (this->isInBounds(candidate))
       {
 	valid_inputs.push_back(candidate);
@@ -139,9 +144,10 @@ bool Opponent::isValidInput(const std::string& input, std::pair<int, int>& coord
     }
   }
   
-  //minus 1 because collection starts at 0 not 1
+  //convert from input space [1...] to [0...]
   coordinate = std::pair<int,int>(valid_inputs[0]-1, valid_inputs[1]-1);
   
+  // finally, make sure the space is free
   if (this->board_ptr->getTileState(coordinate.first, coordinate.second) != Tile::State::EMPTY)
   {
     std::cout << "Space already taken" << std::endl;
@@ -151,6 +157,14 @@ bool Opponent::isValidInput(const std::string& input, std::pair<int, int>& coord
   return true;
 }
 
+
+//******************************************************************
+// bool isValidInt(const std::string& input, int& candidate)
+// Purpose: check to see if part of the received human input is an int
+// Input: a token parseed from the human input
+//        a container to receive the validated int
+// Output: a bool that is true if the str is an int
+//******************************************************************
 bool Opponent::isValidInt(const std::string& str, int& candidate)
 {
   try
@@ -164,6 +178,12 @@ bool Opponent::isValidInt(const std::string& str, int& candidate)
   return true;
 }
 
+//******************************************************************
+// bool isInBounds(const int candidate)
+// Purpose: check to see if value is within range of gameboard
+// Input: potential row or column value
+// Output: a bool that is true when the value is within the bounds
+//******************************************************************
 bool Opponent::isInBounds(const int candidate)
 {
   if (1 <= candidate && candidate <= this->board_ptr->getSize())

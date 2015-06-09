@@ -23,9 +23,9 @@ public:
   const Gameboard* getGameboardPtr();
   
 private:
-  Gameboard gameboard;
-  std::vector<Opponent> opponents;
-  std::vector<Opponent>::iterator player;
+  Gameboard gameboard;  // where the state of the board is stored
+  std::vector<Opponent> opponents; // the different people playing
+  std::vector<Opponent>::iterator player; // the user whos turn turn it is
     
   bool isValidInt(const std::string&, int&);
   bool isInBounds(const int);

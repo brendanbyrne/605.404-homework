@@ -21,10 +21,11 @@ public:
   const std::string getName();
   
 private:
-  const std::string name;
-  Tile::State symbol;
-  const bool isAI;
-  const Gameboard* board_ptr;
+  const std::string name; // human readable name of player
+  Tile::State symbol;  // The Tile::State that is associated with the player
+  const bool isAI; // flag for whether or not this player is a computer
+  const Gameboard* board_ptr; // a pointer used to look at the game board
+                              // used by the ai to help make decisions
 
   void getAIInput(std::pair<int, int>&);
   void getHumanInput(std::pair<int, int>&);
