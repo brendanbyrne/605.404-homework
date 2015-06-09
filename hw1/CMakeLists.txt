@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(homework1)
+project(hw1)
 
 #########################################
 # include C++11 support

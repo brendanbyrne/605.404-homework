@@ -1,4 +1,4 @@
-/////////// Tile.hpp
+// Tile.hpp
 //
 #ifndef TILE_HPP_
 #define TILE_HPP_
@@ -19,7 +19,7 @@ public:
   std::string str() const;
 
 private:
-  State state;
+  State state;  // the state of the individual tile
 };
   
 } // namespace hw1

@@ -23,7 +23,6 @@ GameState::GameState(const int size): // the size of the tictactoe grid
 // Input: None, but there must be at least one player added to start
 //        the game
 // Output: None
-// Postcondition: A game of TicTacToe has been played
 //******************************************************************
 void GameState::startGame()
 {  
@@ -93,7 +92,6 @@ const Gameboard* GameState::getGameboardPtr()
 //          the Tile::State enum
 // Input: An Opponent object
 // Output: None
-// Postcondition: A player has been added to the game
 //******************************************************************
 void GameState::addPlayer(Opponent& player)
 {
@@ -105,7 +103,6 @@ void GameState::addPlayer(Opponent& player)
 // Purpose: Check a slice of the gameboard for a win condition
 // Input: None, but there must be at least 1 player to start the game
 // Output: true, if a win state is detected
-// Postcondition: isGameOver will terminate the do->while loop
 //******************************************************************
 bool sequenceHasWin(const std::vector<Tile::State>& sequence)
 {
@@ -134,7 +131,6 @@ bool sequenceHasWin(const std::vector<Tile::State>& sequence)
 // Input: iterator container to capture the potential winner
 //        location of the last played move
 // Output: true, if a win state is detecte
-// Postcondition: The game moves out of the do->while loop
 //******************************************************************
 bool GameState::isGameOver(std::vector<Opponent>::iterator& winner_ptr,
 			   std::pair<int, int> coordinate)
