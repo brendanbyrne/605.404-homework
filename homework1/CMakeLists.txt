@@ -27,10 +27,10 @@ include_directories(include ${Boost_INCLUDE_DIRS})
 #########################################
 # build
 #########################################
-add_executable(game_test src/main.cc src/tile.cc src/gameboard.cc src/tictactoe.cc src/opponent.cc)
-target_link_libraries(game_test ${Boost_LIBRARIES})
+add_executable(tictactoe src/TicTacToe.cc src/Tile.cc src/Gameboard.cc src/GameState.cc src/Opponent.cc)
+target_link_libraries(tictactoe ${Boost_LIBRARIES})
 
 #########################################
 # installation
 #########################################
-#install(TARGETS tictactoe DESTINATION bin)
+install(TARGETS tictactoe DESTINATION bin)

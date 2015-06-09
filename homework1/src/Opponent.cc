@@ -3,8 +3,11 @@
 #include <random>
 #include <boost/algorithm/string.hpp>
 
-#include "opponent.hpp"
+#include "Opponent.hpp"
 
+namespace hw1
+{
+  
 Opponent::Opponent(const std::string& name,
 		   Tile::State symbol,
 		   const bool isAI,
@@ -14,10 +17,16 @@ Opponent::Opponent(const std::string& name,
   this->symbol = symbol;
 }
 
+//******************************************************************
+// std::pair<int, int> makeMove()
+// Purpose: Ask either a human or the AI for their next move
+// Input: None
+// Output: A set of coordinates (row, column)
+//******************************************************************
 std::pair<int, int> Opponent::makeMove()
 {
   std::pair<int, int> coordinate;
-  if (isAI)
+  if (this->isAI)
   {
     this->getAIInput(coordinate);
   }
@@ -28,23 +37,52 @@ std::pair<int, int> Opponent::makeMove()
   return coordinate;
 }
 
+//******************************************************************
+// Tile::State getSymbol()
+// Purpose: return the Tile::State that is associated with a player
+// Input: None
+// Output: The Tile::State that this player will
+//******************************************************************
 Tile::State Opponent::getSymbol() const
 {
   return this->symbol;
 }
 
+//******************************************************************
+// const std::string getName()
+// Purpose: supply a human friendly name of the player
+// Input: None
+// Output: a string with the name
+//******************************************************************
 const std::string Opponent::getName()
 {
   return this->name;
 }
 
+//******************************************************************
+// void getAIInput(std::pair<int, int>& coordinate)
+// Purpose: Choose the location for the AI to make its moves
+// Input: a referenced (row, col) coordinate
+// Output: Nothing returned, choice is saved to referenced input
+//******************************************************************
 void Opponent::getAIInput(std::pair<int, int>& coordinate)
 {
+  // Find the open spaces in on the board
   std::vector<std::pair<int, int>> open_tiles = this->board_ptr->getOpenTiles();
+
+  //choose a random one
   int random_index = rand() % open_tiles.size();
+
+  // and assign it as the AI decision
   coordinate = open_tiles[random_index];  
 }
 
+//******************************************************************
+// void getHumanInput(std::pair<int, int>& coordinate)
+// Purpose: ask a human where they want to move
+// Input: a referenced (row, col) coordinate
+// Output: Nothing returned, choice is saved to referenced input
+//******************************************************************
 void Opponent::getHumanInput(std::pair<int, int>& coordinate)
 {
   std::string input;
@@ -59,14 +97,20 @@ void Opponent::getHumanInput(std::pair<int, int>& coordinate)
   } while(this->isValidInput(input, coordinate) != true);
 }
 
+//******************************************************************
+// bool isValidInput(const std::string& input, std::pair<int,int>& coordinate)
+// Purpose: check to see if the received human input is valid
+// Input: the human input and a container to receive the validated location
+// Output: Nothing returned, validated location is return via the reference
+//******************************************************************
 bool Opponent::isValidInput(const std::string& input, std::pair<int, int>& coordinate)
 {
   const std::string delimiters = " ";
-
+  
   std::vector<std::string> tokens;
   boost::split(tokens, input, boost::is_any_of(delimiters));
 
-  if (tokens.size() != this->DIMENSIONS)
+  if (tokens.size() != Gameboard::NUM_DIMENSIONS)
   {
     std::cout << "Incorrect number of inputs" << std::endl;
     return false;
@@ -131,3 +175,5 @@ bool Opponent::isInBounds(const int candidate)
     return false;
   }
 }
+
+} // namespace hw1

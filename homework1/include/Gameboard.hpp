@@ -1,3 +1,5 @@
+// Gameboard.hpp
+//
 #ifndef GAMEBOARD_HPP_
 #define GAMEBOARD_HPP_
 
@@ -6,11 +8,16 @@
 #include <utility>
 #include <string>
 
-#include "tile.hpp"
+#include "Tile.hpp"
 
+namespace hw1
+{
+  
 class Gameboard
 {
 public:
+  const static int NUM_DIMENSIONS = 2;
+  
   std::vector<std::vector<Tile>>* GetBoard();
   
   Gameboard(const int);
@@ -26,4 +33,5 @@ private:
   std::vector< std::vector<Tile> > board;
 };
 
+} // hw1
 #endif // GAMEBOARD_HPP_
