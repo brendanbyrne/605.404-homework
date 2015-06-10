@@ -34,12 +34,12 @@ include_directories(include
 #########################################
 # build
 #########################################
-#add_executable(ranker src/RankHands.cpp src/PlayingCard.cpp)
-#target_link_libraries(ranker
-#  ${LIBCONFIGPP_LIBRARIES}
-#  ${Boost_LIBRARIES})
-add_executable(question src/QuestionMain.cpp src/QuestionClass.cpp)
-target_link_libraries(question ${Boost_LIBRARIES})
+add_executable(ranker src/RankHands.cpp src/PlayingCard.cpp)
+target_link_libraries(ranker
+  ${LIBCONFIGPP_LIBRARIES}
+  ${Boost_LIBRARIES})
+#add_executable(question src/QuestionMain.cpp src/QuestionClass.cpp)
+#target_link_libraries(question ${Boost_LIBRARIES})
 
 #########################################
 # installation

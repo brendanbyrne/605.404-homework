@@ -4,31 +4,52 @@
 
 namespace hw2
 {
-  PlayingCard::PlayingCard() {};
-  
-  PlayingCard::PlayingCard(Suit suit, Rank rank):
+  /*============================================================================
+
+    PlayingCard
+        Constructor for a PlayingCard object
+    
+  *///==========================================================================
+
+  PlayingCard::PlayingCard(Rank rank, // The desired rank of the card
+			   Suit suit):// the desired suit of the card
     suit(suit), rank(rank)
-  {
-  }
-  
-  PlayingCard::Suit PlayingCard::getSuit() const
-  {
-    return this->suit;
-  }
-  
+  {}
+
+  /*============================================================================
+
+    getRank
+        Returns the rank of the card
+	
+  *///==========================================================================
+
   PlayingCard::Rank PlayingCard::getRank() const
   {
     return this->rank;
   }
   
-  /*
+  /*============================================================================
+
+    getSuit
+        Returns the suit of the card
+	
+  *///==========================================================================
+  PlayingCard::Suit PlayingCard::getSuit() const
+  {
+    return this->suit;  
+  }
+  
+  /*============================================================================
+
+    str
+        Returns a human readable representation of the card
+	
+  *///==========================================================================
   std::string PlayingCard::str() const
   {
-    const std::string RANK = PlayingCard::rankToStr[this->rank];
-    const std::string SUIT = PlayingCard::suitToStr[this->suit];
-    return SUIT + " of " + RANK;
+    const std::string RANK = this->rankToStr.at(this->rank);
+    const std::string SUIT = this->suitToStr.at(this->suit);
+    return RANK + " of " + SUIT;
   }
-  */
-  
   
 }; // namespace hw2
