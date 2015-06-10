@@ -34,7 +34,7 @@ include_directories(include
 #########################################
 # build
 #########################################
-add_executable(ranker src/RankHands.cpp src/PlayingCard.cpp)
+add_executable(ranker src/RankHands.cpp src/PokerHand.cpp src/PlayingCard.cpp)
 target_link_libraries(ranker
   ${LIBCONFIGPP_LIBRARIES}
   ${Boost_LIBRARIES})
@@ -44,4 +44,4 @@ target_link_libraries(ranker
 #########################################
 # installation
 #########################################
-#install(TARGETS ranker DESTINATION bin)
+install(TARGETS ranker DESTINATION bin)

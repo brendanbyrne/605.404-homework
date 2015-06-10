@@ -36,3 +36,9 @@ build/
 
 # Non source stuff
 docs/
+
+#Microsoft Office
+*.doc
+
+#Linux open file
+.~lock*
