@@ -3,6 +3,7 @@ project(hw2)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_files)
 message("CMAKE_MODULE_PATH: \"${CMAKE_MODULE_PATH}\"")
+
 #########################################
 # include C++11 support
 #########################################
@@ -23,19 +24,24 @@ endif()
 #########################################
 # Find dependacies
 #########################################
-#find_package(Boost)
-#include_directories(${Boost_INCLUDE_DIRS})
-
+find_package(Boost)
 find_package(libConfig)
+
+include_directories(include
+  ${LIBCONFIGPP_INCLUDE_DIR}
+  ${Boost_INCLUDE_DIRS})
+
 #########################################
 # build
 #########################################
-add_executable(ranker src/HandRank.cc)
-target_link_libraries(ranker ${LIBCONFIGPP_LIBRARIES})
-#target_link_libraries(tictactoe ${Boost_LIBRARIES})
-
+#add_executable(ranker src/RankHands.cpp src/PlayingCard.cpp)
+#target_link_libraries(ranker
+#  ${LIBCONFIGPP_LIBRARIES}
+#  ${Boost_LIBRARIES})
+add_executable(question src/QuestionMain.cpp src/QuestionClass.cpp)
+target_link_libraries(question ${Boost_LIBRARIES})
 
 #########################################
 # installation
 #########################################
-#install(TARGETS tictactoe DESTINATION bin)
+#install(TARGETS ranker DESTINATION bin)
