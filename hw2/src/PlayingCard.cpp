@@ -4,6 +4,9 @@
 
 #include "PlayingCard.hpp"
 
+//for testing
+#include <iostream>
+
 namespace hw2
 { 
   /*============================================================================
@@ -15,33 +18,26 @@ namespace hw2
   *///==========================================================================
   PlayingCard::PlayingCard(Rank rank, // The desired rank of the card
 			   Suit suit):// the desired suit of the card
-    suit(suit), rank(rank)
-  {}
+    rank(rank), suit(suit)
+  {
+  }
 
   /*============================================================================
-    getRank
-        Returns the rank of the card
-
+    PlayingCard
+        Constructor for a PlayingCard object that takes in ints and converts to
+	the correct enum types
+	
     Revision History:
-        9 June, 2015 - function created
+        11 June, 2015 - function created
   *///==========================================================================
-  PlayingCard::Rank PlayingCard::getRank() const
+  PlayingCard::PlayingCard(const int rankNumber, //Desired rank as an int
+			   const int suitNumber)://Desired rank as an int
+    PlayingCard(static_cast<Rank>(rankNumber),
+		static_cast<Suit>(suitNumber))
+    
   {
-    return this->rank;
   }
   
-  /*============================================================================
-    getSuit
-        Returns the suit of the card
-
-    Revision History:
-        9 June, 2015 - function created
-  *///==========================================================================
-  PlayingCard::Suit PlayingCard::getSuit() const
-  {
-    return this->suit;  
-  }
-
   /*============================================================================
     operator<<
         Returns a human readable representation of a card's rank
@@ -110,7 +106,7 @@ namespace hw2
       break;
 
     default:
-      name = "Rank doesn't have name";
+      name = "Rank does not have a name";
     }
 
     out << name;

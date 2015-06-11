@@ -28,13 +28,14 @@ namespace hw2
 
   class PlayingCard
   {
-  public:    
-    enum class Suit {SPADES, CLUBS, HEARTS, DIAMONDS};
-    
+  public:
     enum class Rank {TWO = 2, THREE, FOUR, FIVE, SIX, SEVEN,
 	EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE};
+
+    enum class Suit : int{SPADES, CLUBS, HEARTS, DIAMONDS};
     
     PlayingCard(Rank, Suit);
+    PlayingCard(const int, const int);
     PlayingCard::Rank getRank() const;
     PlayingCard::Suit getSuit() const;
     
@@ -44,6 +45,30 @@ namespace hw2
     
   }; //PlayingCard
 
+  /*============================================================================
+    getRank
+        Returns the rank of the card
+
+    Revision History:
+        9 June, 2015 - function created
+  *///==========================================================================
+  inline PlayingCard::Rank PlayingCard::getRank() const
+  {
+    return this->rank;
+  }
+
+  /*============================================================================
+    getSuit
+        Returns the suit of the card
+
+    Revision History:
+        9 June, 2015 - function created
+  *///==========================================================================
+  inline PlayingCard::Suit PlayingCard::getSuit() const
+  {
+    return this->suit;
+  }
+  
   std::ostream& operator<<(std::ostream&, const PlayingCard::Suit&);
   std::ostream& operator<<(std::ostream&, const PlayingCard::Rank&);
   std::ostream& operator<<(std::ostream&, const PlayingCard&);

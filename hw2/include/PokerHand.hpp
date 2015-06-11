@@ -22,6 +22,7 @@
 #define POKER_HAND_HPP
 
 #include <array>
+#include <map>
 #include <ostream>
 
 #include "PlayingCard.hpp"
@@ -31,9 +32,11 @@ namespace hw2
   class PokerHand
   {
   public:
-    static const int SIZE_OF_HAND = 5;
+    static const int SIZE = 5;
     
-    typedef std::array<PlayingCard, SIZE_OF_HAND> Hand;
+    typedef std::array<PlayingCard, SIZE> Hand;
+    typedef std::map<PlayingCard::Rank, int> RankCount;
+    typedef std::map<PlayingCard::Suit, int> SuitCount;
     
     PokerHand(Hand&);
     Hand getHand() const;
@@ -64,6 +67,12 @@ namespace hw2
     static bool isThreeOfAKind(Hand&);
     static bool isTwoPairs(Hand&);
 
+    // helper functions
+    static RankCount frequencyRank(const Hand&);
+    static SuitCount frequencySuit(const Hand&);
+    static void suitSort(Hand&);
+    static void rankSort(Hand&);
+    
     // Functions for determining the value of a hand
     static int valueFlush(Hand&);
     static int valueFourOfAKind(Hand&);
@@ -77,17 +86,31 @@ namespace hw2
     
   }; // PokerHand
 
-  inline Hand PokerHand::getHand() const
+  /*============================================================================
+    getHand
+        Returns the std::array
+
+    Revision History:
+        10 June, 2015 - function created
+  *///==========================================================================
+  inline PokerHand::Hand PokerHand::getHand() const
   {
     return this->hand;
   }
 
+  /*============================================================================
+    getValue
+        Returns the calculated value of the hand
+
+    Revision History:
+        10 June, 2015 - function created
+  *///==========================================================================
   inline int PokerHand::getValue() const
   {
     return this->value;
   }
   
-  std::ostream& operator<<(std::ostream&, const PokerHand&);
+  std::ostream& operator<<(std::ostream&, const PokerHand::Hand&);
   
 }; // namespace hw2
 

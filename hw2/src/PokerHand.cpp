@@ -3,10 +3,14 @@
 #include <string>
 #include <array>
 #include <sstream>
+#include <algorithm> // for find, sort
 
 #include <boost/algorithm/string/join.hpp>
 
 #include "PokerHand.hpp"
+
+// testing
+#include <iostream>
 
 namespace hw2
 {
@@ -31,6 +35,14 @@ namespace hw2
   *///==========================================================================
   int PokerHand::calculateHandValue(Hand& hand)
   {
+    std::cout << "Hand: " << hand << std::endl;
+    std::cout << "Is flush: " << isFlush(hand) << std::endl;
+    std::cout << "Is straight: " << isStraight(hand) << std::endl;
+    std::cout << "Is four of a kind: " << isFourOfAKind(hand) << std::endl;
+    std::cout << "Is three of a kind: " << isThreeOfAKind(hand) << std::endl;
+    std::cout << "Is 2 pairs: " << isTwoPairs(hand) << std::endl;
+    std::cout << "Is a pair: " << isOnePair(hand) << std::endl;
+    
     int value;
     if (isFlush(hand) && isStraight(hand))
     {
@@ -69,43 +81,56 @@ namespace hw2
       value = valueHighCard(hand);
     }
       
-    return value;
+    //return value;
+    return 0;
+  }
+
+  /*============================================================================	
+    frequencyRank
+        creates a frequency count of the different card ranks
+
+    Revision History:
+        11 June, 2015 - function created
+  *///==========================================================================
+  PokerHand::RankCount PokerHand::frequencyRank(const Hand& hand)
+  {
+    RankCount frequency;
+    for(auto card : hand)
+    {
+      ++frequency[card.getRank()];
+    }
+    return frequency;
+  }
+
+  /*============================================================================	
+    frequencySuit
+        creates a frequency count of the different card suits
+
+    Revision History:
+        11 June, 2015 - function created
+  *///==========================================================================
+  PokerHand::SuitCount PokerHand::frequencySuit(const Hand& hand)
+  {
+    SuitCount frequency;
+    for(auto card : hand)
+    {
+      ++frequency[card.getSuit()];
+    }
+    return frequency;
   }
   
-  /*============================================================================
-    getHand
-        Returns the std::array
-
-    Revision History:
-        10 June, 2015 - function created
-  *///==========================================================================
-  // PokerHand::Hand PokerHand::getHand() const
-  // {
-  //   return this->hand;
-  // }
-  
-  /*============================================================================
-    getValue
-        Returns the calculated value of the hand
-
-    Revision History:
-        10 June, 2015 - function created
-  *///==========================================================================
-  // int PokerHand::getValue() const
-  // {
-  //   return this->value;
-  // }
-
   /*============================================================================
     isFlush
         Determines whether of not the hand is a flush
 
     Revision History:
         10 June, 2015 - function created
+	11 June, 2015 - completed logic added
   *///==========================================================================
   bool PokerHand::isFlush(Hand& hand)
   {
-    return false;
+    SuitCount frequency = frequencySuit(hand);
+    return frequency.size() == 1;
   }
 
   /*============================================================================
@@ -117,7 +142,20 @@ namespace hw2
   *///==========================================================================
   bool PokerHand::isFourOfAKind(Hand& hand)
   {
-    return false;
+    bool rightConfiguration;
+    
+    RankCount frequency = frequencyRank(hand);
+
+    if(frequency.size() != 2)
+    {
+      rightConfiguration = false;
+    }
+    else
+    {
+      rightConfiguration = frequency[0] == 4 || frequency[1] == 4;
+    }
+
+    return rightConfiguration;
   }
 
   /*============================================================================
@@ -153,7 +191,13 @@ namespace hw2
   *///==========================================================================
   bool PokerHand::isStraight(Hand& hand)
   {
-    return false;
+    bool hasAce = hand.end() != std::find_if(hand.begin(), hand.end(),
+					     [](PlayingCard& card) -> bool
+					     {
+					       return card.getRank() == PlayingCard::Rank::ACE;
+					     });
+    
+    return hasAce;
   }
 
   /*============================================================================
@@ -165,7 +209,13 @@ namespace hw2
   *///==========================================================================
   bool PokerHand::isThreeOfAKind(Hand& hand)
   {
+    RankCount frequency = frequencyRank(hand);
+    for (auto count : frequency)
+    {
+      std::cout << cout << std::endl;
+    }
     return false;
+    //return rightConfiguration;
   }
 
   /*============================================================================
@@ -179,6 +229,44 @@ namespace hw2
   {
     return false;
   }  
+
+  /*============================================================================
+    suitSort
+        sorts the hand based on the enum value of the suit, useful for 
+	seperating the suits
+
+    Revision History:
+        10 June, 2015 - function created
+  *///==========================================================================
+  void PokerHand::suitSort(Hand& hand)
+  {
+    std::sort(hand.begin(), hand.end(),
+	      [](const PlayingCard& firstCard,
+		 const PlayingCard& secondCard) -> bool
+	      {
+		return firstCard.getSuit() < secondCard.getSuit();;
+	      });
+  }
+  
+  /*============================================================================
+    rankSort
+        sorts the hand based on the enum value of the rank
+
+    Note
+        The ace will always be consider high in this search
+
+    Revision History:
+        10 June, 2015 - function created
+  *///==========================================================================
+   void PokerHand::rankSort(Hand& hand)
+   {
+     std::sort(hand.begin(), hand.end(),
+	       [](const PlayingCard& firstCard,
+		  const PlayingCard& secondCard) -> bool
+	       {
+		 return firstCard.getRank() < secondCard.getRank();
+	       });
+   }
 
   /*============================================================================
     valueFlush
@@ -299,19 +387,19 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  std::ostream& operator<<(std::ostream& out, const PokerHand&  pokerhand)
+  std::ostream& operator<<(std::ostream& out, const PokerHand::Hand&  hand)
   {
-    PokerHand::Hand hand = pokerhand.getHand();
-    std::array<std::string, hand.size()> strings;
+   
+    std::array<std::string, PokerHand::SIZE> strings;
 
-    std::transform(hand.begin(), hand.end(), strings.begin(), [](PlayingCard& card)
+    std::transform(hand.begin(), hand.end(), strings.begin(), [](const PlayingCard& card)
 		   {
 		     std::stringstream ss;
 		     ss << card;
 		     return ss.str();
 		   });
 
-    out << boost::algorithm::join(strings, ", ");
+    out << "[" + boost::algorithm::join(strings, ", ") + "]";
     
     return out;
   }
