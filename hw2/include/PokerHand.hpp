@@ -31,7 +31,7 @@ namespace hw2
   class PokerHand
   {
   public:
-    const static int SIZE_OF_HAND = 5;
+    static const int SIZE_OF_HAND = 5;
     
     typedef std::array<PlayingCard, SIZE_OF_HAND> Hand;
     
@@ -43,7 +43,18 @@ namespace hw2
     bool isAceHigh;
     Hand hand;
     int value;
-    
+
+    // Encoding offsets for different kinds of hands
+    static const int STRAIGHT_FLUSH  = 8000000;
+    static const int FOUR_OF_A_KIND  = 7000000;
+    static const int FULL_HOUSE      = 6000000;
+    static const int FLUSH           = 5000000;
+    static const int STRAIGHT        = 4000000;
+    static const int THREE_OF_A_KIND = 3000000;
+    static const int TWO_PAIRS       = 2000000;
+    static const int ONE_PAIR        = 1000000;
+
+    // Functions for determining the type of hand
     static int calculateHandValue(Hand&);
     static bool isFlush(Hand&);
     static bool isFourOfAKind(Hand&);
@@ -52,8 +63,30 @@ namespace hw2
     static bool isStraight(Hand&);
     static bool isThreeOfAKind(Hand&);
     static bool isTwoPairs(Hand&);
+
+    // Functions for determining the value of a hand
+    static int valueFlush(Hand&);
+    static int valueFourOfAKind(Hand&);
+    static int valueFullHouse(Hand&);
+    static int valueHighCard(Hand&);
+    static int valueOnePair(Hand&);
+    static int valueStraight(Hand&);
+    static int valueStraightFlush(Hand&);    
+    static int valueThreeOfAKind(Hand&);
+    static int valueTwoPairs(Hand&);    
+    
   }; // PokerHand
 
+  inline Hand PokerHand::getHand() const
+  {
+    return this->hand;
+  }
+
+  inline int PokerHand::getValue() const
+  {
+    return this->value;
+  }
+  
   std::ostream& operator<<(std::ostream&, const PokerHand&);
   
 }; // namespace hw2

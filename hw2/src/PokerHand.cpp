@@ -31,9 +31,47 @@ namespace hw2
   *///==========================================================================
   int PokerHand::calculateHandValue(Hand& hand)
   {
-    return 0;
+    int value;
+    if (isFlush(hand) && isStraight(hand))
+    {
+      value = valueStraightFlush(hand);
+    }
+    else if(isFourOfAKind(hand))
+    {
+      value =  valueFourOfAKind(hand);
+    }
+    else if(isFullHouse(hand))
+    {
+      value = valueFullHouse(hand);
+    }
+    else if(isFlush(hand))
+    {
+      value = valueFlush(hand);
+    }
+    else if (isStraight(hand))
+    {
+      value = valueStraight(hand);
+    }
+    else if (isThreeOfAKind(hand))
+    {
+      value = valueThreeOfAKind(hand);
+    }
+    else if (isTwoPairs(hand))
+    {
+      value = valueTwoPairs(hand);
+    }
+    else if (isOnePair(hand))
+    {
+      value = valueOnePair(hand);
+    }
+    else
+    {
+      value = valueHighCard(hand);
+    }
+      
+    return value;
   }
-
+  
   /*============================================================================
     getHand
         Returns the std::array
@@ -41,10 +79,10 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  PokerHand::Hand PokerHand::getHand() const
-  {
-    return this->hand;
-  }
+  // PokerHand::Hand PokerHand::getHand() const
+  // {
+  //   return this->hand;
+  // }
   
   /*============================================================================
     getValue
@@ -53,10 +91,10 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::getValue() const
-  {
-    return this->value;
-  }
+  // int PokerHand::getValue() const
+  // {
+  //   return this->value;
+  // }
 
   /*============================================================================
     isFlush
@@ -142,6 +180,115 @@ namespace hw2
     return false;
   }  
 
+  /*============================================================================
+    valueFlush
+        Determines the value of a hand if assuming it is a flush
+
+    Revision History:
+        10 June, 2015 - function created
+  *///==========================================================================
+  int PokerHand::valueFlush(Hand&)
+  {
+    return 0;
+  }
+
+  /*============================================================================
+    valueFourOfAKind
+        Determines the value of a hand if assuming it is a four of a kind
+
+    Revision History:
+        10 June, 2015 - function created
+  *///==========================================================================
+  int PokerHand::valueFourOfAKind(Hand&)
+  {
+    return 0;
+  }
+
+  /*============================================================================
+    valueFullHouse
+        Determines the value of a hand if assuming it is a full house
+
+    Revision History:
+        10 June, 2015 - function created
+  *///==========================================================================
+  int PokerHand::valueFullHouse(Hand&)
+  {
+    return 0;
+  }
+
+  /*============================================================================
+    valueHighCard
+        Determines the value of a hand disregarding the other possible special
+	possible types: (e.g. Full House, Flush, etc...)
+
+    Revision History:
+        10 June, 2015 - function created
+  *///==========================================================================
+  int PokerHand::valueHighCard(Hand&)
+  {
+    return 0;
+  }
+  
+  /*============================================================================
+    valueOnePair
+        Determines the value of a hand if assuming it is a One Pair hand only
+
+    Revision History:
+        10 June, 2015 - function created
+  *///==========================================================================
+  int PokerHand::valueOnePair(Hand&)
+  {
+    return 0;
+  }
+
+  /*============================================================================
+    valueStraigt
+        Determines the value of a hand if assuming it only contains a Straight
+
+    Revision History:
+        10 June, 2015 - function created
+  *///==========================================================================
+  int PokerHand::valueStraight(Hand&)
+  {
+    return 0;
+  }
+
+  /*============================================================================
+    valueStraightFlush
+        Determines the value of a hand if assuming it is a Straight Flush
+
+    Revision History:
+        10 June, 2015 - function created
+  *///==========================================================================
+  int PokerHand::valueStraightFlush(Hand&)
+  {
+    return 0;
+  }
+
+  /*============================================================================
+    valueThreeOfAKind
+        Determines the value of a hand if assuming it has Three of a Kind
+
+    Revision History:
+        10 June, 2015 - function created
+  *///==========================================================================
+  int PokerHand::valueThreeOfAKind(Hand&)
+  {
+    return 0;
+  }
+
+  /*============================================================================
+    valueThreeOfAKind
+        Determines the value of a hand if assuming it has Three of a Kind
+
+    Revision History:
+        10 June, 2015 - function created
+  *///==========================================================================
+  int PokerHand::valueTwoPairs(Hand&)
+  {
+    return 0;
+  }  
+  
   /*============================================================================
     operator<<
         Returns a human readable representation of a poker hand
