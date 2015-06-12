@@ -38,49 +38,51 @@ namespace hw2
     std::cout << "Hand: " << hand << std::endl;
     std::cout << "Is flush: " << isFlush(hand) << std::endl;
     std::cout << "Is straight: " << isStraight(hand) << std::endl;
+    std::cout << "Is Full House: " << isFullHouse(hand) << std::endl;
     std::cout << "Is four of a kind: " << isFourOfAKind(hand) << std::endl;
     std::cout << "Is three of a kind: " << isThreeOfAKind(hand) << std::endl;
     std::cout << "Is 2 pairs: " << isTwoPairs(hand) << std::endl;
     std::cout << "Is a pair: " << isOnePair(hand) << std::endl;
     
+    /*
     int value;
-    if (isFlush(hand) && isStraight(hand))
+    if (PokerHand::isFlush(hand) && PokerHand::isStraight(hand))
     {
-      value = valueStraightFlush(hand);
+      value = PokerHand::valueStraightFlush(hand);
     }
-    else if(isFourOfAKind(hand))
+    else if (PokerHand::isFourOfAKind(hand))
     {
-      value =  valueFourOfAKind(hand);
+      value =  PokerHand::valueFourOfAKind(hand);
     }
-    else if(isFullHouse(hand))
+    else if (PokerHand::isFullHouse(hand))
     {
-      value = valueFullHouse(hand);
+      value = PokerHand::valueFullHouse(hand);
     }
-    else if(isFlush(hand))
+    else if(PokerHand::isFlush(hand))
     {
-      value = valueFlush(hand);
+      value = PokerHand::valueFlush(hand);
     }
-    else if (isStraight(hand))
+    else if (PokerHand::isStraight(hand))
     {
-      value = valueStraight(hand);
+      value = PokerHand::valueStraight(hand);
     }
-    else if (isThreeOfAKind(hand))
+    else if (PokerHand::isThreeOfAKind(hand))
     {
-      value = valueThreeOfAKind(hand);
+      value = PokerHand::valueThreeOfAKind(hand);
     }
-    else if (isTwoPairs(hand))
+    else if (PokerHand::isTwoPairs(hand))
     {
-      value = valueTwoPairs(hand);
+      value = PokerHand::valueTwoPairs(hand);
     }
-    else if (isOnePair(hand))
+    else if (PokerHand::isOnePair(hand))
     {
-      value = valueOnePair(hand);
+      value = PokerHand::valueOnePair(hand);
     }
     else
     {
-      value = valueHighCard(hand);
+      value = PokerHand::valueHighCard(hand);
     }
-      
+    */
     //return value;
     return 0;
   }
@@ -94,12 +96,12 @@ namespace hw2
   *///==========================================================================
   PokerHand::RankCount PokerHand::frequencyRank(const Hand& hand)
   {
-    RankCount frequency;
-    for(auto card : hand)
+    RankCount count;
+    for (auto card : hand)
     {
-      ++frequency[card.getRank()];
+      ++count[card.getRank()];
     }
-    return frequency;
+    return count;
   }
 
   /*============================================================================	
@@ -111,12 +113,12 @@ namespace hw2
   *///==========================================================================
   PokerHand::SuitCount PokerHand::frequencySuit(const Hand& hand)
   {
-    SuitCount frequency;
-    for(auto card : hand)
+    SuitCount count;
+    for (auto card : hand)
     {
-      ++frequency[card.getSuit()];
+      ++count[card.getSuit()];
     }
-    return frequency;
+    return count;
   }
   
   /*============================================================================
@@ -125,12 +127,12 @@ namespace hw2
 
     Revision History:
         10 June, 2015 - function created
-	11 June, 2015 - completed logic added
+	11 June, 2015 - complete logic added
   *///==========================================================================
   bool PokerHand::isFlush(Hand& hand)
   {
-    SuitCount frequency = frequencySuit(hand);
-    return frequency.size() == 1;
+    SuitCount count = PokerHand::frequencySuit(hand);
+    return count.size() == 1;
   }
 
   /*============================================================================
@@ -142,20 +144,23 @@ namespace hw2
   *///==========================================================================
   bool PokerHand::isFourOfAKind(Hand& hand)
   {
-    bool rightConfiguration;
+    RankCount count = PokerHand::frequencyRank(hand);
     
-    RankCount frequency = frequencyRank(hand);
-
-    if(frequency.size() != 2)
+    bool hasFour;
+    if (count.size() != 2)
     {
-      rightConfiguration = false;
+      hasFour = false;
     }
     else
     {
-      rightConfiguration = frequency[0] == 4 || frequency[1] == 4;
+      RankCount::iterator it = count.begin();
+      do
+      {
+	hasFour = it++->second == 4 || hasFour;
+      } while ( !hasFour && it != count.end() );
     }
 
-    return rightConfiguration;
+    return hasFour;
   }
 
   /*============================================================================
@@ -164,10 +169,30 @@ namespace hw2
 
     Revision History:
         10 June, 2015 - function created
+	11 June, 2015 - complete logic added
   *///==========================================================================
   bool PokerHand::isFullHouse(Hand& hand)
   {
-    return false;
+    RankCount count = PokerHand::frequencyRank(hand);
+    
+    bool hasThreeCount;
+    bool hasTwoCount;
+    
+    if (count.size() != 2)
+    {
+      hasThreeCount = false;
+      hasTwoCount = false;
+    }
+    else
+    {
+      for (auto keyVal : count)
+      {
+	hasThreeCount = (keyVal.second == 3) || hasThreeCount;
+	hasTwoCount = (keyVal.second == 2) || hasTwoCount;
+      }
+    }
+    
+    return hasThreeCount && hasTwoCount;
   }
 
   /*============================================================================
@@ -179,25 +204,72 @@ namespace hw2
   *///==========================================================================
   bool PokerHand::isOnePair(Hand& hand)
   {
-    return false;
+    RankCount count = PokerHand::frequencyRank(hand);
+    return count.size() == 4;
   }
   
   /*============================================================================
     isStraight
         Determines whether of not the hand is a straight
 
+    Note
+        There is exists a special case with the Ace card.  Straights need to be
+	checked to allow for ace high [10, J, Q, K, A] and ace low [A, 2, 3, 4]
+	corner cases.
+
     Revision History:
         10 June, 2015 - function created
+	11 June, 2015 - complete logic added
   *///==========================================================================
   bool PokerHand::isStraight(Hand& hand)
   {
-    bool hasAce = hand.end() != std::find_if(hand.begin(), hand.end(),
+    PokerHand::rankSort(hand);
+   
+    bool hasAce = hand.end() != std::find_if (hand.begin(), hand.end(),
 					     [](PlayingCard& card) -> bool
 					     {
 					       return card.getRank() == PlayingCard::Rank::ACE;
 					     });
     
-    return hasAce;
+    Hand::iterator it;
+    bool hasStraight;
+    if (hasAce)
+    {
+      it = hand.begin();
+      bool straightLowAce = it++->getRank() == PlayingCard::Rank::TWO &&
+	                    it++->getRank() == PlayingCard::Rank::THREE &&
+	                    it++->getRank() == PlayingCard::Rank::FOUR &&
+	                    it->getRank() == PlayingCard::Rank::FIVE;
+
+      it = hand.begin();
+      bool straightHighAce = it++->getRank() == PlayingCard::Rank::TEN &&
+	                     it++->getRank() == PlayingCard::Rank::JACK &&
+	                     it++->getRank() == PlayingCard::Rank::QUEEN &&
+	                     it->getRank() == PlayingCard::Rank::KING;
+      
+      hasStraight = straightLowAce || straightHighAce;
+    }
+    else
+    {
+      it = hand.begin();
+      PlayingCard::Rank currentRank = it++->getRank();
+      
+      PlayingCard::Rank nextRank;
+      PlayingCard::Rank predictedRank;
+      hasStraight = true;
+      do
+      {
+	predictedRank = static_cast<hw2::PlayingCard::Rank>(static_cast<int>(currentRank)+1);
+	
+	nextRank = it++->getRank();
+	
+	hasStraight = (nextRank == predictedRank) && hasStraight;
+	
+	currentRank = nextRank;
+      } while (hasStraight && it != hand.end() );
+    }
+    
+    return hasStraight;
   }
 
   /*============================================================================
@@ -206,16 +278,20 @@ namespace hw2
 
     Revision History:
         10 June, 2015 - function created
+	11 June, 2015 - complete logic added
   *///==========================================================================
   bool PokerHand::isThreeOfAKind(Hand& hand)
   {
-    RankCount frequency = frequencyRank(hand);
-    for (auto count : frequency)
+    RankCount count = PokerHand::frequencyRank(hand);
+    
+    bool hasThree;
+    RankCount::iterator it = count.begin();
+    do
     {
-      std::cout << cout << std::endl;
-    }
-    return false;
-    //return rightConfiguration;
+      hasThree = it++->second == 3;
+    } while ( !hasThree && it!=count.end() );
+    
+    return hasThree;
   }
 
   /*============================================================================
@@ -227,36 +303,38 @@ namespace hw2
   *///==========================================================================
   bool PokerHand::isTwoPairs(Hand& hand)
   {
-    return false;
+    RankCount count = PokerHand::frequencyRank(hand);
+    bool hasTwoPairs;
+    
+    if (count.size() != 3)
+    {
+      hasTwoPairs = false;
+    }
+    else
+    {
+      const int PAIR = 2;
+      int numberOfPairs = 0;
+      for (auto keyVal : count)
+      {
+	if (keyVal.second == PAIR)
+	{
+	  ++numberOfPairs;
+	}
+      }
+      hasTwoPairs = numberOfPairs == PAIR;
+    }
+    return hasTwoPairs;
   }  
-
-  /*============================================================================
-    suitSort
-        sorts the hand based on the enum value of the suit, useful for 
-	seperating the suits
-
-    Revision History:
-        10 June, 2015 - function created
-  *///==========================================================================
-  void PokerHand::suitSort(Hand& hand)
-  {
-    std::sort(hand.begin(), hand.end(),
-	      [](const PlayingCard& firstCard,
-		 const PlayingCard& secondCard) -> bool
-	      {
-		return firstCard.getSuit() < secondCard.getSuit();;
-	      });
-  }
   
   /*============================================================================
     rankSort
-        sorts the hand based on the enum value of the rank
+        Ascenging order sort of the hand using the  enum value of the rank
 
     Note
         The ace will always be consider high in this search
 
     Revision History:
-        10 June, 2015 - function created
+        11 June, 2015 - function created
   *///==========================================================================
    void PokerHand::rankSort(Hand& hand)
    {
@@ -273,11 +351,11 @@ namespace hw2
         Determines the value of a hand if assuming it is a flush
 
     Revision History:
-        10 June, 2015 - function created
+        11 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::valueFlush(Hand&)
+  int PokerHand::valueFlush(Hand& hand)
   {
-    return 0;
+    return PokerHand::FLUSH + PokerHand::valueHighCard(hand);
   }
 
   /*============================================================================
@@ -285,11 +363,13 @@ namespace hw2
         Determines the value of a hand if assuming it is a four of a kind
 
     Revision History:
-        10 June, 2015 - function created
+        11 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::valueFourOfAKind(Hand&)
+  int PokerHand::valueFourOfAKind(Hand& hand)
   {
-    return 0;
+    PokerHand::rankSort(hand);
+    const int END = 4;
+    return PokerHand::FOUR_OF_A_KIND + static_cast<int>(hand[END].getRank());
   }
 
   /*============================================================================
@@ -299,9 +379,11 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::valueFullHouse(Hand&)
+  int PokerHand::valueFullHouse(Hand& hand)
   {
-    return 0;
+    PokerHand::rankSort(hand);
+    const int END = 4;
+    return PokerHand::FULL_HOUSE + static_cast<int>(hand[END].getRank());
   }
 
   /*============================================================================
@@ -312,9 +394,18 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::valueHighCard(Hand&)
+  int PokerHand::valueHighCard(Hand& hand)
   {
-    return 0;
+    PokerHand::rankSort(hand);
+    
+    int value = 0;
+    value += static_cast<int>(hand[0].getRank());
+    value += 14*static_cast<int>(hand[1].getRank());
+    value += 14*14*static_cast<int>(hand[2].getRank());
+    value += 14*14*14*static_cast<int>(hand[3].getRank());
+    value += 14*14*14*14*static_cast<int>(hand[4].getRank());
+    
+    return value;
   }
   
   /*============================================================================
@@ -324,7 +415,7 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::valueOnePair(Hand&)
+  int PokerHand::valueOnePair(Hand& hand)
   {
     return 0;
   }
@@ -336,9 +427,9 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::valueStraight(Hand&)
+  int PokerHand::valueStraight(Hand& hand)
   {
-    return 0;
+    return PokerHand::STRAIGHT + PokerHand::valueHighCard(hand);
   }
 
   /*============================================================================
@@ -348,9 +439,9 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::valueStraightFlush(Hand&)
+  int PokerHand::valueStraightFlush(Hand& hand)
   {
-    return 0;
+    return PokerHand::STRAIGHT_FLUSH + PokerHand::valueHighCard(hand);
   }
 
   /*============================================================================
@@ -360,19 +451,21 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::valueThreeOfAKind(Hand&)
+  int PokerHand::valueThreeOfAKind(Hand& hand)
   {
-    return 0;
+    PokerHand::rankSort(hand);
+    const int END = 4;
+    return PokerHand::THREE_OF_A_KIND + static_cast<int>(hand[END].getRank());
   }
 
   /*============================================================================
-    valueThreeOfAKind
-        Determines the value of a hand if assuming it has Three of a Kind
+    valueTwoPairs
+        Determines the value of a hand if assuming it has two pairs
 
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::valueTwoPairs(Hand&)
+  int PokerHand::valueTwoPairs(Hand& hand)
   {
     return 0;
   }  

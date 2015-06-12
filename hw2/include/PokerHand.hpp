@@ -70,7 +70,6 @@ namespace hw2
     // helper functions
     static RankCount frequencyRank(const Hand&);
     static SuitCount frequencySuit(const Hand&);
-    static void suitSort(Hand&);
     static void rankSort(Hand&);
     
     // Functions for determining the value of a hand
