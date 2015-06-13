@@ -14,10 +14,10 @@ using hw2::operator<<;
 int main()
 {
   hw2::PokerHand::Hand h1 = {hw2::PlayingCard(14, 0),
-			     hw2::PlayingCard(3, 1),
-			     hw2::PlayingCard(3, 2),
-			     hw2::PlayingCard(2, 1),
-			     hw2::PlayingCard(2, 2)};
+			     hw2::PlayingCard(13, 1),
+			     hw2::PlayingCard(12, 2),
+			     hw2::PlayingCard(11, 1),
+			     hw2::PlayingCard(10, 2)};
   
   hw2::PokerHand ph1(h1);
   

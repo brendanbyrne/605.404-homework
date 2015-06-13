@@ -43,7 +43,6 @@ namespace hw2
     int getValue() const;
     
   private:
-    bool isAceHigh;
     Hand hand;
     int value;
 
@@ -63,7 +62,7 @@ namespace hw2
     static bool isFourOfAKind(Hand&);
     static bool isFullHouse(Hand&);
     static bool isOnePair(Hand&);
-    static bool isStraight(Hand&);
+    static bool isStraight(Hand&, bool&);
     static bool isThreeOfAKind(Hand&);
     static bool isTwoPairs(Hand&);
 
@@ -76,10 +75,10 @@ namespace hw2
     static int valueFlush(Hand&);
     static int valueFourOfAKind(Hand&);
     static int valueFullHouse(Hand&);
-    static int valueHighCard(Hand&);
+    static int valueHighCard(Hand& hand, bool isStraightAceLow = false);
     static int valueOnePair(Hand&);
-    static int valueStraight(Hand&);
-    static int valueStraightFlush(Hand&);    
+    static int valueStraight(Hand&, bool);
+    static int valueStraightFlush(Hand&, bool);    
     static int valueThreeOfAKind(Hand&);
     static int valueTwoPairs(Hand&);    
     
