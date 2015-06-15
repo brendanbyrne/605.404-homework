@@ -33,11 +33,14 @@ namespace hw2
 	EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE};
 
     enum class Suit : int{SPADES, CLUBS, HEARTS, DIAMONDS};
-    
+
+    PlayingCard();
     PlayingCard(Rank, Suit);
     PlayingCard(const int, const int);
-    PlayingCard::Rank getRank() const;
-    PlayingCard::Suit getSuit() const;
+    Rank getRank() const;
+    Suit getSuit() const;
+    void setRank(Rank&);
+    void setSuit(Suit&);
     
   private:    
     Rank rank;
@@ -67,6 +70,30 @@ namespace hw2
   inline PlayingCard::Suit PlayingCard::getSuit() const
   {
     return this->suit;
+  }
+
+  /*============================================================================
+    setRank
+        Sets the "rank" data member to the input value
+
+    Revision History:
+        14 June, 2015 - function created
+  *///==========================================================================
+  inline void PlayingCard::setRank(Rank& rank)
+  {
+    this->rank = rank;
+  }
+
+  /*============================================================================
+    setSuit
+        Sets the "suit" data member to the input value
+
+    Revision History:
+        14 June, 2015 - function created
+  *///==========================================================================
+  inline void PlayingCard::setSuit(Suit& suit)
+  {
+    this->suit = suit;
   }
   
   std::ostream& operator<<(std::ostream&, const PlayingCard::Suit&);

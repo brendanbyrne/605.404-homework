@@ -9,11 +9,11 @@
 
 #include "PokerHand.hpp"
 
-// testing
-#include <iostream>
-
 namespace hw2
 {
+  PokerHand::PokerHand()
+  {}
+  
   /*============================================================================
     PokerHand
         Constructor for a PokerHand object
@@ -39,17 +39,7 @@ namespace hw2
     bool isStraightAceLow = false; // is only set to high if the hand is a
                                    // straight, contains an ace, and the 
                                    // ace is at the bottom of the run
-    
-    std::cout << "Hand: " << hand << std::endl;
-    std::cout << "Is flush: " << isFlush(hand) << std::endl;
-    std::cout << "Is straight: " << isStraight(hand, isStraightAceLow) << " with low ace: " << isStraightAceLow << std::endl;
-    std::cout << "Is Full House: " << isFullHouse(hand) << std::endl;
-    std::cout << "Is four of a kind: " << isFourOfAKind(hand) << std::endl;
-    std::cout << "Is three of a kind: " << isThreeOfAKind(hand) << std::endl;
-    std::cout << "Is 2 pairs: " << isTwoPairs(hand) << std::endl;
-    std::cout << "Is a pair: " << isOnePair(hand) << std::endl;
-    
-    
+        
     int value;
     if (PokerHand::isFlush(hand) && PokerHand::isStraight(hand, isStraightAceLow))
     {
@@ -87,7 +77,6 @@ namespace hw2
     {
       value = PokerHand::valueHighCard(hand);
     }
-    
     
     return value;
   }
@@ -173,8 +162,7 @@ namespace hw2
         Determines whether of not the hand is a full house
 
     Revision History:
-        10 June, 2015 - function created
-	11 June, 2015 - complete logic added
+        11 June, 2015 - function created
   *///==========================================================================
   bool PokerHand::isFullHouse(Hand& hand)
   {
@@ -223,7 +211,7 @@ namespace hw2
 	corner cases.
 
     Revision History:        
-	13 June, 2015 - Fucntion Created
+	13 June, 2015 - Function Created
   *///==========================================================================
   bool PokerHand::isStraight(Hand& hand,     // the hand to test
 			     bool& isStraightAceLow) // true if the straight has a low ace
@@ -331,7 +319,7 @@ namespace hw2
     }
     return hasTwoPairs;
   }  
-  
+    
   /*============================================================================
     rankSort
         Ascenging order sort of the hand using the  enum value of the rank
@@ -370,12 +358,32 @@ namespace hw2
 
     Revision History:
         11 June, 2015 - function created
+	15 June, 2015 - fixed non quad rank not effecting outcome
   *///==========================================================================
   int PokerHand::valueFourOfAKind(Hand& hand)
   {
-    PokerHand::rankSort(hand);
-    const int END = 4;
-    return PokerHand::FOUR_OF_A_KIND + static_cast<int>(hand[END].getRank());
+    
+    RankCount count = PokerHand::frequencyRank(hand);
+
+    PlayingCard::Rank rankQuad;
+    PlayingCard::Rank rankSingle;
+    for (auto keyVal : count)
+    {
+      if (keyVal.second == 4)
+      {
+	rankQuad = keyVal.first;
+      }
+      else if (keyVal.second == 1)
+      {
+	rankSingle = keyVal.first;
+      }
+    }
+    
+    int value = PokerHand::FOUR_OF_A_KIND;
+    value += 14 * static_cast<int>(rankQuad);
+    value += static_cast<int>(rankSingle);
+
+    return value;
   }
   
   /*============================================================================
@@ -384,12 +392,32 @@ namespace hw2
 
     Revision History:
         10 June, 2015 - function created
+	15 June, 2015 - fixed X full of Y where rank Y wasn't effecting outcome
   *///==========================================================================
   int PokerHand::valueFullHouse(Hand& hand)
   {
-    PokerHand::rankSort(hand);
-    const int END = 4;
-    return PokerHand::FULL_HOUSE + static_cast<int>(hand[END].getRank());
+    RankCount count = PokerHand::frequencyRank(hand);
+
+    PlayingCard::Rank rankTriple;
+    PlayingCard::Rank rankDouble;
+
+    for (auto keyVal : count)
+    {
+      if (keyVal.second == 3)
+      {
+	rankTriple = keyVal.first;
+      }
+      else if (keyVal.second == 2)
+      {
+	rankDouble = keyVal.first;
+      }
+    }
+
+    int value = PokerHand::FULL_HOUSE;
+    value += 14 * static_cast<int>(rankTriple);
+    value += static_cast<int>(rankDouble);
+
+    return value;
   }
 
   /*============================================================================
@@ -432,7 +460,7 @@ namespace hw2
         Determines the value of a hand if assuming it is a One Pair hand only
 
     Revision History:
-        10 June, 2015 - function created
+        14 June, 2015 - function created
   *///==========================================================================
   int PokerHand::valueOnePair(Hand& hand)
   {
@@ -504,9 +532,40 @@ namespace hw2
   *///==========================================================================
   int PokerHand::valueThreeOfAKind(Hand& hand)
   {
-    PokerHand::rankSort(hand);
-    const int END = 4;
-    return PokerHand::THREE_OF_A_KIND + static_cast<int>(hand[END].getRank());
+    RankCount count = PokerHand::frequencyRank(hand);
+
+    PlayingCard::Rank rankTriple;
+    std::array<PlayingCard::Rank, 2>  rankSingle;
+    std::array<PlayingCard::Rank, 2>::iterator it = rankSingle.begin();
+    
+    for (auto keyVal : count)
+    {
+      if (keyVal.second == 3)
+      {
+	rankTriple = keyVal.first;
+      }
+      else if (keyVal.second == 1)
+      {
+	*it = keyVal.first;
+	it++;
+      }
+    }
+        
+    int value = PokerHand::THREE_OF_A_KIND;
+    value += 14 * 14 * static_cast<int>(rankTriple);
+    
+    if (rankSingle[0] > rankSingle[1])
+    {
+      value += 14 * static_cast<int>(rankSingle[0]);
+      value += static_cast<int>(rankSingle[1]);
+    }
+    else
+    {
+      value += 14 * static_cast<int>(rankSingle[1]);
+      value += static_cast<int>(rankSingle[0]);
+    }
+
+    return value;
   }
 
   /*============================================================================
@@ -514,7 +573,7 @@ namespace hw2
         Determines the value of a hand if assuming it has two pairs
 
     Revision History:
-        10 June, 2015 - function created
+        14 June, 2015 - function created
   *///==========================================================================
   int PokerHand::valueTwoPairs(Hand& hand)
   {

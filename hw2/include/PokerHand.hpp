@@ -38,9 +38,11 @@ namespace hw2
     typedef std::map<PlayingCard::Rank, int> RankCount;
     typedef std::map<PlayingCard::Suit, int> SuitCount;
     
+    PokerHand();
     PokerHand(Hand&);
     Hand getHand() const;
     int getValue() const;
+    void setHand(const Hand&);
     
   private:
     Hand hand;
@@ -83,7 +85,7 @@ namespace hw2
     static int valueTwoPairs(Hand&);    
     
   }; // PokerHand
-
+  
   /*============================================================================
     getHand
         Returns the std::array
@@ -107,7 +109,21 @@ namespace hw2
   {
     return this->value;
   }
-  
+
+  /*============================================================================
+    setHand
+        Changes the "hand" data member
+
+    Revision History:
+        15 June, 2015 - function created
+  *///==========================================================================
+  inline void PokerHand::setHand(const Hand& hand)
+  {
+    this->hand = hand;
+    this->value = PokerHand::calculateHandValue(this->hand);
+  }
+
+  // Non class declarations
   std::ostream& operator<<(std::ostream&, const PokerHand::Hand&);
   
 }; // namespace hw2

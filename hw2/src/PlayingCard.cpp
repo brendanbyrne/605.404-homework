@@ -8,7 +8,19 @@
 #include <iostream>
 
 namespace hw2
-{ 
+{
+  /*============================================================================
+    PlayingCard
+        Default Constructor for a PlayingCard object
+	
+    Revision History:
+        15 June, 2015 - function created
+
+    Note:
+        Added for support of Hand typedef in the pokerhand class
+  *///==========================================================================
+  PlayingCard::PlayingCard(){}
+  
   /*============================================================================
     PlayingCard
         Constructor for a PlayingCard object
@@ -17,10 +29,10 @@ namespace hw2
         9 June, 2015 - function created
   *///==========================================================================
   PlayingCard::PlayingCard(Rank rank, // The desired rank of the card
-			   Suit suit):// the desired suit of the card
+   			   Suit suit):// the desired suit of the card
     rank(rank), suit(suit)
-  {
-  }
+   {
+   }
 
   /*============================================================================
     PlayingCard
@@ -31,10 +43,9 @@ namespace hw2
         11 June, 2015 - function created
   *///==========================================================================
   PlayingCard::PlayingCard(const int rankNumber, //Desired rank as an int
-			   const int suitNumber)://Desired rank as an int
+  			   const int suitNumber)://Desired rank as an int
     PlayingCard(static_cast<Rank>(rankNumber),
-		static_cast<Suit>(suitNumber))
-    
+  		static_cast<Suit>(suitNumber))
   {
   }
   
