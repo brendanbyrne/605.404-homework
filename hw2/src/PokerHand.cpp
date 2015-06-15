@@ -11,6 +11,17 @@
 
 namespace hw2
 {
+  /*============================================================================
+    PokerHand
+        Default Constructor for a PokerHand object
+	
+    Note
+        This was created to allow PokerHand objects to be declared in an 
+	uninitialized std::array
+
+    Revision History:
+        15 June, 2015 - function created
+  *///==========================================================================
   PokerHand::PokerHand()
   {}
   

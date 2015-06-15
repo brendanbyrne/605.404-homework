@@ -1,3 +1,16 @@
+/*
+  RankHands.cpp
+  Author: Brendan Byrne
+  Date: 15 June, 2015
+  Class: 605.404.31 Object Oriented Programming in C++
+  Purpose: This program loads a configuration file and compares all
+           the different poker hands that are contained with in it
+  Input: (from a configuration file)
+           Player hands and the expected winner
+  Output: (to standard out) The poker hands being compared, which hand
+          was calculated to win and which hand should have won
+*/
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -7,8 +20,6 @@
 
 #include "PokerHand.hpp"
 #include "PlayingCard.hpp"
-
-
 
 using hw2::operator<<;
 
@@ -101,24 +112,19 @@ int main()
     std::stringstream ss;
     ss << "compare" << comparisionNumber << ".winner";
     cfg.lookupValue(ss.str(), givenWinner);
-
-
-    if ( calculatedWinner != givenWinner )
-    //if (comparisionNumber == 4)
-    {
-      std::cout << "Comparision: " << comparisionNumber << std::endl;
-      std::cout << std::string(80, '=') << std::endl;
-      std::cout << "  Comparing" << std::endl;
-      std::cout << "    " << players[0].getHand() << std::endl;
-      std::cout << "      against" << std::endl;
-      std::cout << "    " << players[1].getHand() << std::endl;
-      std::cout << std::endl;
-      std::cout << "  Values: " << players[0].getValue()
-		<< " vs. " << players[1].getValue() << std::endl;
-      std::cout << "  Expected outcome: " << givenWinner << std::endl;
-      std::cout << "  Calculated outcome: " << calculatedWinner << std::endl;
-      std::cout << std::endl;
-    }
+    
+    std::cout << "Comparision: " << comparisionNumber << std::endl;
+    std::cout << std::string(80, '=') << std::endl;
+    std::cout << "  Comparing" << std::endl;
+    std::cout << "    " << players[0].getHand() << std::endl;
+    std::cout << "      against" << std::endl;
+    std::cout << "    " << players[1].getHand() << std::endl;
+    std::cout << std::endl;
+    std::cout << "  Values: " << players[0].getValue()
+	      << " vs. " << players[1].getValue() << std::endl;
+    std::cout << "  Expected outcome: " << givenWinner << std::endl;
+    std::cout << "  Calculated outcome: " << calculatedWinner << std::endl;
+    std::cout << std::endl;
     
   } // for comparisionNumber
 
