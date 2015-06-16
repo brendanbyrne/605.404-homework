@@ -23,6 +23,8 @@
 
 using hw2::operator<<;
 
+std::string outcomeString(int); // converts win state id to string
+
 int main()
 {
   // load the configuration file
@@ -113,19 +115,53 @@ int main()
     ss << "compare" << comparisionNumber << ".winner";
     cfg.lookupValue(ss.str(), givenWinner);
 
+    std::string givenString = outcomeString(givenWinner);
+    std::string calculatedString = outcomeString(calculatedWinner);
+    
     // print out the results
     std::cout << "Comparision: " << comparisionNumber << std::endl;
     std::cout << std::string(80, '=') << std::endl;
     std::cout << "  Comparing" << std::endl;
     std::cout << "    " << hands[0].getHand() << std::endl;
     std::cout << "      against" << std::endl;
-    std::cout << "    " << hands[1].getHand() << std::endl;
-    std::cout << std::endl;
-    std::cout << "  Expected outcome: " << givenWinner << std::endl;
-    std::cout << "  Calculated outcome: " << calculatedWinner << std::endl;
-    std::cout << std::endl;
+    std::cout << "    " << hands[1].getHand() << "\n" << std::endl;
+    std::cout << "  Expected outcome:   " << givenString << std::endl;
+    std::cout << "  Calculated outcome: " << calculatedString << std::endl;
     
   } // for comparisionNumber
 
   return 0;
 } // main function
+
+
+/*==============================================================================
+    outcomeString
+        Converts win state id number to a string
+
+    Revision History
+        16 June, 2015 - function created
+*///============================================================================
+std::string outcomeString(int outcome) // win state number
+{
+  std::string outcomeString;
+
+  switch(outcome)
+  {
+  case 1:
+    outcomeString = "First Hand Wins";
+    break;
+
+  case 0:
+    outcomeString = "Tie";
+    break;
+
+  case -1:
+    outcomeString = "Second Hand Wins";
+    break;
+
+  default:
+    outcomeString = "Not a valid outcome";
+  }
+
+  return outcomeString;
+}
