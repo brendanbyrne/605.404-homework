@@ -4,9 +4,6 @@
 
 #include "PlayingCard.hpp"
 
-//for testing
-#include <iostream>
-
 namespace hw2
 {
   /*============================================================================
@@ -59,7 +56,8 @@ namespace hw2
     Revision History:
        10 June, 2015 - function created
   *///==========================================================================
-  std::ostream& operator<<(std::ostream& out, const PlayingCard::Rank& rank)
+  std::ostream& operator<<(std::ostream& out, // the desired output stream
+			   const PlayingCard::Rank& rank) // the rank to output
   {
     std::string name;
     switch(rank)
@@ -134,7 +132,8 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  std::ostream& operator<<(std::ostream& out, const PlayingCard::Suit& suit)
+  std::ostream& operator<<(std::ostream& out, // the desired output stream
+			   const PlayingCard::Suit& suit) // the suit to output
   {
     std::string name;
     switch (suit)
@@ -173,11 +172,11 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  std::ostream& operator<<(std::ostream& out, const PlayingCard& card)
+  std::ostream& operator<<(std::ostream& out, // desired output stream
+			   const PlayingCard& card) // card object to output
   {
     out << card.getRank() << " of " << card.getSuit();
     return out;
   }
   
 }; // namespace hw2
-  

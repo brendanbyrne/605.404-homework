@@ -2,7 +2,7 @@
   RankHands.cpp
   Author: Brendan Byrne
   Date: 15 June, 2015
-  Class: 605.404.31 Object Oriented Programming in C++
+  Class: 605.404.31 Object Oriented Programming with C++
   Purpose: This program loads a configuration file and compares all
            the different poker hands that are contained with in it
   Input: (from a configuration file)
@@ -25,57 +25,55 @@ using hw2::operator<<;
 
 int main()
 {
-
-  std::cout << "Loading Configuration File" << std::endl;
-  
+  // load the configuration file
   libconfig::Config cfg;
-  cfg.readFile("test.cfg");
-  
+  cfg.readFile("comparisons.cfg");
+
+  // print out description of config file
   std::string name;
   cfg.lookupValue("description", name);
   std::cout << "Description: " << name << std::endl;
-    
+
+  // load and print settings stored in the config file
   int number_of_comparisions;
-  int number_of_players;
+  int number_of_hands;
   int number_of_cards;
   cfg.lookupValue("number_of_comparisions", number_of_comparisions);
-  cfg.lookupValue("number_of_players", number_of_players);
+  cfg.lookupValue("number_of_hands", number_of_hands);
   cfg.lookupValue("number_of_cards", number_of_cards);
-
   std::cout << "Number of comparisions to be made: "
 	    << number_of_comparisions << std::endl;
-  std::cout << "Number of players in comparision: "
-	    << number_of_players << std::endl;
+  std::cout << "Number of handss in comparision: "
+	    << number_of_hands << std::endl;
   std::cout << "Number of cards in hand per player: "
 	    << number_of_cards << std::endl;
   std::cout << std::endl;
 
-  //number_of_comparisions = 3;
-
-  // Run all the comparisions in the cfg file  
+  // for each comparision
   for (int comparisionNumber = 1;
        comparisionNumber <= number_of_comparisions;
        comparisionNumber++)
   {
+
+    // build two poker hands to compare
+    std::array<hw2::PokerHand, 2> hands;
     
-    std::array<hw2::PokerHand, 2> players;
-    for (int playerNumber = 1;
-	 playerNumber <= number_of_players;
-	 playerNumber++)
+    for (int handNumber = 1;
+	 handNumber <= number_of_hands;
+	 handNumber++)
     {
       
+      // build a single poker hand
       hw2::PokerHand::Hand hand;
-      
       for (int cardNumber = 1;
 	   cardNumber <= number_of_cards;
 	   cardNumber++)
       {
-	// empty the string stream
-	std::stringstream ss;
 	
-	// build lookup string location
+	// build location of lookup string
+	std::stringstream ss;
 	ss << "compare" << comparisionNumber
-	   << ".h" <<  playerNumber
+	   << ".h" <<  handNumber
 	   << ".card" << cardNumber;
 	
 	// look up the card properties
@@ -88,40 +86,41 @@ int main()
 	hand[cardNumber-1] = hw2::PlayingCard(rank, suit);
 	
       } // for cardNumber
-
-      // add player to compare
-      players[playerNumber-1] = hw2::PokerHand(hand);
       
-    } // for playerNumber
-    
+      // add hand to compare
+      hands[handNumber-1] = hw2::PokerHand(hand);
+      
+    } // for handNumber
+
+    // figure out which hand is calculated to win
     int calculatedWinner;
-    if (players[0].getValue() > players[1].getValue())
+    if (hands[0].getValue() > hands[1].getValue())
     {
       calculatedWinner = 1;
     }
-    else if (players[0].getValue() == players[1].getValue())
+    else if (hands[0].getValue() == hands[1].getValue())
     {
       calculatedWinner = 0;
     }
     else
     {
       calculatedWinner = -1;
-    }
+    } // end if
 
+    // load the predicted winner from the config file
     int givenWinner;
     std::stringstream ss;
     ss << "compare" << comparisionNumber << ".winner";
     cfg.lookupValue(ss.str(), givenWinner);
-    
+
+    // print out the results
     std::cout << "Comparision: " << comparisionNumber << std::endl;
     std::cout << std::string(80, '=') << std::endl;
     std::cout << "  Comparing" << std::endl;
-    std::cout << "    " << players[0].getHand() << std::endl;
+    std::cout << "    " << hands[0].getHand() << std::endl;
     std::cout << "      against" << std::endl;
-    std::cout << "    " << players[1].getHand() << std::endl;
+    std::cout << "    " << hands[0].getHand() << std::endl;
     std::cout << std::endl;
-    std::cout << "  Values: " << players[0].getValue()
-	      << " vs. " << players[1].getValue() << std::endl;
     std::cout << "  Expected outcome: " << givenWinner << std::endl;
     std::cout << "  Calculated outcome: " << calculatedWinner << std::endl;
     std::cout << std::endl;
@@ -129,4 +128,4 @@ int main()
   } // for comparisionNumber
 
   return 0;
-}
+} // main function

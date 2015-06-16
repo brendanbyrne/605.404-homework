@@ -3,7 +3,7 @@
 #include <string>
 #include <array>
 #include <sstream>
-#include <algorithm> // for find_if, sort
+#include <algorithm> // find_if, sort
 
 #include <boost/algorithm/string/join.hpp>
 
@@ -32,7 +32,7 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  PokerHand::PokerHand(Hand& hand):
+  PokerHand::PokerHand(Hand& hand): // array of PlayingCard making up a hand
     hand(hand), value(PokerHand::calculateHandValue(this->hand))
   {
   }
@@ -44,7 +44,7 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::calculateHandValue(Hand& hand)
+  int PokerHand::calculateHandValue(Hand& hand) // array of PlayingCard making up a hand
   {
 
     bool isStraightAceLow = false; // is only set to high if the hand is a
@@ -94,12 +94,12 @@ namespace hw2
 
   /*============================================================================	
     frequencyRank
-        creates a frequency count of the different card ranks
+        performs a frequency count of the different card ranks in a hand
 
     Revision History:
         11 June, 2015 - function created
   *///==========================================================================
-  PokerHand::RankCount PokerHand::frequencyRank(const Hand& hand)
+  PokerHand::RankCount PokerHand::frequencyRank(const Hand& hand) // array of PlayingCard making up a hand
   {
     RankCount count;
     for (auto card : hand)
@@ -111,12 +111,12 @@ namespace hw2
 
   /*============================================================================	
     frequencySuit
-        creates a frequency count of the different card suits
+        performs a frequency count of the different card suits in a hand
 
     Revision History:
         11 June, 2015 - function created
   *///==========================================================================
-  PokerHand::SuitCount PokerHand::frequencySuit(const Hand& hand)
+  PokerHand::SuitCount PokerHand::frequencySuit(const Hand& hand) // array of PlayingCard making up a hand
   {
     SuitCount count;
     for (auto card : hand)
@@ -134,7 +134,7 @@ namespace hw2
         10 June, 2015 - function created
 	11 June, 2015 - complete logic added
   *///==========================================================================
-  bool PokerHand::isFlush(Hand& hand)
+  bool PokerHand::isFlush(Hand& hand) // array of PlayingCard making up a hand
   {
     SuitCount count = PokerHand::frequencySuit(hand);
     return count.size() == 1;
@@ -147,7 +147,7 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  bool PokerHand::isFourOfAKind(Hand& hand)
+  bool PokerHand::isFourOfAKind(Hand& hand) // array of PlayingCard making up a hand
   {
     RankCount count = PokerHand::frequencyRank(hand);
     
@@ -175,12 +175,13 @@ namespace hw2
     Revision History:
         11 June, 2015 - function created
   *///==========================================================================
-  bool PokerHand::isFullHouse(Hand& hand)
+  bool PokerHand::isFullHouse(Hand& hand) // array of PlayingCard making up a hand
   {
     RankCount count = PokerHand::frequencyRank(hand);
     
     bool hasThreeCount;
     bool hasTwoCount;
+
     
     if (count.size() != 2)
     {
@@ -206,7 +207,7 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  bool PokerHand::isOnePair(Hand& hand)
+  bool PokerHand::isOnePair(Hand& hand) // array of PlayingCard making up a hand
   {
     RankCount count = PokerHand::frequencyRank(hand);
     return count.size() == 4;
@@ -224,8 +225,9 @@ namespace hw2
     Revision History:        
 	13 June, 2015 - Function Created
   *///==========================================================================
-  bool PokerHand::isStraight(Hand& hand,     // the hand to test
-			     bool& isStraightAceLow) // true if the straight has a low ace
+  bool PokerHand::isStraight(Hand& hand, // array of PlayingCard making up a hand
+			     bool& isStraightAceLow) // output variable,
+                                                     //true if the straight has a low ace
   {
     PokerHand::rankSort(hand);
    
@@ -285,7 +287,7 @@ namespace hw2
     Revision History:
         11 June, 2015 - function created
   *///==========================================================================
-  bool PokerHand::isThreeOfAKind(Hand& hand)
+  bool PokerHand::isThreeOfAKind(Hand& hand) // array of PlayingCard making up a hand
   {
     RankCount count = PokerHand::frequencyRank(hand);
     
@@ -306,7 +308,7 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  bool PokerHand::isTwoPairs(Hand& hand)
+  bool PokerHand::isTwoPairs(Hand& hand) // array of PlayingCard making up a hand
   {
     RankCount count = PokerHand::frequencyRank(hand);
     bool hasTwoPairs;
@@ -341,7 +343,7 @@ namespace hw2
     Revision History:
         11 June, 2015 - function created
   *///==========================================================================
-  void PokerHand::rankSort(Hand& hand)
+  void PokerHand::rankSort(Hand& hand) // array of PlayingCard making up a hand
   {
     std::sort(hand.begin(), hand.end(),
 	      [](const PlayingCard& firstCard,
@@ -358,7 +360,7 @@ namespace hw2
     Revision History:
         11 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::valueFlush(Hand& hand)
+  int PokerHand::valueFlush(Hand& hand) // array of PlayingCard making up a hand
   {
     return PokerHand::FLUSH + PokerHand::valueHighCard(hand);
   }
@@ -371,7 +373,7 @@ namespace hw2
         11 June, 2015 - function created
 	15 June, 2015 - fixed non quad rank not effecting outcome
   *///==========================================================================
-  int PokerHand::valueFourOfAKind(Hand& hand)
+  int PokerHand::valueFourOfAKind(Hand& hand) // array of PlayingCard making up a hand
   {
     
     RankCount count = PokerHand::frequencyRank(hand);
@@ -405,7 +407,7 @@ namespace hw2
         10 June, 2015 - function created
 	15 June, 2015 - fixed X full of Y where rank Y wasn't effecting outcome
   *///==========================================================================
-  int PokerHand::valueFullHouse(Hand& hand)
+  int PokerHand::valueFullHouse(Hand& hand) // array of PlayingCard making up a hand
   {
     RankCount count = PokerHand::frequencyRank(hand);
 
@@ -439,7 +441,8 @@ namespace hw2
     Revision History:
         13 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::valueHighCard(Hand& hand, bool isAceLow)
+  int PokerHand::valueHighCard(Hand& hand, // array of PlayingCard making up a hand
+			       bool isAceLow) // switch to use the low value for ace
   {
     PokerHand::rankSort(hand);
     
@@ -473,7 +476,7 @@ namespace hw2
     Revision History:
         14 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::valueOnePair(Hand& hand)
+  int PokerHand::valueOnePair(Hand& hand) // array of PlayingCard making up a hand
   {
     PokerHand::rankSort(hand);
     
@@ -517,9 +520,11 @@ namespace hw2
     Revision History:
         13 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::valueStraight(Hand& hand, bool isAceLow)
+  int PokerHand::valueStraight(Hand& hand, // array of PlayingCard making up a hand
+			       bool isStraightAceLow) // pass through for the state
+                                                      // of the ace card
   {
-    return PokerHand::STRAIGHT + PokerHand::valueHighCard(hand, isAceLow);
+    return PokerHand::STRAIGHT + PokerHand::valueHighCard(hand, isStraightAceLow);
   }
 
   /*============================================================================
@@ -529,7 +534,9 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::valueStraightFlush(Hand& hand, bool isStraightAceLow)
+  int PokerHand::valueStraightFlush(Hand& hand, // array of PlayingCard making up a hand
+				    bool isStraightAceLow) // pass through for the state
+                                                           // of the ace card
   {
     return PokerHand::STRAIGHT_FLUSH + PokerHand::valueHighCard(hand, isStraightAceLow);
   }
@@ -541,7 +548,7 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::valueThreeOfAKind(Hand& hand)
+  int PokerHand::valueThreeOfAKind(Hand& hand) // array of PlayingCard making up a hand
   {
     RankCount count = PokerHand::frequencyRank(hand);
 
@@ -586,7 +593,7 @@ namespace hw2
     Revision History:
         14 June, 2015 - function created
   *///==========================================================================
-  int PokerHand::valueTwoPairs(Hand& hand)
+  int PokerHand::valueTwoPairs(Hand& hand) // array of PlayingCard making up a hand
   {
     PokerHand::rankSort(hand);
     
@@ -626,7 +633,8 @@ namespace hw2
     Revision History:
         10 June, 2015 - function created
   *///==========================================================================
-  std::ostream& operator<<(std::ostream& out, const PokerHand::Hand&  hand)
+  std::ostream& operator<<(std::ostream& out, // the desired output stream
+			   const PokerHand::Hand&  hand) // array of PlayingCard making up a hand
   {
    
     std::array<std::string, PokerHand::SIZE> strings;

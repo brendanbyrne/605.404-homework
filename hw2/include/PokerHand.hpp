@@ -32,21 +32,26 @@ namespace hw2
   class PokerHand
   {
   public:
-    static const int SIZE = 5;
-    
+    static const int SIZE = 5; // the size of a poker hand
+
+    // poker hand typedef, used to force the size of a poker hand
     typedef std::array<PlayingCard, SIZE> Hand;
+
+    // typedef for rank frequency count output
     typedef std::map<PlayingCard::Rank, int> RankCount;
+    
+    // typedef for suit frequency count output
     typedef std::map<PlayingCard::Suit, int> SuitCount;
     
-    PokerHand();
-    PokerHand(Hand&);
-    Hand getHand() const;
-    int getValue() const;
-    void setHand(const Hand&);
+    PokerHand(); // default constructor, build empty class
+    PokerHand(Hand&); // construct PokerHand from a given 5 card hand
+    Hand getHand() const; // hand attribute getter
+    int getValue() const; // value attribute getter
+    void setHand(const Hand&); // set the hand attribute to the provided Hand
     
   private:
-    Hand hand;
-    int value;
+    Hand hand; // the 5 cards representing the poker hand
+    int value; // the encoded value of the poker hand
 
     // Encoding offsets for different kinds of hands
     static const int STRAIGHT_FLUSH  = 8000000;
