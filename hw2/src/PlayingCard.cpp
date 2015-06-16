@@ -9,8 +9,8 @@ namespace hw2
   /*============================================================================
     PlayingCard
         Default Constructor for a PlayingCard object
-	
-    Revision History:
+        
+    Revision History
         15 June, 2015 - function created
 
     Note:
@@ -21,12 +21,12 @@ namespace hw2
   /*============================================================================
     PlayingCard
         Constructor for a PlayingCard object
-	
-    Revision History:
+        
+    Revision History
         9 June, 2015 - function created
   *///==========================================================================
   PlayingCard::PlayingCard(Rank rank, // The desired rank of the card
-   			   Suit suit):// the desired suit of the card
+                           Suit suit):// the desired suit of the card
     rank(rank), suit(suit)
    {
    }
@@ -34,15 +34,15 @@ namespace hw2
   /*============================================================================
     PlayingCard
         Constructor for a PlayingCard object that takes in ints and converts to
-	the correct enum types
-	
-    Revision History:
+        the correct enum types
+        
+    Revision History
         11 June, 2015 - function created
   *///==========================================================================
   PlayingCard::PlayingCard(const int rankNumber, //Desired rank as an int
-  			   const int suitNumber)://Desired rank as an int
+                           const int suitNumber)://Desired rank as an int
     PlayingCard(static_cast<Rank>(rankNumber),
-  		static_cast<Suit>(suitNumber))
+                static_cast<Suit>(suitNumber))
   {
   }
   
@@ -51,13 +51,13 @@ namespace hw2
         Returns a human readable representation of a card's rank
 
     Note:
-        Only works inside hw2 namespace useless combined with "using"
+        Only works inside hw2 namespace
 
-    Revision History:
+    Revision History
        10 June, 2015 - function created
   *///==========================================================================
   std::ostream& operator<<(std::ostream& out, // the desired output stream
-			   const PlayingCard::Rank& rank) // the rank to output
+                           const PlayingCard::Rank& rank) // the rank to output
   {
     std::string name;
     switch(rank)
@@ -127,13 +127,13 @@ namespace hw2
         Returns a human readable representation of a card's suit
 
     Note:
-        Only works inside hw2 namespace useless combined with "using"
+        Only works inside hw2 namespace
 
-    Revision History:
+    Revision History
         10 June, 2015 - function created
   *///==========================================================================
   std::ostream& operator<<(std::ostream& out, // the desired output stream
-			   const PlayingCard::Suit& suit) // the suit to output
+                           const PlayingCard::Suit& suit) // the suit to output
   {
     std::string name;
     switch (suit)
@@ -167,13 +167,13 @@ namespace hw2
         Returns a human readable representation of the card
 
     Note:
-        Only works inside hw2 namespace useless combined with "using"
+        Only works inside hw2 namespace
 
-    Revision History:
+    Revision History
         10 June, 2015 - function created
   *///==========================================================================
   std::ostream& operator<<(std::ostream& out, // desired output stream
-			   const PlayingCard& card) // card object to output
+                           const PlayingCard& card) // card object to output
   {
     out << card.getRank() << " of " << card.getSuit();
     return out;

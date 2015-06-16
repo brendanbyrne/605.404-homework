@@ -42,49 +42,49 @@ int main()
   cfg.lookupValue("number_of_hands", number_of_hands);
   cfg.lookupValue("number_of_cards", number_of_cards);
   std::cout << "Number of comparisions to be made: "
-	    << number_of_comparisions << std::endl;
+            << number_of_comparisions << std::endl;
   std::cout << "Number of handss in comparision: "
-	    << number_of_hands << std::endl;
+            << number_of_hands << std::endl;
   std::cout << "Number of cards in hand per player: "
-	    << number_of_cards << std::endl;
+            << number_of_cards << std::endl;
   std::cout << std::endl;
 
-  // for each comparision
+  // for each set of hands to compare
   for (int comparisionNumber = 1;
        comparisionNumber <= number_of_comparisions;
        comparisionNumber++)
   {
 
-    // build two poker hands to compare
-    std::array<hw2::PokerHand, 2> hands;
     
+    std::array<hw2::PokerHand, 2> hands;
+    // build the two poker hands to compare
     for (int handNumber = 1;
-	 handNumber <= number_of_hands;
-	 handNumber++)
+         handNumber <= number_of_hands;
+         handNumber++)
     {
       
-      // build a single poker hand
+      // one at a time
       hw2::PokerHand::Hand hand;
       for (int cardNumber = 1;
-	   cardNumber <= number_of_cards;
-	   cardNumber++)
+           cardNumber <= number_of_cards;
+           cardNumber++)
       {
-	
-	// build location of lookup string
-	std::stringstream ss;
-	ss << "compare" << comparisionNumber
-	   << ".h" <<  handNumber
-	   << ".card" << cardNumber;
-	
-	// look up the card properties
-	int rank;
-	int suit;
-	cfg.lookupValue(ss.str()+".rank", rank);
-	cfg.lookupValue(ss.str()+".suit", suit);
+        
+        // build location of lookup string
+        std::stringstream ss;
+        ss << "compare" << comparisionNumber
+           << ".h" <<  handNumber
+           << ".card" << cardNumber;
+        
+        // look up the card properties
+        int rank;
+        int suit;
+        cfg.lookupValue(ss.str()+".rank", rank);
+        cfg.lookupValue(ss.str()+".suit", suit);
 
-	// add card to hand
-	hand[cardNumber-1] = hw2::PlayingCard(rank, suit);
-	
+        // add card to hand
+        hand[cardNumber-1] = hw2::PlayingCard(rank, suit);
+        
       } // for cardNumber
       
       // add hand to compare
@@ -105,7 +105,7 @@ int main()
     else
     {
       calculatedWinner = -1;
-    } // end if
+    }
 
     // load the predicted winner from the config file
     int givenWinner;
@@ -119,7 +119,7 @@ int main()
     std::cout << "  Comparing" << std::endl;
     std::cout << "    " << hands[0].getHand() << std::endl;
     std::cout << "      against" << std::endl;
-    std::cout << "    " << hands[0].getHand() << std::endl;
+    std::cout << "    " << hands[1].getHand() << std::endl;
     std::cout << std::endl;
     std::cout << "  Expected outcome: " << givenWinner << std::endl;
     std::cout << "  Calculated outcome: " << calculatedWinner << std::endl;

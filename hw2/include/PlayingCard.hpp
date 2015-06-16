@@ -4,7 +4,7 @@
   
   Date: 9 June, 2015
   
-  Revision History:
+  Revision History
       9 June, 2015 - class created
       10 June, 2015 - operator<< override provided
   
@@ -14,7 +14,7 @@
   
   Description: This file defines the PlayingCard class which maintains the
                state information of a traditional vegas style playing card. A
-	       PlayingCard has a Suit and Value, both expressed as enums.
+               PlayingCard has a Suit and Value, both expressed as enums.
   
 *///============================================================================
 
@@ -31,7 +31,7 @@ namespace hw2
   public:
     // enum to represent the rank NOT the value of card
     enum class Rank {TWO = 2, THREE, FOUR, FIVE, SIX, SEVEN,
-	EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE};
+        EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE};
 
     // neum to represt the suit of the card
     enum class Suit : int{SPADES, CLUBS, HEARTS, DIAMONDS};
@@ -54,7 +54,7 @@ namespace hw2
     getRank
         Returns the rank of the card
 
-    Revision History:
+    Revision History
         9 June, 2015 - function created
   *///==========================================================================
   inline PlayingCard::Rank PlayingCard::getRank() const
@@ -66,7 +66,7 @@ namespace hw2
     getSuit
         Returns the suit of the card
 
-    Revision History:
+    Revision History
         9 June, 2015 - function created
   *///==========================================================================
   inline PlayingCard::Suit PlayingCard::getSuit() const
@@ -78,7 +78,7 @@ namespace hw2
     setRank
         Sets the "rank" data member to the input value
 
-    Revision History:
+    Revision History
         14 June, 2015 - function created
   *///==========================================================================
   inline void PlayingCard::setRank(Rank& rank)
@@ -90,7 +90,7 @@ namespace hw2
     setSuit
         Sets the "suit" data member to the input value
 
-    Revision History:
+    Revision History
         14 June, 2015 - function created
   *///==========================================================================
   inline void PlayingCard::setSuit(Suit& suit)
@@ -105,7 +105,5 @@ namespace hw2
   std::ostream& operator<<(std::ostream&, const PlayingCard&);
   
 } // namespace hw2
-
-
 
 #endif // PLAYING_CARD_HPP
