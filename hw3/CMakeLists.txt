@@ -21,7 +21,7 @@ endif()
 #########################################
 # Find dependacies
 #########################################
-find_package(Boost)
+find_package(Boost COMPONENTS program_options REQUIRED)
 
 include_directories(include
   ${Boost_INCLUDE_DIRS})
@@ -29,10 +29,13 @@ include_directories(include
 #########################################
 # build
 #########################################
-#add_executable(macd src/main.cpp)
-add_executable(test_input src/test_load_file.cpp)
-target_link_libraries(test_input
-  ${Boost_LIBRARIES})
+add_executable(macd src/main.cpp)
+target_link_libraries(macd
+        ${Boost_LIBRARIES})
+
+#add_executable(test_input src/test_load_file.cpp)
+#target_link_libraries(test_input
+#  ${Boost_LIBRARIES})
 
 #########################################
 # installation

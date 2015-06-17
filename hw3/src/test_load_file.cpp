@@ -9,7 +9,7 @@ int main()
   std::string filePath = "histories/asps.csv";
 
   std::ifstream inputFile(filePath);
-    
+  
   std::string line;
   
   while (std::getline(inputFile, line))
