@@ -31,9 +31,8 @@ int main (int argc, char* argv[])
   bool inputGiven = false;
   bool outputGiven = false;
   bool serialGiven = false;
-  std::string inputFilePath;
-  std::string outputFilePath;
-  std::string serialFilePath;
+  
+  po::variables_map vm;
   
   // attempt to parse command line arguments
   try
@@ -43,10 +42,16 @@ int main (int argc, char* argv[])
       ("help,h", "display this help dialog")
       ("input,i", po::value<std::string>(), "path to input file")
       ("output,o", po::value<std::string>(), "path to output file")
-      ("serialize,s", po::value<std::string>(),
-       "path to serialized object output file");
+      ("serialize,c", po::value<std::string>(),
+       "path to serialized object output file")
+      ("fast,f", po::value<int>()->default_value(12),
+       "set the number of days to look back for the fast EMA, defaults to 12")
+      ("slow,s", po::value<int>()->default_value(26),
+       "set the number of days to look back for the slow EMA, defaults to 26")
+      ("signal,g", po::value<int>()->default_value(9),
+       "set the number of days to look back for the signal, defaults to 9");
 
-    po::variables_map vm;        
+    
     po::store(po::parse_command_line(argc, argv, help_menu), vm);
     po::notify(vm);    
     
@@ -61,19 +66,16 @@ int main (int argc, char* argv[])
     if (vm.count("input"))
     {
       inputGiven = true;
-      inputFilePath = vm["input"].as<std::string>();
     }
 
     if (vm.count("output"))
     {
       outputGiven = true;
-      outputFilePath = vm["output"].as<std::string>();
     }
 
     if (vm.count("serialize"))
     {
       serialGiven = true;
-      serialFilePath = vm["serialize"].as<std::string>();
     }
   }
   catch(std::exception& e) {
@@ -88,23 +90,36 @@ int main (int argc, char* argv[])
   // and if so attempt to perform
   if (inputGiven && (outputGiven || serialGiven))
   {
-    hw3::PriceHistory ph;
-    hw3::GoogleHistoryParser ghp(inputFilePath);
+    std::string inputFilePath  = vm["input"].as<std::string>();
+    
+    hw3::GoogleHistoryParser parser;
 
+    hw3::PriceHistory ph = parser.parse(inputFilePath);
+    
     // check if the parsing was successful
-    if (ghp.parse(ph))
+    if (parser.wasSuccessful())
     {
+      for (auto i : ph)
+      {
+        std::cout << i << std::endl;
+      }
+      
+      int fastEMA = vm["fast"].as<int>();
+      int slowEMA = vm["slow"].as<int>();
+      int signal  = vm["signal"].as<int>();
 
-      
-      
+      //hw3::MACD(
+  
       // generate MACD data
       if (outputGiven)
       {
+        std::string outputFilePath = vm["output"].as<std::string>();
         // write out
       }
       
       if (serialGiven)
       {
+        std::string serialFilePath = vm["serialize"].as<std::string>();
         // serial out
       }
     }

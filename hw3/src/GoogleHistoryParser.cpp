@@ -18,21 +18,8 @@ namespace hw3
         17 June, 2015 - function created
   *///==========================================================================
   GoogleHistoryParser::GoogleHistoryParser():
-    filePath("")
+    fileErrorFlag(true), lineErrorFlag(true), dateErrorFlag(true)
   {
-  }
-
-  /*============================================================================
-    GoogleHistoryParser
-        Constructor for a given input file path
-
-    Revision History
-        17 June, 2015 - function created
-  *///==========================================================================
-                                           // location of file with data
-  GoogleHistoryParser::GoogleHistoryParser(const std::string& filePath):
-    filePath(filePath)
-  {  
   }
   
   /*============================================================================
@@ -45,12 +32,10 @@ namespace hw3
     Revision History
         18 June, 2015 - function created
   *///==========================================================================
-                                        // the line to parse
-  bool GoogleHistoryParser::lineToStats(const std::string& line,
-                                        // container to capture output
-                                        StockDayStats& dayStats)
-  {
-    const int EXPECTED_TOKEN_SIZE = 6;
+                                                 // the line to parse
+  StockDayStats GoogleHistoryParser::lineToStats(const std::string& line) 
+  {    
+    StockDayStats dayStats;
     
     // which tokens coorespond to which pieces of data
     const int DATE_INDEX   = 0;
@@ -59,20 +44,19 @@ namespace hw3
     const int LOW_INDEX    = 3;
     const int CLOSE_INDEX  = 4;
     const int VOLUME_INDEX = 5;
-    
-    bool wasSuccessful = true;
 
-    // split a line around commas
+    // split line around commas
+    const int EXPECTED_TOKEN_SIZE = 6;
     std::string delimiters = ",";
     std::vector<std::string> tokens;
     boost::split(tokens, line, boost::is_any_of(delimiters));
-
+    
     // check the token's properties for anomalies and continue
     // parsing as long as things look good
     if (tokens.size() == EXPECTED_TOKEN_SIZE)
     {
-      greg::date date;
-      if (toDate(tokens[DATE_INDEX], date))
+      greg::date date = toDate(tokens[DATE_INDEX]);
+      if (!this->dateErrorFlag)
       {
         // attempt to convert strings to numbers
         try
@@ -82,7 +66,7 @@ namespace hw3
           double lowPrice   = stod(tokens[LOW_INDEX]);
           double closePrice = stod(tokens[CLOSE_INDEX]);
           int volumeTraded  = stoi(tokens[VOLUME_INDEX]);
-
+          
           // assign the values to the StockDayStats object
           dayStats.setDate(date)
                   .setOpen(openPrice)
@@ -93,62 +77,55 @@ namespace hw3
         }
         catch (...)
         {
-          wasSuccessful = false;
-        }
-        
-      }
-      else
-      {
-        wasSuccessful = false;
-      } // if toDate
+          this->lineErrorFlag = true;
+        } // try
+      } // if dateErrorFlag
     }
     else
     {
-      wasSuccessful = false;
+      this->lineErrorFlag = true;
     }// if tokens.size() 
     
-    return wasSuccessful;
+    return dayStats;
   }
   
   /*============================================================================
     parse 
-        Attempts to parse the file at the location described by the data member
-        filePath.  The input is the container for the data and the output is
-        true if the parsing completed succuessfully.
+        Attempts to parse the file at the location described filePath.  The 
+        priceHistory is the container for the data. The output is true if the
+        parsing completed succuessfully.
 
     Revision History
         18 June, 2015 - function created
   *///==========================================================================
-                                  // container to capture output
-  bool GoogleHistoryParser::parse(PriceHistory& priceHistory) const
+                                          // path to the input
+  PriceHistory GoogleHistoryParser::parse(const std::string& filePath)
   {
-    // sanitize inputs
-    priceHistory.clear();
+    // reset the error flags
+    this->fileErrorFlag = false; 
+    this->lineErrorFlag = false;
+    this->dateErrorFlag = false;
     
-    bool wasSuccessful = true;
+    PriceHistory priceHistory;    
     
-    std::ifstream file(this->filePath);
-
-    // if file successfully opened
-
+    std::ifstream file(filePath);
     
+    // if file successfully opened    
     if (file)
     {
-      // while there is data in the file to parse
       std::string line;
       getline(file, line); // skip over the header
+      // while there is data in the file to parse
       while (getline(file, line))
-      {
-        
+      {       
+        StockDayStats dayStats = this->lineToStats(line);
         // if the line was parsed correctly
-        StockDayStats dayStats;
-        if (GoogleHistoryParser::lineToStats(line, dayStats))
+        if (!this->lineErrorFlag && !this->dateErrorFlag)
         {
           priceHistory.push_back(dayStats);
         }
         else
         {
-          wasSuccessful = false;
           break;
         }
       } // while
@@ -156,28 +133,38 @@ namespace hw3
     }
     else
     {
-      wasSuccessful = false;
+      // raise flag for an error with file operations
+      this->fileErrorFlag = true;
     } // if (file)
-    
-    return wasSuccessful;
+
+    priceHistory.shrink_to_fit();
+    return priceHistory;
   }
-  
-                                   // extract date from here
-  bool GoogleHistoryParser::toDate(const std::string& string,
-                                   greg::date& date) // store parsed data here
-  {
-    bool wasSuccessful = true;
+
+  /*============================================================================
+    toDate
+        Attempts to a date from a string and use that string to create a 
+        boost::gregorian::date object
+
+    Revision History
+        18 June, 2015 - function created
+  *///==========================================================================
+                                         // extract date from here
+  greg::date GoogleHistoryParser::toDate(const std::string& string)
+  {    
+    greg::date date;
     
     // expected locations of date information
     const int DAY_INDEX   = 0;
     const int MONTH_INDEX = 1;
     const int YEAR_INDEX  = 2;
-    
+
+    // grab the date components
+    const int EXPECTED_TOKEN_SIZE = 3;
     std::vector<std::string> tokens;
     std::string delimiters = "-";
     boost::split(tokens, string, boost::is_any_of(delimiters));
-
-    const int EXPECTED_TOKEN_SIZE = 3;
+    
     if (tokens.size() == EXPECTED_TOKEN_SIZE)
     {
       // Y3K bug!!! tsk tsk google
@@ -190,15 +177,17 @@ namespace hw3
       }
       catch (...)
       {
-        wasSuccessful = false;
+        // raise error with date parsing
+        this->dateErrorFlag = true;
       }
     }
     else
     {
-      wasSuccessful = false;
+      // raise error with date parsing
+      this->dateErrorFlag = true;
     }
     
-    return wasSuccessful;
+    return date;
   }
   
 } // namespace hw3

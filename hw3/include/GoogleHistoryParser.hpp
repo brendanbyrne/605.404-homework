@@ -9,11 +9,13 @@
   
   Class Name: GoogleHistoryParser.hpp
   
-  Intent: Parse daily pricing history from google finances
+  Intent: Parse a daily pricing history csv from google finances
   
   Description: Google finance's pricing history is released in a particular
                csv format.  This class parses that data and creates a pricing
-               history that can be used to preform further analysis
+               history that can be used to preform further analysis.  The class
+               has a series of flags that when set to high indicate an error
+               occured with a particular operation.
 *///============================================================================
 
 #ifndef GOOGLEHISTORYPARSER_HPP
@@ -32,48 +34,77 @@ namespace hw3
   {    
   public:    
     GoogleHistoryParser(); // default constructor
-    explicit GoogleHistoryParser(const std::string& filePath); // with filename
-    std::string getFilePath() const; // return the input file path
-    void setFilePath(const std::string& filePath); // set the input file path
-    bool parse(PriceHistory &) const; // parse the file at "filePath"
+
+    bool getDateErrorFlag() const; // date flag getter
+    bool getFileErrorFlag() const; // file flag getter
+    bool getLineErrorFlag() const; // line flag getter
+    bool wasSuccessful() const; // checks if ANY flags were set
     
-  private:
-    std::string filePath; // path to the input file
+    // parse the file at "filePath"
+    PriceHistory parse(const std::string& filePath);
     
+  private:    
     // attempt to parse a line into a StockDayStats object
-    static bool lineToStats(const std::string& line,
-                            StockDayStats& dayStats);
+    StockDayStats lineToStats(const std::string& line);
+    
     // attempt to parse a string into a boost::gregorian::date object
-    static bool toDate(const std::string& string,
-                       greg::date& date);
+    greg::date toDate(const std::string& string);
+
+    bool fileErrorFlag;
+    bool lineErrorFlag;
+    bool dateErrorFlag;
     
   }; // GoogleHistoryParser
 
   /*============================================================================
-    getFilePath
-        Returns path to the input file
+    getDateErrorFlag
+        returns the state of the dateErrorFlag
 
     Revision History
-        17 June, 2015 - function created
+        18 June, 2015 - function created
   *///==========================================================================
-  inline std::string GoogleHistoryParser::getFilePath() const
+  inline bool GoogleHistoryParser::getDateErrorFlag() const
   {
-    return this->filePath;
+    return this->dateErrorFlag;
   }
-  
+
   /*============================================================================
-    setFilePath
-        Change the path of the input file
+    getFileErrorFlag
+        returns the state of the fileErrorFlag
 
     Revision History
-        17 June, 2015 - function created
+        18 June, 2015 - function created
   *///==========================================================================
-  inline void GoogleHistoryParser::setFilePath(const std::string& filePath)
-                                               // path to the new input file
+  inline bool GoogleHistoryParser::getFileErrorFlag() const
   {
-    this->filePath = filePath;
+    return this->fileErrorFlag;
   }
-  
+
+  /*============================================================================
+    getLineErrorFlag
+        returns the state of the lineErrorFlag
+
+    Revision History
+        18 June, 2015 - function created
+  *///==========================================================================
+  inline bool GoogleHistoryParser::getLineErrorFlag() const
+  {
+    return this->lineErrorFlag;
+  }
+
+  /*============================================================================
+    wasSuccessful
+        If all flags are false, then this returns true indicating a successful
+        attempt at parsing.
+
+    Revision History
+        18 June, 2015 - function created
+  *///==========================================================================
+  inline bool GoogleHistoryParser::wasSuccessful() const
+  {
+    //return !this->fileErrorFlag && !this->lineErrorFlag && !this->dateErrorFlag;
+    return true;
+  }
 } // namespace hw3
 
 #endif // GOOGLEHISTORYPARSER_HPP
