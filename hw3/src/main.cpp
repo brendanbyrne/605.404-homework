@@ -62,17 +62,20 @@ int main (int argc, char* argv[])
       // do not attempt anything else, simply return
       return 0;
     }
-    
+
+    // given an input file
     if (vm.count("input"))
     {
       inputGiven = true;
     }
 
+    // given an output file
     if (vm.count("output"))
     {
       outputGiven = true;
     }
 
+    // given a file to serialize to
     if (vm.count("serialize"))
     {
       serialGiven = true;
@@ -86,8 +89,7 @@ int main (int argc, char* argv[])
     std::cerr << "Exception of unknown type!" << "\n";
   }
 
-  // check if there are enough arguments given
-  // and if so attempt to perform
+  // check if there was enough information given
   if (inputGiven && (outputGiven || serialGiven))
   {
     std::string inputFilePath  = vm["input"].as<std::string>();
@@ -108,7 +110,7 @@ int main (int argc, char* argv[])
       int slowEMA = vm["slow"].as<int>();
       int signal  = vm["signal"].as<int>();
 
-      //hw3::MACD(
+      hw3::MACD macd(fastEMA, slowEMA, signal);
   
       // generate MACD data
       if (outputGiven)
