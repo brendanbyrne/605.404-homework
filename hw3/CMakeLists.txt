@@ -21,15 +21,20 @@ endif()
 #########################################
 # Find dependacies
 #########################################
-find_package(Boost COMPONENTS program_options REQUIRED)
-
+find_package(Boost COMPONENTS program_options date_time REQUIRED)
 include_directories(include
   ${Boost_INCLUDE_DIRS})
 
 #########################################
 # build
 #########################################
-add_executable(macd src/main.cpp src/StockDayStats.cpp)
+
+set(SOURCE_FILES
+        src/main.cpp
+        src/StockDayStats.cpp
+        src/GoogleHistoryParser.cpp)
+        
+add_executable(macd ${SOURCE_FILES})
 target_link_libraries(macd
         ${Boost_LIBRARIES})
 

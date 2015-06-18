@@ -19,27 +19,33 @@
 #ifndef GOOGLEHISTORYPARSER_HPP
 #define GOOGLEHISTORYPARSER_HPP
 
-#include <fstream>
 #include <string>
 
 #include <boost/date_time/gregorian/gregorian_types.hpp> // date
+namespace greg = boost::gregorian;
 
 #include "StockDayStats.hpp"
 
 namespace hw3
-{  
+{    
   class GoogleHistoryParser
-  {
-    
-  public:
+  {    
+  public:    
     GoogleHistoryParser(); // default constructor
-    GoogleHistoryParser(const std::string& filePath); // constructor with filename
+    explicit GoogleHistoryParser(const std::string& filePath); // with filename
     std::string getFilePath() const; // return the input file path
     void setFilePath(const std::string& filePath); // set the input file path
-    PriceHistory parse(); // parse the data in current file path
+    bool parse(PriceHistory &) const; // parse the file at "filePath"
     
   private:
     std::string filePath; // path to the input file
+    
+    // attempt to parse a line into a StockDayStats object
+    static bool lineToStats(const std::string& line,
+                            StockDayStats& dayStats);
+    // attempt to parse a string into a boost::gregorian::date object
+    static bool toDate(const std::string& string,
+                       greg::date& date);
     
   }; // GoogleHistoryParser
 

@@ -23,32 +23,10 @@
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
-#include "StockDayStats.hpp"
-
-// for testing
-#include <boost/date_time/gregorian/gregorian.hpp>
-namespace greg = boost::gregorian;
+#include "GoogleHistoryParser.hpp"
 
 int main (int argc, char* argv[])
-{
-  // testing boost date
-  greg::date day = greg::date_from_iso_string("20150220");
-  std::cout << day << std::endl;
-
-  /*
-  // test code reading int file
-  std::ifstream inputFile(inputFilePath);
-  std::string line;
-  while (std::getline(inputFile, line))
-  {
-    std::cout << ">" << line << "<" << std::endl;
-  }
-  
-  inputFile.close();
-  */
-  
-  return 0;
-  
+{  
   // switches to detect input
   bool inputGiven = false;
   bool outputGiven = false;
@@ -60,8 +38,8 @@ int main (int argc, char* argv[])
   // attempt to parse command line arguments
   try
   {
-    po::options_description desc("Allowed options");
-    desc.add_options()
+    po::options_description help_menu("Allowed options");
+    help_menu.add_options()
       ("help,h", "display this help dialog")
       ("input,i", po::value<std::string>(), "path to input file")
       ("output,o", po::value<std::string>(), "path to output file")
@@ -69,12 +47,15 @@ int main (int argc, char* argv[])
        "path to serialized object output file");
 
     po::variables_map vm;        
-    po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::store(po::parse_command_line(argc, argv, help_menu), vm);
     po::notify(vm);    
     
     if (vm.count("help"))
     {
-      std::cout << desc << std::endl;
+      std::cout << help_menu;
+      
+      // do not attempt anything else, simply return
+      return 0;
     }
     
     if (vm.count("input"))
@@ -100,23 +81,36 @@ int main (int argc, char* argv[])
     return 1;
   }
   catch(...) {
-    std::cerr << "Exception of unknown type!\n";
+    std::cerr << "Exception of unknown type!" << "\n";
   }
 
   // check if there are enough arguments given
   // and if so attempt to perform
   if (inputGiven && (outputGiven || serialGiven))
   {
-    // parse input
-    // generate MACD data
-    if (outputGiven)
-    {
-      // write out
-    }
+    hw3::PriceHistory ph;
+    hw3::GoogleHistoryParser ghp(inputFilePath);
 
-    if (serialGiven)
+    // check if the parsing was successful
+    if (ghp.parse(ph))
     {
-      // serial out
+
+      
+      
+      // generate MACD data
+      if (outputGiven)
+      {
+        // write out
+      }
+      
+      if (serialGiven)
+      {
+        // serial out
+      }
+    }
+    else
+    {
+      std::cout << "Unable to parse pricing history!" << std::endl;
     }
   }
   else

@@ -43,12 +43,12 @@ namespace hw3
     double getLow() const; // return the lowest trade price
     double getOpen() const; // return the opening trade price
     int getVolume() const; // return the number of trades made that day
-    void setClose(const double newClosePrice); // set the closing price
-    void setDate(const greg::date& newDate); // set the date of the data point
-    void setHigh(const double newHighPrice); // set the highest trade price
-    void setLow(const double newLowPrice); // set the lowest trade price
-    void setOpen(const double newOpenPrice); // set the opening trade price
-    void setVolume(const int newVolume); // set the number of trades made that day
+    StockDayStats& setClose(const double newClosePrice); // set closing price
+    StockDayStats& setDate(const greg::date& newDate); // set the date
+    StockDayStats& setHigh(const double newHighPrice); // set highest trade price
+    StockDayStats& setLow(const double newLowPrice); // set lowest trade price
+    StockDayStats& setOpen(const double newOpenPrice); // set opening trade price
+    StockDayStats& setVolume(const int newVolume); // set the number of trades
     
   private:
     double closePrice; // the closing price after a day of trading
@@ -142,9 +142,11 @@ namespace hw3
     Revision History
         17 June, 2015 - function created
   *///==========================================================================
-  inline void StockDayStats::setClose(const double newClosePrice) // new price
+                                                // new price
+  inline StockDayStats& StockDayStats::setClose(const double newClosePrice) 
   {
     this->closePrice = newClosePrice;
+    return *this;
   }
 
   /*============================================================================
@@ -154,9 +156,11 @@ namespace hw3
     Revision History
         17 June, 2015 - function created
   *///==========================================================================
-  inline void StockDayStats::setDate(const greg::date& newDate) // new price
+                                               // new price
+  inline StockDayStats& StockDayStats::setDate(const greg::date& newDate) 
   {
     this->date = newDate;
+    return *this;
   }
 
   /*============================================================================
@@ -166,9 +170,11 @@ namespace hw3
     Revision History
         17 June, 2015 - function created
   *///==========================================================================
-  inline void StockDayStats::setHigh(const double newHighPrice) // new price
+                                               // new price
+  inline StockDayStats& StockDayStats::setHigh(const double newHighPrice)
   {
     this->highPrice = newHighPrice;
+    return *this;
   }
 
   /*============================================================================
@@ -178,9 +184,11 @@ namespace hw3
     Revision History
         17 June, 2015 - function created
   *///==========================================================================
-  inline void StockDayStats::setLow(const double newLowPrice) // new price
+                                              // new price
+  inline StockDayStats& StockDayStats::setLow(const double newLowPrice)
   {
     this->lowPrice = newLowPrice;
+    return *this;
   }
 
   /*============================================================================
@@ -190,9 +198,11 @@ namespace hw3
     Revision History
     17 June, 2015 - function created
   *///==========================================================================
-  inline void StockDayStats::setOpen(const double newOpenPrice) // new price
+                                               // new price
+  inline StockDayStats& StockDayStats::setOpen(const double newOpenPrice)
   {
     this->openPrice = newOpenPrice;
+    return *this;
   }
   
   /*============================================================================
@@ -202,9 +212,11 @@ namespace hw3
     Revision History
         17 June, 2015 - function created
   *///==========================================================================
-  inline void StockDayStats::setVolume(const int newVolume) // new traded volume
+                                                 // new traded volume
+  inline StockDayStats& StockDayStats::setVolume(const int newVolume) 
   {
     this->volumeTraded = newVolume;
+    return *this;
   }
   
   // Overload for insertion operator
