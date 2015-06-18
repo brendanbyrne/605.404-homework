@@ -29,7 +29,7 @@ include_directories(include
 #########################################
 # build
 #########################################
-add_executable(macd src/main.cpp)
+add_executable(macd src/main.cpp src/StockDayStats.cpp)
 target_link_libraries(macd
         ${Boost_LIBRARIES})
 

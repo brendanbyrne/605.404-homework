@@ -47,10 +47,10 @@ namespace hw2
     typedef std::map<PlayingCard::Suit, int> SuitCount;
     
     PokerHand(); // default constructor, build empty class
-    PokerHand(const Hand&); // construct PokerHand from a given 5 card hand
+    PokerHand(const Hand& hand); // construct PokerHand from a given 5 card hand
     Hand getHand() const; // hand attribute getter
     int getValue() const; // value attribute getter
-    void setHand(const Hand&); // set the hand attribute to the provided Hand
+    void setHand(const Hand& hand); // set the hand attribute to the provided Hand
     
   private:
     Hand hand; // the 5 cards representing the poker hand
@@ -70,29 +70,29 @@ namespace hw2
     static int calculateHandValue(Hand&);
 
     // Functions for determining the type of hand
-    static bool isFlush(const Hand&);
-    static bool isFourOfAKind(const Hand&);
-    static bool isFullHouse(const Hand&);
-    static bool isOnePair(const Hand&);
-    static bool isStraight(Hand&, bool&);
-    static bool isThreeOfAKind(const Hand&);
-    static bool isTwoPairs(const Hand&);
+    static bool isFlush(const Hand& hand);
+    static bool isFourOfAKind(const Hand& hand);
+    static bool isFullHouse(const Hand& hand);
+    static bool isOnePair(const Hand& hand);
+    static bool isStraight(Hand& hand, bool& isStraightAceLow);
+    static bool isThreeOfAKind(const Hand& hand);
+    static bool isTwoPairs(const Hand& hand);
 
     // helper functions
-    static RankCount frequencyRank(const Hand&); // frequency count of card ranks
-    static SuitCount frequencySuit(const Hand&); // frequency count of card suits
+    static RankCount frequencyRank(const Hand& hand); // frequency count of ranks
+    static SuitCount frequencySuit(const Hand& hand); // frequency count of suits
     static void rankSort(Hand&); // ascending inplace sort of cards by rank
     
     // Functions for determining the value of a hand
-    static int valueFlush(Hand&);
-    static int valueFourOfAKind(const Hand&);
-    static int valueFullHouse(const Hand&);
+    static int valueFlush(Hand& hand);
+    static int valueFourOfAKind(const Hand& hand);
+    static int valueFullHouse(const Hand& hand);
     static int valueHighCard(Hand& hand, bool isStraightAceLow = false);
-    static int valueOnePair(Hand&);
-    static int valueStraight(Hand&, bool);
-    static int valueStraightFlush(Hand&, bool);    
-    static int valueThreeOfAKind(const Hand&);
-    static int valueTwoPairs(Hand&);    
+    static int valueOnePair(Hand& hand);
+    static int valueStraight(Hand& hand, bool isStraightAceLow);
+    static int valueStraightFlush(Hand& hand, bool isStraightAceLow);    
+    static int valueThreeOfAKind(const Hand& hand);
+    static int valueTwoPairs(Hand& hand);
     
   }; // PokerHand
   

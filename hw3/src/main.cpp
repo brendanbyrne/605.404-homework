@@ -16,15 +16,39 @@
    usage: macd -i /path/to/input/data.csv -o /path/to/desired/output.csv
           macd -i /path/to/input/data.csv -s /path/to/serialized/output.serial
 *///============================================================================
-#include <boost/program_options.hpp>
-namespace po = boost::program_options;
-
 #include <iostream>
 #include <string>
 #include <fstream>
 
+#include <boost/program_options.hpp>
+namespace po = boost::program_options;
+
+#include "StockDayStats.hpp"
+
+// for testing
+#include <boost/date_time/gregorian/gregorian.hpp>
+namespace greg = boost::gregorian;
+
 int main (int argc, char* argv[])
 {
+  // testing boost date
+  greg::date day = greg::date_from_iso_string("20150220");
+  std::cout << day << std::endl;
+
+  /*
+  // test code reading int file
+  std::ifstream inputFile(inputFilePath);
+  std::string line;
+  while (std::getline(inputFile, line))
+  {
+    std::cout << ">" << line << "<" << std::endl;
+  }
+  
+  inputFile.close();
+  */
+  
+  return 0;
+  
   // switches to detect input
   bool inputGiven = false;
   bool outputGiven = false;
@@ -32,7 +56,7 @@ int main (int argc, char* argv[])
   std::string inputFilePath;
   std::string outputFilePath;
   std::string serialFilePath;
-
+  
   // attempt to parse command line arguments
   try
   {
@@ -57,29 +81,18 @@ int main (int argc, char* argv[])
     {
       inputGiven = true;
       inputFilePath = vm["input"].as<std::string>();
-      
-      std::ifstream inputFile(inputFilePath);
-      std::string line;
-      while (std::getline(inputFile, line))
-      {
-        std::cout << ">" << line << "<" << std::endl;
-      }
-      
-      inputFile.close();
     }
 
     if (vm.count("output"))
     {
       outputGiven = true;
       outputFilePath = vm["output"].as<std::string>();
-      std::cout << "Output" << std::endl;
     }
 
     if (vm.count("serialize"))
     {
       serialGiven = true;
       serialFilePath = vm["serialize"].as<std::string>();
-      std::cout << "Serialize" << std::endl;
     }
   }
   catch(std::exception& e) {
@@ -90,10 +103,21 @@ int main (int argc, char* argv[])
     std::cerr << "Exception of unknown type!\n";
   }
 
-
+  // check if there are enough arguments given
+  // and if so attempt to perform
   if (inputGiven && (outputGiven || serialGiven))
   {
-    
+    // parse input
+    // generate MACD data
+    if (outputGiven)
+    {
+      // write out
+    }
+
+    if (serialGiven)
+    {
+      // serial out
+    }
   }
   else
   {
@@ -106,5 +130,6 @@ int main (int argc, char* argv[])
       std::cout << "No output or serial path given" << std::endl;
     }
   }
+  
   return 0;
 } // main

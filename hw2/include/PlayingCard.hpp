@@ -37,12 +37,13 @@ namespace hw2
     enum class Suit : int{SPADES, CLUBS, HEARTS, DIAMONDS};
 
     PlayingCard(); // default construct
-    PlayingCard(Rank, Suit); // enum based constructor
-    PlayingCard(const int, const int); //
+    PlayingCard(Rank rank, Suit suit); // enum based constructor
+    PlayingCard(const int rankNumber,
+                const int suitNumber); // convience int constructor
     Rank getRank() const; // rank getter function
     Suit getSuit() const; // suit getter function
-    void setRank(Rank&); // rank setter function
-    void setSuit(Suit&); // suit setter function
+    void setRank(Rank& rank); // rank setter function
+    void setSuit(Suit& suit); // suit setter function
     
   private:    
     Rank rank; // attribute that holds the card's rank
@@ -100,9 +101,12 @@ namespace hw2
 
   //  << overloading in the hw2 namespace i.e. using hw2::operator<<
   // overloads for Suit, Rank, and PlayingCard objects
-  std::ostream& operator<<(std::ostream&, const PlayingCard::Suit&);
-  std::ostream& operator<<(std::ostream&, const PlayingCard::Rank&);
-  std::ostream& operator<<(std::ostream&, const PlayingCard&);
+  std::ostream& operator<<(std::ostream& out, // desired output stream
+                           const PlayingCard::Suit& suit); // suit to output
+  std::ostream& operator<<(std::ostream& out, // desired output stream
+                           const PlayingCard::Rank& rank); // rank to output
+  std::ostream& operator<<(std::ostream& out, // desired output stream
+                           const PlayingCard&); // card to output
   
 } // namespace hw2
 
