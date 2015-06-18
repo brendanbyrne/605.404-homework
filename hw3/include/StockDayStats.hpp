@@ -64,7 +64,7 @@ namespace hw3
   typedef std::vector<StockDayStats> PriceHistory;
   
   /*============================================================================
-    getSClose
+    getClose
         Returns the closing value of the stock
 
     Revision History

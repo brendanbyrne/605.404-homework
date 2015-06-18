@@ -33,15 +33,41 @@ namespace hw3
     
   public:
     GoogleHistoryParser(); // default constructor
-    GoogleHistoryParser(std::string filePath); // constructor with filename
-    std::string getFilePath() const;
-    void setFilePath(std::string filePath);
-    PriceHistory parseFile();
+    GoogleHistoryParser(const std::string& filePath); // constructor with filename
+    std::string getFilePath() const; // return the input file path
+    void setFilePath(const std::string& filePath); // set the input file path
+    PriceHistory parse(); // parse the data in current file path
     
   private:
-    std::string filePath;
+    std::string filePath; // path to the input file
     
   }; // GoogleHistoryParser
+
+  /*============================================================================
+    getFilePath
+        Returns path to the input file
+
+    Revision History
+        17 June, 2015 - function created
+  *///==========================================================================
+  inline std::string GoogleHistoryParser::getFilePath() const
+  {
+    return this->filePath;
+  }
+  
+  /*============================================================================
+    setFilePath
+        Change the path of the input file
+
+    Revision History
+        17 June, 2015 - function created
+  *///==========================================================================
+  inline void GoogleHistoryParser::setFilePath(const std::string& filePath)
+                                               // path to the new input file
+  {
+    this->filePath = filePath;
+  }
+  
 } // namespace hw3
 
 #endif // GOOGLEHISTORYPARSER_HPP
