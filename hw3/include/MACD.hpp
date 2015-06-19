@@ -26,16 +26,33 @@ namespace hw3
   class MACD
   {
   public:
-    MACD();
-    MACD(int fastEMA, int slowEMA, int signal);
-    analyze(PriceHistory priceHistory);
+    MACD(); // default constructor
+    MACD(int fastEMA, int slowEMA, int signal); // full constructor
     
-
+    void analyze(PriceHistory priceHistory);
+    
+    int getFastEMA();
+    int getSlowEMA();
+    int getSignal();
+    void setFastEMA(const int newValue);
+    void setSlowEMA(const int newValue);
+    void setSignal(const int newValue);
+    
+    bool wasSuccessful();
+    
   private:
     int fastEMA;
     int slowEMA;
     int signal;
     
   }; // class MACD
-    
+  
+  /*============================================================================
+    GoogleHistoryParser
+        Default constructor
+
+    Revision History
+        17 June, 2015 - function created
+  *///==========================================================================
+  
 } // namespace hw3
