@@ -7,7 +7,7 @@
   Revision History
       17 June, 2015 - class created
   
-  Class Name: GoogleHistoryParser.hpp
+  Class Name: GoogleHistoryParser
   
   Intent: Parse a daily pricing history csv from google finances
   

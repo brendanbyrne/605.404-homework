@@ -24,6 +24,7 @@
 namespace po = boost::program_options;
 
 #include "GoogleHistoryParser.hpp"
+#include "MACD.hpp"
 
 int main (int argc, char* argv[])
 {  
@@ -101,16 +102,15 @@ int main (int argc, char* argv[])
     // check if the parsing was successful
     if (parser.wasSuccessful())
     {
-      for (auto i : ph)
-      {
-        std::cout << i << std::endl;
-      }
-      
+
+      // settings for the MACD analysis
       int fastEMA = vm["fast"].as<int>();
       int slowEMA = vm["slow"].as<int>();
       int signal  = vm["signal"].as<int>();
 
+      // perform the MACD analysis
       hw3::MACD macd(fastEMA, slowEMA, signal);
+      macd.analyze(ph);
   
       // generate MACD data
       if (outputGiven)

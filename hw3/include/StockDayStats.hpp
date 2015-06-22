@@ -220,7 +220,7 @@ namespace hw3
   }
   
   // Overload for insertion operator
-  std::ostream& operator<<(std::ostream&, const StockDayStats);
+  std::ostream& operator<<(std::ostream&, const StockDayStats&);
   
 } // namespace hw3
 

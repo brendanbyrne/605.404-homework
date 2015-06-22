@@ -32,8 +32,9 @@ include_directories(include
 set(SOURCE_FILES
         src/main.cpp
         src/StockDayStats.cpp
-        #src/MACD.cpp
-        src/GoogleHistoryParser.cpp)
+        src/MACD.cpp
+        src/GoogleHistoryParser.cpp
+        src/AnalysisEntry)
         
 add_executable(macd ${SOURCE_FILES})
 target_link_libraries(macd

@@ -44,7 +44,7 @@ namespace hw3
         17 June, 2015 - function created
   *///==========================================================================
     std::ostream& operator<<(std::ostream& out, // desired output stream
-                             const StockDayStats sds) //StockDayStats object
+                             const StockDayStats& sds) //StockDayStats object
   {
     out << sds.getDate() << ", " << sds.getOpen() << ", " << sds.getHigh()
         <<  ", " << sds.getLow() << ", " << sds.getClose() << ", "

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <fstream>
+#include <algorithm> // reverse
 
 #include <boost/algorithm/string.hpp> // split, is_any_of
 
@@ -138,6 +139,8 @@ namespace hw3
     } // if (file)
 
     priceHistory.shrink_to_fit();
+    std::reverse(priceHistory.begin(), priceHistory.end());
+    
     return priceHistory;
   }
 
