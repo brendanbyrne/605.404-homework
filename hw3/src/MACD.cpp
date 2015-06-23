@@ -65,7 +65,7 @@ namespace hw3
       //Begin building an entry
       AnalysisEntry entry(phIT->getDate());
 
-      std::cout << i++ << ": " << phIT->getClose() << std::endl;
+      //std::cout << i++ << ": " << phIT->getClose() << std::endl;
       
       // if there is enough room to perform the smaller sized EMA
       if (phIT - this->fastEMASize+1 >= priceHistory.begin())
@@ -95,13 +95,14 @@ namespace hw3
         entry.setSlowEMA(slowEMA);
         entry.setMACD(entry.getFastEMA() - entry.getSlowEMA());
       }
-
+      int i = 0;
       // if there is enough data to find the signal
       int windowSize = this->slowEMASize + this->signalSize - 1;
+      std::cout << i++ << " :window size: " << windowSize << std::endl;
       if (phIT - windowSize >= priceHistory.begin())
       {
+        std::cout << "inside signal if" << std::endl;
         // calc signal and histogram
-        std::cout << "here" << std::endl;
         double previousSignal = (faIT-1)->getSignal();
         FullAnalysis::const_iterator start;
         start = faIT - windowSize;
@@ -125,10 +126,9 @@ namespace hw3
         
         entry.setSignal(signal);
         entry.setHistogram(entry.getMACD() - entry.getSignal());
-        break;
       }
-
-      *faIT = entry;
+      
+      analysisOutput.push_back(entry);
       
       ++phIT;
       ++faIT;

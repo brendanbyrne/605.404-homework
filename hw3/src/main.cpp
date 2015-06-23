@@ -102,7 +102,6 @@ int main (int argc, char* argv[])
     // check if the parsing was successful
     if (parser.wasSuccessful())
     {
-
       // settings for the MACD analysis
       int fastEMA = vm["fast"].as<int>();
       int slowEMA = vm["slow"].as<int>();
@@ -110,7 +109,11 @@ int main (int argc, char* argv[])
 
       // perform the MACD analysis
       hw3::MACD macd(fastEMA, slowEMA, signal);
-      macd.analyze(ph);
+      hw3::FullAnalysis fa = macd.analyze(ph);
+
+      std::cout << "size: " << fa.size() << std::endl;
+      for (auto i : fa)
+        std::cout << i << std::endl;
   
       // generate MACD data
       if (outputGiven)
