@@ -110,19 +110,26 @@ int main (int argc, char* argv[])
       // perform the MACD analysis
       hw3::MACD macd(fastEMA, slowEMA, signal);
       hw3::FullAnalysis fa = macd.analyze(ph);
-
-      int i = 0;
-      std::cout << "size: " << fa.size() << std::endl;
-      for (auto e : fa)
-      {
-        std::cout << std::setw(2);
-        std::cout << i++ << ": " << e << std::endl;
-      }
+      
       // generate MACD data
       if (outputGiven)
       {
         std::string outputFilePath = vm["output"].as<std::string>();
-        // write out
+
+        // attempt to write the analysis to an output file
+        try
+        {
+          std::ofstream ofile(outputFilePath);
+          for (auto entry : fa)
+          {
+            ofile << entry << "\n";
+          }
+          ofile.close();
+        }
+        catch (...)
+        {
+          std::cout << "Error writing to file" << std::endl;
+        }
       }
       
       if (serialGiven)
@@ -134,7 +141,7 @@ int main (int argc, char* argv[])
     else
     {
       std::cout << "Unable to parse pricing history!" << std::endl;
-    }
+    } // if success parsing
   }
   else
   {
@@ -142,11 +149,12 @@ int main (int argc, char* argv[])
     {
       std::cout << "No input file given" << std::endl;
     }
+
     if (!outputGiven && !serialGiven)
     {
       std::cout << "No output or serial path given" << std::endl;
     }
-  }
+  } // if have enough inputs
   
   return 0;
 } // main
