@@ -111,10 +111,13 @@ int main (int argc, char* argv[])
       hw3::MACD macd(fastEMA, slowEMA, signal);
       hw3::FullAnalysis fa = macd.analyze(ph);
 
+      int i = 0;
       std::cout << "size: " << fa.size() << std::endl;
-      for (auto i : fa)
-        std::cout << i << std::endl;
-  
+      for (auto e : fa)
+      {
+        std::cout << std::setw(2);
+        std::cout << i++ << ": " << e << std::endl;
+      }
       // generate MACD data
       if (outputGiven)
       {

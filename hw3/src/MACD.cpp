@@ -56,7 +56,6 @@ namespace hw3
     double slowEMA;
     double signal;
 
-    int i = 0;
     // loop through the price data and perform the analysis
     PriceHistory::const_iterator phIT = priceHistory.begin();
     FullAnalysis::iterator faIT = analysisOutput.begin();
@@ -65,10 +64,8 @@ namespace hw3
       //Begin building an entry
       AnalysisEntry entry(phIT->getDate());
 
-      //std::cout << i++ << ": " << phIT->getClose() << std::endl;
-      
       // if there is enough room to perform the smaller sized EMA
-      if (phIT - this->fastEMASize+1 >= priceHistory.begin())
+      if (phIT - this->fastEMASize + 1 >= priceHistory.begin())
       {
         PriceHistory::const_iterator start = phIT - this->fastEMASize + 1;
         PriceHistory::const_iterator end = phIT + 1;        
@@ -95,44 +92,55 @@ namespace hw3
         entry.setSlowEMA(slowEMA);
         entry.setMACD(entry.getFastEMA() - entry.getSlowEMA());
       }
-      int i = 0;
-      // if there is enough data to find the signal
-      int windowSize = this->slowEMASize + this->signalSize - 1;
-      std::cout << i++ << " :window size: " << windowSize << std::endl;
-      if (phIT - windowSize >= priceHistory.begin())
+      
+      // if there is enough data to find the signal      
+      if (phIT - this->slowEMASize - this->signalSize + 2
+           >= priceHistory.begin())
       {
-        std::cout << "inside signal if" << std::endl;
-        // calc signal and histogram
         double previousSignal = (faIT-1)->getSignal();
-        FullAnalysis::const_iterator start;
-        start = faIT - windowSize;
-        FullAnalysis::const_iterator end = faIT + 1;
-        
+
+        // if a signal has been calculated yet
         if (!std::isnan(previousSignal))
         {
-          signal = entry.getMACD() * (2.0 / (windowSize + 1.0)) +
-                   previousSignal * (1.0 - (2.0 / (windowSize + 1)));
+          signal = entry.getMACD() * (2.0 / (this->signalSize + 1.0)) +
+                   previousSignal * (1.0 - (2.0 / (this->signalSize + 1)));
         }
         else
         {
+          FullAnalysis::const_iterator start;
+          start = faIT - this->signalSize + 1;
+          
+          // no plus one here because *faIT+1 hasn't
+          // been push onto the vector yet
+          FullAnalysis::const_iterator end = faIT;
+          
+          // get all previous MACDs
           double sum = 0.0;
           std::for_each(start, end,
                         [&sum](const AnalysisEntry& ae)
                         {
                           sum += ae.getMACD();
                         });
-          signal = sum / static_cast<double>(end - start);
-        }
+          
+          // add the current MACD that hasn't been pushed to the vector yet
+          sum += entry.getMACD();
+
+          // then +1 here to make up for it
+          signal = sum / static_cast<double>(end - start + 1);
+          
+        } // if previous isnan
         
         entry.setSignal(signal);
         entry.setHistogram(entry.getMACD() - entry.getSignal());
-      }
+        
+      } // if should calculate signal
       
       analysisOutput.push_back(entry);
       
       ++phIT;
       ++faIT;
-    }
+
+    } // while data in 
     
     return analysisOutput;
   }
