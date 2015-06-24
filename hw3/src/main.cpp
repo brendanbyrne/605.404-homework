@@ -19,9 +19,13 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <algorithm>
 
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
+
+#include <boost/date_time/gregorian/gregorian.hpp>
+namespace greg = boost::gregorian;
 
 #include "GoogleHistoryParser.hpp"
 #include "MACD.hpp"
@@ -30,38 +34,32 @@ int main (int argc, char* argv[])
 {  
   // switches to detect input
   bool inputGiven = false;
-  bool outputGiven = false;
-  bool serialGiven = false;
-  
-  po::variables_map vm;
   
   // attempt to parse command line arguments
+  po::variables_map vm;
   try
   {
+    // initialize the input options
     po::options_description help_menu("Allowed options");
     help_menu.add_options()
       ("help,h", "display this help dialog")
       ("input,i", po::value<std::string>(), "path to input file")
-      ("output,o", po::value<std::string>(), "path to output file")
-      ("serialize,c", po::value<std::string>(),
-       "path to serialized object output file")
       ("fast,f", po::value<int>()->default_value(12),
        "set the number of days to look back for the fast EMA, defaults to 12")
       ("slow,s", po::value<int>()->default_value(26),
        "set the number of days to look back for the slow EMA, defaults to 26")
       ("signal,g", po::value<int>()->default_value(9),
        "set the number of days to look back for the signal, defaults to 9");
-
     
+    // parse the input options
     po::store(po::parse_command_line(argc, argv, help_menu), vm);
     po::notify(vm);    
     
+    // if help is requested
     if (vm.count("help"))
     {
       std::cout << help_menu;
-      
-      // do not attempt anything else, simply return
-      return 0;
+      return 0; // do not attempt anything else, simply return
     }
 
     // given an input file
@@ -70,17 +68,6 @@ int main (int argc, char* argv[])
       inputGiven = true;
     }
 
-    // given an output file
-    if (vm.count("output"))
-    {
-      outputGiven = true;
-    }
-
-    // given a file to serialize to
-    if (vm.count("serialize"))
-    {
-      serialGiven = true;
-    }
   }
   catch(std::exception& e) {
     std::cerr << "error: " << e.what() << "\n";
@@ -88,16 +75,15 @@ int main (int argc, char* argv[])
   }
   catch(...) {
     std::cerr << "Exception of unknown type!" << "\n";
-  }
+  } // try to read the input options
 
   // check if there was enough information given
-  if (inputGiven && (outputGiven || serialGiven))
+  if (inputGiven)
   {
     std::string inputFilePath  = vm["input"].as<std::string>();
     
     hw3::GoogleHistoryParser parser;
-
-    hw3::PriceHistory ph = parser.parse(inputFilePath);
+    hw3::PriceHistory priceHistory = parser.parse(inputFilePath);
     
     // check if the parsing was successful
     if (parser.wasSuccessful())
@@ -106,37 +92,30 @@ int main (int argc, char* argv[])
       int fastEMA = vm["fast"].as<int>();
       int slowEMA = vm["slow"].as<int>();
       int signal  = vm["signal"].as<int>();
-
+      
       // perform the MACD analysis
       hw3::MACD macd(fastEMA, slowEMA, signal);
-      hw3::FullAnalysis fa = macd.analyze(ph);
+      hw3::FullAnalysis analysis = macd.analyze(priceHistory);
       
-      // generate MACD data
-      if (outputGiven)
+      hw3::FullAnalysis::const_iterator entry;
+      
+      // search the analysis for entry pertaining june 1st 2015
+      greg::date june1st(2015,06,01);
+      entry = std::find_if(analysis.begin(), analysis.end(),
+			   [&june1st](const hw3::AnalysisEntry& entry) -> bool
+			   {
+			     return entry.getDate() == june1st;
+			   });
+      
+      if (entry != analysis.end())
       {
-        std::string outputFilePath = vm["output"].as<std::string>();
+	std::cout << "Here's the MACD for June 1st, 2015: " << entry->getMACD() << std::endl;
+      }
+      else
+      {
+	std::cout << "No data for June 1st, 2015 found." << std::endl;
+      }
 
-        // attempt to write the analysis to an output file
-        try
-        {
-          std::ofstream ofile(outputFilePath);
-          for (auto entry : fa)
-          {
-            ofile << entry << "\n";
-          }
-          ofile.close();
-        }
-        catch (...)
-        {
-          std::cout << "Error writing to file" << std::endl;
-        }
-      }
-      
-      if (serialGiven)
-      {
-        std::string serialFilePath = vm["serialize"].as<std::string>();
-        // serial out
-      }
     }
     else
     {
@@ -145,16 +124,8 @@ int main (int argc, char* argv[])
   }
   else
   {
-    if (!inputGiven)
-    {
-      std::cout << "No input file given" << std::endl;
-    }
-
-    if (!outputGiven && !serialGiven)
-    {
-      std::cout << "No output or serial path given" << std::endl;
-    }
-  } // if have enough inputs
+    std::cout << "No input file given" << std::endl;
+  } // if input given
   
   return 0;
 } // main

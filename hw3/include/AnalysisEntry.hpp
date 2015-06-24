@@ -42,19 +42,22 @@ namespace hw3
                   const double MACD = nld::quiet_NaN(),
                   const double signal = nld::quiet_NaN(),
                   const double histogram = nld::quiet_NaN());  // full constructor
-    greg::date getDate() const; // date data member getter
-    double getFastEMA() const; // fastEMA data member getter
-    double getHistogram() const; // histogram data member getter
-    double getMACD() const; // MACD data member getter
-    double getSignal() const; // signal data member getter
-    double getSlowEMA() const; // slowEMA data member getter
-    AnalysisEntry& setDate(const greg::date& newDate); // date data member setter
-    AnalysisEntry& setFastEMA(const double newFastEMA);//fastEMA data member setter
-                                                      //histogram data member setter
+    
+    // Data Member Getters
+    greg::date getDate() const;
+    double getFastEMA() const;
+    double getHistogram() const;
+    double getMACD() const;
+    double getSignal() const;
+    double getSlowEMA() const;
+
+    // Data Member Setters
+    AnalysisEntry& setDate(const greg::date& newDate);
+    AnalysisEntry& setFastEMA(const double newFastEMA);
     AnalysisEntry& setHistogram(const double newHistogram);
-    AnalysisEntry& setMACD(const double newMACD); // MACD data member setter
-    AnalysisEntry& setSignal(const double newSignal); // signal data member setter
-    AnalysisEntry& setSlowEMA(const double newSlowEMA);//slowEMA data member setter
+    AnalysisEntry& setMACD(const double newMACD);
+    AnalysisEntry& setSignal(const double newSignal);
+    AnalysisEntry& setSlowEMA(const double newSlowEMA);
     
   private:
     greg::date date; // date that the analysis data is for
@@ -227,7 +230,7 @@ namespace hw3
 
   // operator overloads
   std::ostream& operator<<(std::ostream& out, const AnalysisEntry& entry);
-  
+
 } // namespace hw3
 
 #endif // ANALYSIS_ENTRY_HPP
