@@ -110,7 +110,7 @@ namespace hw3
           FullAnalysis::const_iterator start;
           start = faIT - this->signalSize + 1;
           
-          // no plus one here because *faIT+1 hasn't
+          // no +1 here because *faIT+1 hasn't
           // been push onto the vector yet
           FullAnalysis::const_iterator end = faIT;
           
@@ -122,7 +122,7 @@ namespace hw3
                           sum += ae.getMACD();
                         });
           
-          // add the current MACD that hasn't been pushed to the vector yet
+          // add the current MACD that hasn't yet been pushed onto the vector
           sum += entry.getMACD();
 
           // then +1 here to make up for it
@@ -143,7 +143,7 @@ namespace hw3
     } // while data in 
     
     return analysisOutput;
-  }
+  } // function analize
   
   /*============================================================================
     checkRanges

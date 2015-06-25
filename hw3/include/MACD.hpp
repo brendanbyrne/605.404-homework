@@ -43,16 +43,21 @@ namespace hw3
 
     // perform MACD analysis
     FullAnalysis analyze(const PriceHistory& priceHistory);
-    // checks for properly sized input data
-    void checkRanges(const PriceHistory& priceHistory);
     
-    int getFastEMASize() const; // fast EMA window size getter
-    int getSlowEMASize() const; // slow EMA window size getter
-    int getSignalSize() const; // signal window size getter
+    // Data Member Setters
+    int getFastEMASize() const;
+    bool getFastError() const;
+    int getSlowEMASize() const;
+    bool getSlowError() const;
+    int getSignalSize() const;
+    bool getSignalError() const;
+    
     bool hasErrors() const; // returns true if there is an error flag set
-    void setFastEMASize(const int newFastEMASize); // fast EMA window size setter
-    void setSlowEMASize(const int newSlowEMASize); // slow EMA window size setter
-    void setSignalSize(const int newSignalSize); // signal window size setter
+    
+    // Data Member Setters
+    void setFastEMASize(const int newFastEMASize);
+    void setSlowEMASize(const int newSlowEMASize);
+    void setSignalSize(const int newSignalSize);
     
   private:
     // analysis window size parameters
@@ -64,8 +69,11 @@ namespace hw3
     bool fastSizeError;
     bool slowSizeError;
     bool signalSizeError;    
-
-    // attempt 
+    
+    // checks for properly sized input data
+    void checkRanges(const PriceHistory& priceHistory);
+    
+    // perform a moving average across the given range
     double closePriceEMA(double closePrice,
                          double previousEMA,
                          int windowSize,
@@ -84,7 +92,19 @@ namespace hw3
   {
     return this->fastEMASize;
   }
+  
+  /*============================================================================
+    getFastError
+        Returns the value of the fastSizeError data member
 
+    Revision History
+        19 June, 2015 - function created
+  *///==========================================================================
+  inline bool MACD::getFastError() const
+  {
+    return this->fastSizeError;
+  }
+  
   /*============================================================================
     getSlowEMASize
         Returns the value of the slowEMASize data member
@@ -98,6 +118,18 @@ namespace hw3
   }
   
   /*============================================================================
+    getSlowError
+        Returns the value of the slowSizeError data member
+
+    Revision History
+        19 June, 2015 - function created
+  *///==========================================================================
+  inline bool MACD::getSlowError() const
+  {
+    return this->slowSizeError;
+  }
+  
+  /*============================================================================
     getSignalSize
         Returns the value of the signal data member
 
@@ -108,7 +140,19 @@ namespace hw3
   {
     return this->signalSize;
   }
+  
+  /*============================================================================
+    getSignalError
+        Returns the value of the signalSizeError data member
 
+    Revision History
+        19 June, 2015 - function created
+  *///==========================================================================
+  inline bool MACD::getSignalError() const
+  {
+    return this->signalSizeError;
+  }
+  
   /*============================================================================
     hasErrors
         Returns whether or not the analyzer has an error flag set to true

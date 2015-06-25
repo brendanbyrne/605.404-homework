@@ -52,4 +52,4 @@ namespace hw3
     
     return out;
   }
-}
+} // namespace hw3

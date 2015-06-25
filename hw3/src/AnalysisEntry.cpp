@@ -30,7 +30,7 @@ namespace hw3
         19 June, 2015 - Function created
   *///==========================================================================
   std::ostream& operator<<(std::ostream& out, // desired output stream
-                      const AnalysisEntry& entry)
+                           const AnalysisEntry& entry) // entry to output
   {
     out << entry.getDate() << "," << entry.getFastEMA()
         << "," << entry.getSlowEMA()

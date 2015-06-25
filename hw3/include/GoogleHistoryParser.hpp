@@ -34,10 +34,12 @@ namespace hw3
   {    
   public:    
     GoogleHistoryParser(); // default constructor
-
-    bool getDateErrorFlag() const; // date flag getter
-    bool getFileErrorFlag() const; // file flag getter
-    bool getLineErrorFlag() const; // line flag getter
+    
+    // Data Member Getters
+    bool getDateErrorFlag() const;
+    bool getFileErrorFlag() const;
+    bool getLineErrorFlag() const;
+    
     bool wasSuccessful() const; // checks if ANY flags were set
     
     // parse the file at "filePath"
@@ -104,6 +106,7 @@ namespace hw3
   {
     return !this->fileErrorFlag && !this->lineErrorFlag && !this->dateErrorFlag;
   }
+
 } // namespace hw3
 
 #endif // GOOGLEHISTORYPARSER_HPP

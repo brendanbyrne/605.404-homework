@@ -20,7 +20,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <algorithm>
+#include <algorithm> // for find_if
 
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;

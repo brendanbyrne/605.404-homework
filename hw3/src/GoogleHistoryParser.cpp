@@ -35,7 +35,8 @@ namespace hw3
   *///==========================================================================
                                                  // the line to parse
   StockDayStats GoogleHistoryParser::lineToStats(const std::string& line) 
-  {    
+  {
+    // output variable
     StockDayStats dayStats;
     
     // which tokens coorespond to which pieces of data
@@ -46,7 +47,7 @@ namespace hw3
     const int CLOSE_INDEX  = 4;
     const int VOLUME_INDEX = 5;
     
-    // split line around commas
+    // split line around commas, i.e. csv format
     const int EXPECTED_TOKEN_SIZE = 6;
     std::string delimiters = ",";
     std::vector<std::string> tokens;
@@ -129,7 +130,7 @@ namespace hw3
     }// if tokens.size() 
     
     return dayStats;
-  }
+  } // function lineToStats
   
   /*============================================================================
     parse 
@@ -148,6 +149,7 @@ namespace hw3
     this->lineErrorFlag = false;
     this->dateErrorFlag = false;
     
+    // declare output variable
     PriceHistory priceHistory;    
     
     std::ifstream file(filePath);
@@ -197,6 +199,7 @@ namespace hw3
                                          // extract date from here
   greg::date GoogleHistoryParser::toDate(const std::string& string)
   {    
+    // declare output variable
     greg::date date;
     
     // expected locations of date information
@@ -216,6 +219,8 @@ namespace hw3
       std::string dateStr = "20"  + tokens[YEAR_INDEX]
                             + "-" + tokens[MONTH_INDEX]
                             + "-" + tokens[DAY_INDEX];
+      
+      // test for valid parse of date
       try
       {
         date = greg::date(greg::from_string(dateStr));
@@ -230,7 +235,7 @@ namespace hw3
     {
       // raise error with date parsing
       this->dateErrorFlag = true;
-    }
+    } // if parse is correct size
     
     return date;
   }

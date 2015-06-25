@@ -37,18 +37,22 @@ namespace hw3
                   const double lowPrice, // low
                   const double closePrice, // close
                   const int volumeTraded); // volume
-    double getClose() const;  // return the closing trade price
-    greg::date getDate() const; // return the date of the data point
-    double getHigh() const; // return the highest trade price
-    double getLow() const; // return the lowest trade price
-    double getOpen() const; // return the opening trade price
-    int getVolume() const; // return the number of trades made that day
-    StockDayStats& setClose(const double newClosePrice); // set closing price
-    StockDayStats& setDate(const greg::date& newDate); // set the date
-    StockDayStats& setHigh(const double newHighPrice); // set highest trade price
-    StockDayStats& setLow(const double newLowPrice); // set lowest trade price
-    StockDayStats& setOpen(const double newOpenPrice); // set opening trade price
-    StockDayStats& setVolume(const int newVolume); // set the number of trades
+    
+    // Data Member Getters
+    double getClose() const;
+    greg::date getDate() const;
+    double getHigh() const;
+    double getLow() const;
+    double getOpen() const;
+    int getVolume() const;
+    
+    // Data Member Setters
+    StockDayStats& setClose(const double newClosePrice);
+    StockDayStats& setDate(const greg::date& newDate);
+    StockDayStats& setHigh(const double newHighPrice);
+    StockDayStats& setLow(const double newLowPrice);
+    StockDayStats& setOpen(const double newOpenPrice);
+    StockDayStats& setVolume(const int newVolume);
     
   private:
     double closePrice; // the closing price after a day of trading
