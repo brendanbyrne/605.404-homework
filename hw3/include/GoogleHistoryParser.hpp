@@ -102,8 +102,7 @@ namespace hw3
   *///==========================================================================
   inline bool GoogleHistoryParser::wasSuccessful() const
   {
-    //return !this->fileErrorFlag && !this->lineErrorFlag && !this->dateErrorFlag;
-    return true;
+    return !this->fileErrorFlag && !this->lineErrorFlag && !this->dateErrorFlag;
   }
 } // namespace hw3
 

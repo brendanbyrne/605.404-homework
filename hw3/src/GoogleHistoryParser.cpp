@@ -45,7 +45,7 @@ namespace hw3
     const int LOW_INDEX    = 3;
     const int CLOSE_INDEX  = 4;
     const int VOLUME_INDEX = 5;
-
+    
     // split line around commas
     const int EXPECTED_TOKEN_SIZE = 6;
     std::string delimiters = ",";
@@ -59,27 +59,68 @@ namespace hw3
       greg::date date = toDate(tokens[DATE_INDEX]);
       if (!this->dateErrorFlag)
       {
-        // attempt to convert strings to numbers
+        // attempt to read the opening price
+        double openPrice;
         try
         {
-          double openPrice  = stod(tokens[OPEN_INDEX]);
-          double highPrice  = stod(tokens[HIGH_INDEX]);
-          double lowPrice   = stod(tokens[LOW_INDEX]);
-          double closePrice = stod(tokens[CLOSE_INDEX]);
-          int volumeTraded  = stoi(tokens[VOLUME_INDEX]);
-          
-          // assign the values to the StockDayStats object
-          dayStats.setDate(date)
-                  .setOpen(openPrice)
-                  .setHigh(highPrice)
-                  .setLow(lowPrice)
-                  .setClose(closePrice)
-                  .setVolume(volumeTraded);
+          openPrice  = stod(tokens[OPEN_INDEX]);
         }
         catch (...)
         {
-          this->lineErrorFlag = true;
-        } // try
+          openPrice = 0.0;
+        }
+        
+        // attempt to read the highest price
+        double highPrice;
+        try
+        {
+          highPrice = stod(tokens[HIGH_INDEX]);
+        }
+        catch (...)
+        {
+          highPrice = 0.0;
+        }
+        
+        // attempt to read the lowest price
+        double lowPrice;
+        try
+        {
+          lowPrice = stod(tokens[LOW_INDEX]);
+        }
+        catch (...)
+        {
+          lowPrice = 0.0;
+        }
+        
+        // attempt to read the closing price
+        double closePrice;
+        try
+        {
+          closePrice = stod(tokens[CLOSE_INDEX]);
+        }
+        catch (...)
+        {
+          closePrice = 0.0;
+        }
+        
+        // attempt to read the volume traded
+        int volumeTraded;
+        try
+        {
+          volumeTraded  = stoi(tokens[VOLUME_INDEX]);
+        }
+        catch (...)
+        {
+          volumeTraded = 0;
+        }
+        
+        dayStats.setDate(date)
+          .setOpen(openPrice)
+          .setHigh(highPrice)
+          .setLow(lowPrice)
+          .setClose(closePrice)
+          .setVolume(volumeTraded);
+        
       } // if dateErrorFlag
     }
     else
@@ -137,8 +178,9 @@ namespace hw3
       // raise flag for an error with file operations
       this->fileErrorFlag = true;
     } // if (file)
-
+    
     priceHistory.shrink_to_fit();
+    // slip data so it is in ascending date order
     std::reverse(priceHistory.begin(), priceHistory.end());
     
     return priceHistory;

@@ -6,16 +6,17 @@
   
   Options: -h [--help] displays help information
            -i [--input] path to an input file
-           -o [--output] f path to an output file           
-           -s [--serialize] path to an output file where a MACD object will be
-                            serialized to
+           -f [--fast] size of fast EMA window, defaults to 12
+           -s [--slow] size of slow EMA window, defaults to 26
+           -g [--signal] size of signal EMA window, defaults to 9
   
   Outputs: a file containing the moving average convergence divergence data for
            the given input stock price history
 
-   usage: macd -i /path/to/input/data.csv -o /path/to/desired/output.csv
-          macd -i /path/to/input/data.csv -s /path/to/serialized/output.serial
+   usage: macd -i /path/to/input/data.csv
+          macd -i /path/to/input/data.csv -f 18
 *///============================================================================
+
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -80,8 +81,8 @@ int main (int argc, char* argv[])
   // check if there was enough information given
   if (inputGiven)
   {
+    // parse the input file
     std::string inputFilePath  = vm["input"].as<std::string>();
-    
     hw3::GoogleHistoryParser parser;
     hw3::PriceHistory priceHistory = parser.parse(inputFilePath);
     
@@ -97,33 +98,15 @@ int main (int argc, char* argv[])
       hw3::MACD macd(fastEMA, slowEMA, signal);
       hw3::FullAnalysis analysis = macd.analyze(priceHistory);
       
-      std::cout << "Analysis size: " << analysis.size() << std::endl;
-
-      hw3::FullAnalysis::const_iterator entry;
-      
       // search the analysis for entry pertaining june 1st 2015
       greg::date june1st(2015,06,01);
+      hw3::FullAnalysis::const_iterator entry;
       entry = std::find_if(analysis.begin(), analysis.end(),
 			   [&june1st](const hw3::AnalysisEntry& entry) -> bool
 			   {
 			     return entry.getDate() == june1st;
 			   });
       
-      // std::string outputFilePath = inputFilePath + ".out";
-      // try
-      // {
-      //   std::ofstream ofile(outputFilePath);
-      //   for (auto i : analysis)
-      //   {
-      //     ofile << i << "\n";
-      //   }
-      //   ofile.close();
-      // }
-      // catch (...)
-      // {
-      //   std::cout << "Cannot write to output file" << std::endl;
-      // }
-
       // attempt to output the macd of the stock on 1 June, 2015
       if (entry != analysis.end())
       {
@@ -133,7 +116,6 @@ int main (int argc, char* argv[])
       {
 	std::cout << "No data for June 1st, 2015 found." << std::endl;
       }
-
     }
     else
     {
