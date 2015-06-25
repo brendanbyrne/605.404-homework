@@ -32,11 +32,11 @@ namespace hw3
   std::ostream& operator<<(std::ostream& out, // desired output stream
                       const AnalysisEntry& entry)
   {
-    out << entry.getDate() << " " << entry.getFastEMA()
-        << " " << entry.getSlowEMA()
-        << " " << entry.getMACD()
-        << " " << entry.getSignal()
-        << " " << entry.getHistogram();
+    out << entry.getDate() << "," << entry.getFastEMA()
+        << "," << entry.getSlowEMA()
+        << "," << entry.getMACD()
+        << "," << entry.getSignal()
+        << "," << entry.getHistogram();
     return out;
   }  
 } // namespace hw3

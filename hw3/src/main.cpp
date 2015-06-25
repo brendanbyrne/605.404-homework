@@ -97,6 +97,8 @@ int main (int argc, char* argv[])
       hw3::MACD macd(fastEMA, slowEMA, signal);
       hw3::FullAnalysis analysis = macd.analyze(priceHistory);
       
+      std::cout << "Analysis size: " << analysis.size() << std::endl;
+
       hw3::FullAnalysis::const_iterator entry;
       
       // search the analysis for entry pertaining june 1st 2015
@@ -107,9 +109,25 @@ int main (int argc, char* argv[])
 			     return entry.getDate() == june1st;
 			   });
       
+      // std::string outputFilePath = inputFilePath + ".out";
+      // try
+      // {
+      //   std::ofstream ofile(outputFilePath);
+      //   for (auto i : analysis)
+      //   {
+      //     ofile << i << "\n";
+      //   }
+      //   ofile.close();
+      // }
+      // catch (...)
+      // {
+      //   std::cout << "Cannot write to output file" << std::endl;
+      // }
+
+      // attempt to output the macd of the stock on 1 June, 2015
       if (entry != analysis.end())
       {
-	std::cout << "Here's the MACD for June 1st, 2015: " << entry->getMACD() << std::endl;
+	std::cout << entry->getMACD() << std::endl;
       }
       else
       {
