@@ -11,14 +11,14 @@
   
   Intent: Allow integer operations for an number of unlimited size
   
-  Description: 
+  Description: the value data member
 
 *///============================================================================
 
 #ifndef HUGEINT_HPP
 #define HUGEINT_HPP
 
-#include <string>
+#include <deque>
 #include <ostream>
 
 namespace hw4
@@ -29,14 +29,18 @@ namespace hw4
     
   public:
     
-    HugeInt(const std::string& value = "0"); // constructor
+    HugeInt(const std::deque<int>& value = {0},
+            bool positive = true); // constructor
     HugeInt(const int value); // convertion constructor
     
-    std::string getValue() const; // value data member getter
-    void setValue(const std::string& value); // value data member setter
-    
+    std::deque<int> getValue() const; // value data member getter
+    void setValue(const std::deque<int>& value); // value data member setter
+   
+    HugeInt& operator+=(const HugeInt& rhs); // 
+ 
   private:
-    std::string value; // the string version of the number
+    std::deque<int> value; // the vectored digits of the number
+    bool positive;
     
   }; // class HugeInt
   
@@ -47,7 +51,7 @@ namespace hw4
     Revision History
         25 June 2015 - Function created
   *///==========================================================================                                         
-  inline std::string HugeInt::getValue() const
+  inline std::deque<int> HugeInt::getValue() const
   {
     return this->value;
   }
@@ -60,7 +64,7 @@ namespace hw4
         25 June 2015 - Function created
   *///==========================================================================
                                 // desired value for the huge int
-  inline void HugeInt::setValue(const std::string& value)
+  inline void HugeInt::setValue(const std::deque<int>& value)
   {
     this->value = value;
   }
@@ -68,6 +72,5 @@ namespace hw4
   std::ostream& operator<<(std::ostream& out, const HugeInt& value);
   
 } // namespace hw4
-
 
 #endif // HUGEINT_HPP

@@ -15,17 +15,10 @@
 
 #include "HugeInt.hpp"
 
-using hw4::operator<<;
-
 int main()
 {
-  
-  //hw4::HugeInt test("123456789");
-  //std::cout << ">" << test << "<" << std::endl;
-  std::string value = "123456789";
-
-      
-
+  hw4::HugeInt bigNumber = 1000;
+  std::cout << "HugeInt: " << bigNumber << std::endl;
+    
   return 0;
-
 }
