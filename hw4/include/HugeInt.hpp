@@ -11,7 +11,10 @@
   
   Intent: Allow integer operations for an number of unlimited size
   
-  Description: the value data member
+  Description: The value of the number that a HugeInt holds is represented as a
+               series of digits in a std::deque.  Lower index numbers are higher
+               in order of magnitude.  A conversion constructor for the int type
+               is provide to add in working with
 
 *///============================================================================
 
@@ -23,26 +26,48 @@
 
 namespace hw4
 {
-
+  
+  typedef std::deque<char> Number;
+  
   class HugeInt
   {
     
   public:
-    
-    HugeInt(const std::deque<int>& value = {0},
+    HugeInt(const Number& value = {0},
             bool positive = true); // constructor
     HugeInt(const int value); // convertion constructor
     
-    std::deque<int> getValue() const; // value data member getter
-    void setValue(const std::deque<int>& value); // value data member setter
-   
+    bool getSign() const; // positive data member getter
+    Number getValue() const; // value data member getter
+    void setSign(const bool positive); // positive data member setter
+    void setValue(const Number& value); // value data member setter
+
     HugeInt& operator+=(const HugeInt& rhs); // 
- 
-  private:
-    std::deque<int> value; // the vectored digits of the number
-    bool positive;
+    //bool operator>(const HugeInt& rhs);
+    bool operator<(const HugeInt& rhs);
     
+  private:
+    Number value; // the vectored digits of the number
+    bool positive; // sign of the number, positive is true
+    
+    static Number subtractSameSign(Number lhsNum, 
+                                   Number rhsNum);
+    static Number addSameSign(Number lhsNum, 
+                              Number rhsNum);
+      
   }; // class HugeInt
+
+  /*============================================================================
+    getSign
+        return the sign of the number, true is positive
+	
+    Revision History
+        26 June 2015 - Function created
+  *///==========================================================================                 
+  inline bool HugeInt::getSign() const
+  {
+    return this->positive;
+  }
   
   /*============================================================================
     getValue
@@ -50,10 +75,23 @@ namespace hw4
 	
     Revision History
         25 June 2015 - Function created
-  *///==========================================================================                                         
-  inline std::deque<int> HugeInt::getValue() const
+  *///==========================================================================                 
+  inline Number HugeInt::getValue() const
   {
     return this->value;
+  }
+
+  /*============================================================================
+    setSign
+        set the sign of the number, true is positive
+	
+    Revision History
+        26 June 2015 - Function created
+  *///==========================================================================
+                                // desired sign for the huge int
+  inline void HugeInt::setSign(const bool sign)
+  {
+    this->positive = sign;
   }
   
   /*============================================================================
@@ -64,12 +102,25 @@ namespace hw4
         25 June 2015 - Function created
   *///==========================================================================
                                 // desired value for the huge int
-  inline void HugeInt::setValue(const std::deque<int>& value)
+  inline void HugeInt::setValue(const Number& value)
   {
     this->value = value;
   }
   
   std::ostream& operator<<(std::ostream& out, const HugeInt& value);
+  
+  /*============================================================================
+    operator+
+        overloading addition for two HugeInts
+	
+    Revision History
+        26 June 2015 - Function created
+  *///==========================================================================
+  inline HugeInt operator+(HugeInt lhs, const HugeInt& rhs)
+  {
+    lhs += rhs;
+    return lhs;
+  }
   
 } // namespace hw4
 

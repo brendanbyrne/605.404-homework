@@ -17,8 +17,10 @@
 
 int main()
 {
-  hw4::HugeInt bigNumber = 1000;
-  std::cout << "HugeInt: " << bigNumber << std::endl;
+  hw4::HugeInt hi1 = 1000;
+  hw4::HugeInt hi2 = 9000;
+  
+  std::cout << "HugeInt: " << hi1+hi2 << std::endl;
     
   return 0;
 }

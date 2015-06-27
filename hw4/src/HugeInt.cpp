@@ -15,14 +15,14 @@ namespace hw4
     Revision History
         25 June 2015 - Function created
   *///==========================================================================
-  HugeInt::HugeInt (const std::deque<int>& value, bool positive)
+  HugeInt::HugeInt (const Number& value, bool positive)
   {
     this->positive = positive;
     
     this->value = value;
     
     // trim leading zeros
-    std::deque<int>::iterator valIT = this->value.begin();
+    Number::iterator valIT = this->value.begin();
     // +1 for case when value is {0}
     while (*valIT == 0 && valIT + 1 != this->value.end())
     {
@@ -54,7 +54,7 @@ namespace hw4
       this->value = {0};
     }
   }
-    
+  
   /*============================================================================
     HugeInt
         convertion constructor for an int
@@ -79,13 +79,60 @@ namespace hw4
     while (number)
     {
       int digit = number%10;
-            
+      
       number /= 10;
       
       this->value.push_front(digit);
     }
   }
   
+  
+  
+  bool isLarger(const Number& lhs, const Number rhs)
+  {
+    
+    // does this or rhs have the larger magnitude of value
+    bool lhsLargerMag = false;
+    bool rhsLargerMag = false;
+    Number::const_reverse_iterator lhsIT = this->value.rbegin();
+    Number::const_reverse_iterator rhsIT = rhs.getValue().rbegin();
+    while (lhsIT != this->value.rend() &&
+           rhsIT != rhs.getValue().rend())
+    {
+      if (*lhsIT != *rhsIT)
+      {
+        if (*lhsIT > *rhsIT)
+        {
+          lhsLargerMag = true;
+        }
+        else
+        {
+          rhsLargerMag = true;
+        }
+        break;
+      }
+      else
+      {
+        lhsIT++;
+        rhsIT++;
+      }
+    }
+    
+    // if equal
+    if (lhsLargerMag == rhsLargerMag)
+    {
+      return 0;
+    }
+    else if (lhsLargerMag)
+    {
+      return 1;
+    }
+    else
+    {
+      return -1;
+    }
+  }
+
   /*============================================================================
     operator+=
         unary addition assignment operator overload.  Is a member of the 
@@ -94,16 +141,38 @@ namespace hw4
     Revision History
         26 June 2015 - Function created
   *///==========================================================================
-  HugeInt& operator+=(const HugeInt& rhs)
-  {
-    bool isPositive;
-    std::deque<int> answer;
+  HugeInt& HugeInt::operator+=(const HugeInt& rhs)
+  {    
+    Number answer;
+    if (this->positive == rhs.getSign())
+    {
+      answer = HugeInt::addSameSign(this->value, rhs.getValue());
+    }
+    else
+    {
+      if (this->positive == false)
+      {
+        // flip sides to exploit symmetry
+        Number subLHS = rhs.getValue();
+        Number subRHS = lhs->value;
+      }
+      else
+      {
+        Number subLHS = lhs->value;
+        Number subRHS = rhs.getValue();
+      }
+      
+      bool sign;
+      answer = subtractSameSign(subLHS, subRHS, sign);
+
+      this->positive = sign;
+    }
     
-    int carry = 0;
-    std::deque<int>::const_reverse_iterator lhsIT = this->value.rbegin();
-    std::deque<int>::const_reverse_iterator rhsIT = rhs.getValue().rbegin();
+    this->setValue(answer);
+
+    return *this;
   }
-  
+
   /*============================================================================
     operator<<
         insertion operator overload for the HugeInt class
@@ -115,10 +184,15 @@ namespace hw4
 			   const HugeInt& number) // number to display
   
   {
-    std::deque<int> value = number.getValue();
+    Number value = number.getValue();
     
     std::stringstream ss;
     
+    if(!number.getSign())
+    {
+      ss << "-";
+    }
+
     std::for_each(value.begin(), value.end(),
                   [&ss](const int digit)
                   {
@@ -129,5 +203,112 @@ namespace hw4
     
     return out;
   }
+  
 
+  /*============================================================================
+    operator<
+        insertion operator overload for the HugeInt class
+	
+    Revision History
+        27 June 2015 - Function created
+  *///==========================================================================
+  bool operator<(const HugeInt& rhs)
+  {
+    bool isSmaller;
+    // if their signs make this obvious
+    if (this->positive == true && rhs.getSign() == false)
+    {
+      isSmaller = false;
+    }
+    else if (this->positive == false && rhs.getSign() == true)
+    {
+      isSmaller = true;
+    }
+    // if they have the same sign
+    else
+    {
+      if (this.value.size() == rhs.getValue().size())
+      {
+
+      }
+      else
+      {
+      }
+    }
+    return isSmaller
+  }
+  /*============================================================================
+    addSameSign
+        adds two numbers if they share the same sign
+	
+    Revision History
+        25 June 2015 - Function created
+  *///==========================================================================
+                               // left hand side digits
+  Number HugeInt::addSameSign(Number lhsNum, 
+                               // right hand side digits
+                               Number rhsNum)
+  {
+
+    // Container for the outcome
+    Number answer;
+
+    // values for the cur digit from each number
+    int rhsValue;
+    int lhsValue;
+    
+    // walkthrough both numbers adding the digits together
+    int carry = 0;
+    int number;
+    int digit;
+    Number::const_reverse_iterator lhsIT = lhsNum.rbegin();
+    Number::const_reverse_iterator rhsIT = rhsNum.rbegin();
+    while (lhsIT != lhsNum.rend() ||
+           rhsIT != rhsNum.rend())
+    {
+      // get next rhs digit value
+      if (rhsIT != rhsNum.rend())
+      {
+        rhsValue = *rhsIT;
+        ++rhsIT;
+      }
+      else
+      {
+        rhsValue = 0;
+      }
+      
+      // get next lhs digit value
+      if (lhsIT != lhsNum.rend())
+      {
+        lhsValue = *lhsIT;
+        ++lhsIT;
+      }
+      else
+      {
+        lhsValue = 0;
+      }
+      
+      // perform the addition operation
+      number = lhsValue + rhsValue + carry;
+      digit = number%10;
+      carry = number/10;
+      
+      answer.push_front(digit);
+    } // while
+    
+    // check if there is still a carry from the last operation
+    if (carry != 0)
+    {
+      answer.push_front(carry);
+    }
+    
+    return answer;
+    
+  } // addSameSign
+  
+  Number subtractSameSign(const Number& lhsNumber,
+                          const Number& rhsNumber,
+                          bool& sign)
+  
+  
 } // namespace hw4
