@@ -11,7 +11,7 @@ namespace hw4
   /*============================================================================
     HugeInt
         constructor that takes in an string
-	
+        
     Revision History
         25 June 2015 - Function created
   *///==========================================================================
@@ -58,7 +58,7 @@ namespace hw4
   /*============================================================================
     HugeInt
         convertion constructor for an int
-	
+        
     Revision History
         25 June 2015 - Function created
   *///==========================================================================
@@ -87,17 +87,26 @@ namespace hw4
   }
   
   
-  
-  bool isLarger(const Number& lhs, const Number rhs)
-  {
-    
-    // does this or rhs have the larger magnitude of value
+  /*============================================================================
+    isLarger
+        Assumes the the input Numbers both have the same number of digits.
+        Returns 0 if the numbers are equal in magnitude, -1 if the second input
+        is larger, and 1 if the first input is larger.
+        
+    Revision History
+        28 June 2015 - Function created
+  *///==========================================================================
+  int isLarger(const Number& lhs, const Number& rhs)
+  {    
+    // does the lhs or rhs have the larger magnitude of value
     bool lhsLargerMag = false;
     bool rhsLargerMag = false;
-    Number::const_reverse_iterator lhsIT = this->value.rbegin();
-    Number::const_reverse_iterator rhsIT = rhs.getValue().rbegin();
-    while (lhsIT != this->value.rend() &&
-           rhsIT != rhs.getValue().rend())
+    
+    // start looking at the most significant digits
+    Number::const_iterator lhsIT = lhs.begin();
+    Number::const_iterator rhsIT = rhs.begin();
+    while (lhsIT != lhs.end() &&
+           rhsIT != rhs.end())
     {
       if (*lhsIT != *rhsIT)
       {
@@ -118,30 +127,47 @@ namespace hw4
       }
     }
     
+    int result;
     // if equal
     if (lhsLargerMag == rhsLargerMag)
     {
-      return 0;
+      result = 0;
     }
     else if (lhsLargerMag)
     {
-      return 1;
+      result = 1;
     }
     else
     {
-      return -1;
+      result = -1;
     }
+
+    return result;
   }
 
+  /*============================================================================
+    operator==
+        logical equality test operator overload
+
+    Revision History
+        28 June 2015 - Function created
+  *///==========================================================================
+  bool operator==(const HugeInt& lhs,
+		  const HugeInt& rhs)
+  {
+    int result = isLarger(lhs.getValue(), rhs.getValue());
+    return result == 0 && lhs.getSign() == rhs.getSign();
+  }
+  
   /*============================================================================
     operator+=
         unary addition assignment operator overload.  Is a member of the 
         HugeInt class
-	
+        
     Revision History
         26 June 2015 - Function created
   *///==========================================================================
-  HugeInt& HugeInt::operator+=(const HugeInt& rhs)
+  HugeInt& HugeInt::operator+=(const HugeInt& rhs) // number to add to self
   {    
     Number answer;
     if (this->positive == rhs.getSign())
@@ -150,20 +176,22 @@ namespace hw4
     }
     else
     {
+      Number subLHS;
+      Number subRHS;
       if (this->positive == false)
       {
         // flip sides to exploit symmetry
-        Number subLHS = rhs.getValue();
-        Number subRHS = lhs->value;
+        subLHS = rhs.getValue();
+        subRHS = this->value;
       }
       else
       {
-        Number subLHS = lhs->value;
-        Number subRHS = rhs.getValue();
+        subLHS = this->value;
+        subRHS = rhs.getValue();
       }
       
       bool sign;
-      answer = subtractSameSign(subLHS, subRHS, sign);
+      answer = HugeInt::subtractSameSign(subLHS, subRHS, sign);
 
       this->positive = sign;
     }
@@ -176,12 +204,12 @@ namespace hw4
   /*============================================================================
     operator<<
         insertion operator overload for the HugeInt class
-	
+        
     Revision History
         25 June 2015 - Function created
   *///==========================================================================
   std::ostream& operator<<(std::ostream& out, // desired output stream
-			   const HugeInt& number) // number to display
+                           const HugeInt& number) // number to display
   
   {
     Number value = number.getValue();
@@ -207,52 +235,113 @@ namespace hw4
 
   /*============================================================================
     operator<
-        insertion operator overload for the HugeInt class
-	
+        less than operator overload for the HugeInt class
+        
     Revision History
         27 June 2015 - Function created
   *///==========================================================================
-  bool operator<(const HugeInt& rhs)
+  bool operator<(const HugeInt& lhs, // left hand side value in comparison
+                 const HugeInt& rhs) // right hand side value in comparison
   {
     bool isSmaller;
     // if their signs make this obvious
-    if (this->positive == true && rhs.getSign() == false)
+    if (lhs.getSign() == true && rhs.getSign() == false)
     {
       isSmaller = false;
     }
-    else if (this->positive == false && rhs.getSign() == true)
+    else if (lhs.getSign() == false && rhs.getSign() == true)
     {
       isSmaller = true;
     }
     // if they have the same sign
     else
     {
-      if (this.value.size() == rhs.getValue().size())
+      
+      // if they have the same number of digits
+      if (lhs.getValue().size() == rhs.getValue().size())
       {
-
+        int result = isLarger(lhs.getValue(), rhs.getValue());
+        // rhs is larger
+        if (result == -1)
+        {
+          // lhs is positive
+          if (lhs.getSign())
+          {
+            isSmaller = true;
+          }
+          else
+          {
+            isSmaller = false;
+          }
+        }
+	
+        //  lhs is larger
+        else if (result == 1)
+        {
+          // lhs is positive
+          if (lhs.getSign())
+          {
+            isSmaller = false;
+          }
+          else
+          {
+            isSmaller = true;
+          }
+        }
+	
+        // if they are equal
+        else
+        {
+          isSmaller = false;
+        }
       }
+      
+      // if lhs has less digits
+      else if (lhs.getValue().size() < rhs.getValue().size())
+      {
+        if (lhs.getSign())
+        {
+          isSmaller = true;
+        }
+        else
+        {
+          isSmaller = false;
+        }
+      }
+      
+      // if lhs has more digits
       else
       {
-      }
-    }
-    return isSmaller
+        if (lhs.getSign())
+        {
+          isSmaller = false;
+        }
+        else
+        {
+          isSmaller = true;
+        }
+      } // if same number of digits
+
+    } // if their signs are the same
+    return isSmaller;
   }
+
   /*============================================================================
     addSameSign
         adds two numbers if they share the same sign
-	
+        
     Revision History
         25 June 2015 - Function created
   *///==========================================================================
                                // left hand side digits
-  Number HugeInt::addSameSign(Number lhsNum, 
-                               // right hand side digits
-                               Number rhsNum)
+  Number HugeInt::addSameSign(const Number& lhsNum, 
+			      // right hand side digits
+			      const Number& rhsNum)
   {
-
+    
     // Container for the outcome
     Number answer;
-
+    
     // values for the cur digit from each number
     int rhsValue;
     int lhsValue;
@@ -306,9 +395,32 @@ namespace hw4
     
   } // addSameSign
   
-  Number subtractSameSign(const Number& lhsNumber,
-                          const Number& rhsNumber,
-                          bool& sign)
-  
+  Number HugeInt::subtractSameSign(const Number& lhsNumber,
+				   const Number& rhsNumber,
+				   bool& sign)
+  {
+    // figure out the sign
+    if (lhsNumber < rhsNumber)
+    {
+      sign = false;
+    }
+    else
+    {
+      sign = true;
+    }
+
+    Number answer;
+    if (lhsNumber == rhsNumber)
+    {
+      answer = {0};
+    }
+    else
+    {
+      
+    }
+    
+    
+    return answer;
+  }
   
 } // namespace hw4

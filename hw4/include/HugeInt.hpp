@@ -41,19 +41,18 @@ namespace hw4
     Number getValue() const; // value data member getter
     void setSign(const bool positive); // positive data member setter
     void setValue(const Number& value); // value data member setter
-
-    HugeInt& operator+=(const HugeInt& rhs); // 
-    //bool operator>(const HugeInt& rhs);
-    bool operator<(const HugeInt& rhs);
+    
+    HugeInt& operator+=(const HugeInt& rhs);
     
   private:
     Number value; // the vectored digits of the number
     bool positive; // sign of the number, positive is true
     
-    static Number subtractSameSign(Number lhsNum, 
-                                   Number rhsNum);
-    static Number addSameSign(Number lhsNum, 
-                              Number rhsNum);
+    static Number subtractSameSign(const Number& lhsNum, 
+                                   const Number& rhsNum,
+				   bool& sign);
+    static Number addSameSign(const Number& lhsNum, 
+                              const Number& rhsNum);
       
   }; // class HugeInt
 
@@ -107,21 +106,18 @@ namespace hw4
     this->value = value;
   }
   
+  int isLarger(const Number& lhs, const Number& rhs);
+
   std::ostream& operator<<(std::ostream& out, const HugeInt& value);
+  bool operator==(const HugeInt& lhs, const HugeInt& rhs);
+  bool operator<(const HugeInt& lhs, const HugeInt& rhs);
   
-  /*============================================================================
-    operator+
-        overloading addition for two HugeInts
-	
-    Revision History
-        26 June 2015 - Function created
-  *///==========================================================================
   inline HugeInt operator+(HugeInt lhs, const HugeInt& rhs)
   {
     lhs += rhs;
     return lhs;
   }
-  
+
 } // namespace hw4
 
 #endif // HUGEINT_HPP
