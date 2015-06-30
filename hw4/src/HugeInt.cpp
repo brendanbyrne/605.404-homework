@@ -1,5 +1,6 @@
 #include <sstream>
 #include <algorithm> // for_each
+///#include <cstdlib> // atoi
 
 #include "HugeInt.hpp"
 
@@ -15,43 +16,47 @@ namespace hw4
     Revision History
         25 June 2015 - Function created
   *///==========================================================================
-  HugeInt::HugeInt (const Number& value, bool positive)
-  {
-    this->positive = positive;
-    
-    this->value = value;
-    
-    // trim leading zeros
-    Number::iterator valIT = this->value.end();
-    --valIT;
-    while (*valIT == 0 && valIT != this->value.begin())
+  HugeInt::HugeInt (const std::string& numberStr) // string to turn into HugeInt
+  { 
+    this->positive = true;
+
+    bool errorOccurred = false;
+    std::string::const_reverse_iterator strIT = numberStr.rbegin();
+    char digit;
+    char rawInput;
+    while (strIT != numberStr.rend())
     {
-      this->value.erase(valIT);
-      --valIT;
+      // the value of the character in ascii
+      rawInput = static_cast<char>(*strIT);
+      
+      // if negative sign detected
+      if (rawInput == '-')
+      {
+        this->positive = false;
+        break;
+      }
+      
+      // if not a digit
+      if (rawInput < '0' || rawInput > '9')
+      {
+        errorOccurred = true;
+        break;
+      }
+      
+      // shift rawInput from ascii domain to number domain
+      digit = rawInput - '0';      
+      this->value.push_back(digit);
+      ++strIT;
     }
     
-    // check if all values of the vector are positive
-    bool isPositive = true;
-    valIT = this->value.begin();
-    while (isPositive && valIT != this->value.end())
-    {
-      isPositive = *valIT > 0;
-      ++valIT;
-    }
+    trimZeros(this->value);
+
     
-    // check if all values of the deque are single digits
-    bool isDigit = true;
-    valIT = this->value.begin();
-    while (isDigit && valIT != this->value.end())
-    {
-      isDigit = *valIT < 10;
-      ++valIT;
-    }
-    
-    // if not a series of nonnegative digits revert to default value
-    if (!isDigit || !isPositive)
+    // if there was an error in converting string to number, set to 0
+    if (errorOccurred)
     {
       this->value = {0};
+      this->positive = true;
     }
   }
   
@@ -62,7 +67,7 @@ namespace hw4
     Revision History
         25 June 2015 - Function created
   *///==========================================================================
-  HugeInt::HugeInt (const int value)
+  HugeInt::HugeInt (const int value) // number to turn into HugeInt
   {
     
     if (value < 0)
@@ -76,19 +81,80 @@ namespace hw4
     
     // digitize the magnituge of the input
     int number = this->positive ? value : -1 * value;
-    while (number)
-    {
-      int digit = number%10;
-      
-      number /= 10;
-      
-      this->value.push_back(digit);
-    }
+    
+    this->value = HugeInt::digitizeInt(number);
   }
   
+  /*============================================================================
+    addSameSign
+        adds two numbers assuming they share the same sign
+        
+    Revision History
+        25 June 2015 - Function created
+  *///==========================================================================
+                              // left hand side digits
+  Number HugeInt::addSameSign(const Number& lhsNum,
+			      // right hand side digits
+			      const Number& rhsNum)
+  {
+    // Container for the outcome
+    Number answer;
+    
+    // values for the cur digit from each number
+    int rhsValue;
+    int lhsValue;
+    
+    // walkthrough both numbers adding the digits together
+    int carry = 0;
+    int number;
+    int digit;
+    Number::const_iterator lhsIT = lhsNum.begin();
+    Number::const_iterator rhsIT = rhsNum.begin();
+    while (lhsIT != lhsNum.end() ||
+           rhsIT != rhsNum.end())
+    {
+      // get next rhs digit value
+      if (rhsIT != rhsNum.end())
+      {
+        rhsValue = *rhsIT;
+        ++rhsIT;
+      }
+      else
+      {
+        rhsValue = 0;
+      }
+      
+      // get next lhs digit value
+      if (lhsIT != lhsNum.end())
+      {
+        lhsValue = *lhsIT;
+        ++lhsIT;
+      }
+      else
+      {
+        lhsValue = 0;
+      }
+      
+      // perform the addition operation
+      number = lhsValue + rhsValue + carry;
+      digit = number % HugeInt::BASE;
+      carry = number / HugeInt::BASE;
+      
+      answer.push_back(digit);
+    } // while
+    
+    // check if there is still a carry from the last operation
+    if (carry != 0)
+    {
+      answer.push_back(carry);
+    }
+    
+    return answer;
+    
+  } // addSameSign
   
   /*============================================================================
-    isLarger
+    compareSameLength
         Assumes the the input Numbers both have the same number of digits.
         Returns 0 if the numbers are equal in magnitude, -1 if the second input
         is larger, and 1 if the first input is larger.
@@ -96,7 +162,10 @@ namespace hw4
     Revision History
         28 June 2015 - Function created
   *///==========================================================================
-  int isLarger(const Number& lhs, const Number& rhs)
+                                 // first value to use in comparison
+  int HugeInt::compareSameLength(const Number& lhs,
+                                 // second value to use in comparison
+                                 const Number& rhs)
   {    
     // does the lhs or rhs have the larger magnitude of value
     bool lhsLargerMag = false;
@@ -125,7 +194,7 @@ namespace hw4
         lhsIT++;
         rhsIT++;
       }
-    }
+    } // while have digits
     
     int result;
     // if equal
@@ -144,7 +213,31 @@ namespace hw4
 
     return result;
   }
-
+  
+  /*============================================================================
+    digitizeInt
+        Given an int, this method
+        
+    Revision History
+        28 June 2015 - Function created
+  *///==========================================================================
+  Number HugeInt::digitizeInt(int value)
+  {
+    // make sure number is positive
+    int toDigitize = value < 0 ? value*-1 : value;
+    
+    Number number;
+    while (toDigitize)
+    {
+      int digit = toDigitize % HugeInt::BASE;
+      
+      toDigitize /= HugeInt::BASE;
+      
+      number.push_back(digit);
+    }
+    return number;
+  }
+  
   /*============================================================================
     operator==
         logical equality test operator overload
@@ -152,11 +245,19 @@ namespace hw4
     Revision History
         28 June 2015 - Function created
   *///==========================================================================
-  bool operator==(const HugeInt& lhs,
-		  const HugeInt& rhs)
+  bool operator==(const HugeInt& lhs, // left hand side of equality test
+		  const HugeInt& rhs) // right hand side of equality test
   {
-    int result = isLarger(lhs.getValue(), rhs.getValue());
-    return result == 0 && lhs.getSign() == rhs.getSign();
+    // only test if values share same number of digits
+    if (lhs.getValue().size() == rhs.getValue().size())
+    {
+      int result = HugeInt::compareSameLength(lhs.getValue(), rhs.getValue());
+      return result == 0 && lhs.getSign() == rhs.getSign();
+    }
+    else
+    {
+      return false;
+    }
   }
   
   /*============================================================================
@@ -170,8 +271,10 @@ namespace hw4
   HugeInt& HugeInt::operator+=(const HugeInt& rhs) // number to add to self
   {    
     Number answer;
+    
     if (this->positive == rhs.getSign())
-    {
+    {                                                                   
+      // equal signs mean magnitude increase
       answer = HugeInt::addSameSign(this->value, rhs.getValue());
     }
     else
@@ -200,7 +303,50 @@ namespace hw4
 
     return *this;
   }
-
+  
+  /*============================================================================
+    operator-=
+        unary subtract assignment operator overload.  Is a member of the 
+        HugeInt class
+        
+    Revision History
+        26 June 2015 - Function created
+  *///==========================================================================
+  HugeInt& HugeInt::operator-=(const HugeInt& rhs)//number to subtract from self
+  {    
+    Number answer;
+    bool sign;
+    
+    if (this->positive != rhs.getSign())
+    {
+      answer = addSameSign(this->value, rhs.getValue());
+      sign = this->positive;
+    }
+    else if (this->positive && rhs.getSign())
+    {
+      answer = subtractSameSign(this->value, rhs.getValue(), sign);
+    }
+    else
+    {
+      answer = subtractSameSign(rhs.getValue(), this->value, sign);
+    }
+    
+    this->positive = sign;
+    this->value = answer;
+    
+    return *this;
+  }  
+  
+  HugeInt& HugeInt::operator*=(const HugeInt& rhs)
+  {
+    bool sign = this->positive == rhs.getSign();
+    
+    int shift = 0;
+    
+    
+    return *this;
+  }
+  
   /*============================================================================
     operator<<
         insertion operator overload for the HugeInt class
@@ -210,11 +356,11 @@ namespace hw4
   *///==========================================================================
   std::ostream& operator<<(std::ostream& out, // desired output stream
                            const HugeInt& number) // number to display
-  
-  {
     
+  {    
     std::stringstream ss;
     
+    // add negative sign
     if(!number.getSign())
     {
       ss << "-";
@@ -222,6 +368,7 @@ namespace hw4
     
     Number value = number.getValue();
     std::for_each(value.rbegin(), value.rend(),
+                  // upcasts char to int for printing purposes
                   [&ss](const int digit)
                   {
                     ss << digit;
@@ -259,7 +406,7 @@ namespace hw4
       // if they have the same number of digits
       if (lhs.getValue().size() == rhs.getValue().size())
       {
-        int result = isLarger(lhs.getValue(), rhs.getValue());
+        int result = HugeInt::compareSameLength(lhs.getValue(), rhs.getValue());
         // rhs is larger
         if (result == -1)
         {
@@ -319,75 +466,15 @@ namespace hw4
     } // if their signs are the same
     return isSmaller;
   }
-
+    
   /*============================================================================
-    addSameSign
-        adds two numbers if they share the same sign
+    subtractSameSign
+        subtracts two numbers assuming they share the same sign.  Returns the 
+        the sign of the answer by reference
         
     Revision History
-        25 June 2015 - Function created
+        30 June 2015 - Function created
   *///==========================================================================
-                              // left hand side digits
-  Number HugeInt::addSameSign(const Number& lhsNum,
-			      // right hand side digits
-			      const Number& rhsNum)
-  {
-    // Container for the outcome
-    Number answer;
-    
-    // values for the cur digit from each number
-    int rhsValue;
-    int lhsValue;
-    
-    // walkthrough both numbers adding the digits together
-    int carry = 0;
-    int number;
-    int digit;
-    Number::const_iterator lhsIT = lhsNum.begin();
-    Number::const_iterator rhsIT = rhsNum.begin();
-    while (lhsIT != lhsNum.end() ||
-           rhsIT != rhsNum.end())
-    {
-      // get next rhs digit value
-      if (rhsIT != rhsNum.end())
-      {
-        rhsValue = *rhsIT;
-        ++rhsIT;
-      }
-      else
-      {
-        rhsValue = 0;
-      }
-      
-      // get next lhs digit value
-      if (lhsIT != lhsNum.end())
-      {
-        lhsValue = *lhsIT;
-        ++lhsIT;
-      }
-      else
-      {
-        lhsValue = 0;
-      }
-      
-      // perform the addition operation
-      number = lhsValue + rhsValue + carry;
-      digit = number%10;
-      carry = number/10;
-      
-      answer.push_back(digit);
-    } // while
-    
-    // check if there is still a carry from the last operation
-    if (carry != 0)
-    {
-      answer.push_back(carry);
-    }
-    
-    return answer;
-    
-  } // addSameSign
-  
   Number HugeInt::subtractSameSign(const Number& lhsNumber,
 				   const Number& rhsNumber,
 				   bool& sign)
@@ -410,18 +497,23 @@ namespace hw4
       
       sign = true;
     }
-
+    
+    // if numbers are equal make answer 0
     Number answer;
     if (lhsNumber == rhsNumber)
     {
       answer = {0};
     }
+    // perform full subtraction method
     else
     {
+      int difference;
+      int borrow = 0;
       Number::iterator topIT = topNumber.begin();
       Number::iterator botIT = bottomNumber.begin();
       while (topIT != topNumber.end())
       {
+        // get next digit for top number
         int topVal;
         if (topIT != topNumber.end())
         {
@@ -430,9 +522,11 @@ namespace hw4
         }
         else
         {
+          // if no next digit, use zero
           topVal = 0;
         }
-
+        
+        // get next digit for bottom number
         int botVal;
         if (botIT != bottomNumber.end())
         {
@@ -441,22 +535,48 @@ namespace hw4
         }
         else
         {
+          // if no next digit, use zero
           botVal = 0;
         }
         
-        // attempt the subtraction
-        if (topVal > botVal)
+        // where the actual subtraction of bottom digit from top digit happens
+        difference = topVal - botVal - borrow;
+        borrow = 0;
+        
+        // if you need to borrow from the next digit over
+        if (difference < 0)
         {
-          answer.push_back(topVal-botVal);
+          difference += HugeInt::BASE;
+          borrow = 1;
         }
-        else
-        {
-          
-        }
-      }
-    }
+        
+        answer.push_back(difference);
+        
+      } // while still digits to subtract
+    } // if numbers equal
+    
+    trimZeros(answer);
     
     return answer;
+  }
+  
+  /*============================================================================
+    trimZeros
+        takes a number and trims the leading 0s off of it
+        
+    Revision History
+        25 June 2015 - Function created
+  *///==========================================================================
+  void trimZeros(Number& number) // the number to trim zeros from
+  {
+    // trim leading zeros, except if the number is just 0
+    Number::iterator digitIT = number.end();
+    --digitIT;
+    while (*digitIT == 0 && digitIT != number.begin())
+    {
+      number.erase(digitIT);
+      --digitIT;
+    }
   }
   
 } // namespace hw4

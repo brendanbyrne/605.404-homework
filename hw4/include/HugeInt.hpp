@@ -23,6 +23,7 @@
 
 #include <vector>
 #include <ostream>
+#include <string>
 
 namespace hw4
 {
@@ -31,31 +32,46 @@ namespace hw4
   
   class HugeInt
   {
-    
+    // The base of the number system, demical -> 10
+    static const int BASE = 10;
+
   public:
-    HugeInt(const Number& value = {0},
-            bool positive = true); // constructor
+    explicit HugeInt(const std::string& numberStr = "0"); // string
     HugeInt(const int value); // convertion constructor
     
+    // comparison between two numbers of the SAME number of digits
+    // returns -1 if lhs  < rhs
+    //          0 if lhs == rhs
+    //          1 if lhs  > rhs
+    static int compareSameLength(const Number& lhs, const Number& rhs);
+
     bool getSign() const; // positive data member getter
     Number getValue() const; // value data member getter
     void setSign(const bool positive); // positive data member setter
     void setValue(const Number& value); // value data member setter
     
+    // unary operator overloads
     HugeInt& operator+=(const HugeInt& rhs);
+    HugeInt& operator-=(const HugeInt& rhs);
+    HugeInt& operator*=(const HugeInt& rhs);
     
   private:
-    Number value; // the vectored digits of the number
+    Number value; // the vectored digits of the number, {lower -> higher}
     bool positive; // sign of the number, positive is true
     
+    static Number digitizeInt(int toBeDigitize); // turns int into aliased Number type
+
+    // subtraction backend
     static Number subtractSameSign(const Number& lhsNum, 
                                    const Number& rhsNum,
 				   bool& sign);
+    
+    // addition backend
     static Number addSameSign(const Number& lhsNum, 
                               const Number& rhsNum);
       
   }; // class HugeInt
-
+  
   /*============================================================================
     getSign
         return the sign of the number, true is positive
@@ -79,7 +95,12 @@ namespace hw4
   {
     return this->value;
   }
-
+  
+  // binary operator overloads
+  std::ostream& operator<<(std::ostream& out, const HugeInt& value);
+  bool operator==(const HugeInt& lhs, const HugeInt& rhs);
+  bool operator<(const HugeInt& lhs, const HugeInt& rhs);
+    
   /*============================================================================
     setSign
         set the sign of the number, true is positive
@@ -87,7 +108,7 @@ namespace hw4
     Revision History
         26 June 2015 - Function created
   *///==========================================================================
-                                // desired sign for the huge int
+                               // desired sign for the huge int
   inline void HugeInt::setSign(const bool sign)
   {
     this->positive = sign;
@@ -106,17 +127,36 @@ namespace hw4
     this->value = value;
   }
   
-  int isLarger(const Number& lhs, const Number& rhs);
-
-  std::ostream& operator<<(std::ostream& out, const HugeInt& value);
-  bool operator==(const HugeInt& lhs, const HugeInt& rhs);
-  bool operator<(const HugeInt& lhs, const HugeInt& rhs);
-  
-  inline HugeInt operator+(HugeInt lhs, const HugeInt& rhs)
+  /*============================================================================
+    operator+
+        binary addition operator overload
+        
+    Revision History
+        26 June 2015 - Function created
+  *///==========================================================================
+  inline HugeInt operator+(HugeInt lhs, // left hand number
+                           const HugeInt& rhs) // right hand number
   {
     lhs += rhs;
     return lhs;
   }
+  
+  /*============================================================================
+    operator-
+        binary subtraction operator overload
+        
+    Revision History
+        30 June 2015 - Function created
+  *///==========================================================================
+  inline HugeInt operator-(HugeInt lhs, // left hand number
+                           const HugeInt& rhs) // right number
+  {
+    lhs -= rhs;
+    return lhs;
+  }
+
+  // remove leading zeros from a number
+  void trimZeros(Number& number);
 
 } // namespace hw4
 

@@ -22,11 +22,14 @@ int main()
   
   hw4::HugeInt hi3 = 3;
   hw4::HugeInt hi4 = -3;
-
-  //std::cout << "hi3-hi4: " << hi3+hi4 << std::endl;
-
-  //std::cout << hi1 << " == " << hi2 << " == " << (hi1== hi2) << std::endl;
   
-  std::cout << (hi1<hi2) << std::endl;
+  hw4::HugeInt hi5("-700");
+  hw4::HugeInt hi6("700");
+  
+  std::cout << hi5 << std::endl;
+  std::cout << hi6 << std::endl;
+
+  std::cout << hi6 << " - " << hi5 << " = " << hi6+hi5 << std::endl;
+  
   return 0;
 }
