@@ -10,7 +10,7 @@ namespace hw4
 {
   /*============================================================================
     HugeInt
-        constructor that takes in an string
+        constructor that takes in the typedef Number and the sign of the number
         
     Revision History
         25 June 2015 - Function created
@@ -22,15 +22,15 @@ namespace hw4
     this->value = value;
     
     // trim leading zeros
-    Number::iterator valIT = this->value.begin();
-    // +1 for case when value is {0}
-    while (*valIT == 0 && valIT + 1 != this->value.end())
+    Number::iterator valIT = this->value.end();
+    --valIT;
+    while (*valIT == 0 && valIT != this->value.begin())
     {
       this->value.erase(valIT);
-      ++valIT;
+      --valIT;
     }
     
-    // check if all values of the deque are positive
+    // check if all values of the vector are positive
     bool isPositive = true;
     valIT = this->value.begin();
     while (isPositive && valIT != this->value.end())
@@ -48,7 +48,7 @@ namespace hw4
       ++valIT;
     }
     
-    // if not a series of digits revert to default value
+    // if not a series of nonnegative digits revert to default value
     if (!isDigit || !isPositive)
     {
       this->value = {0};
@@ -74,7 +74,7 @@ namespace hw4
       this->positive = true;
     }
     
-    // digit
+    // digitize the magnituge of the input
     int number = this->positive ? value : -1 * value;
     while (number)
     {
@@ -82,7 +82,7 @@ namespace hw4
       
       number /= 10;
       
-      this->value.push_front(digit);
+      this->value.push_back(digit);
     }
   }
   
@@ -103,10 +103,10 @@ namespace hw4
     bool rhsLargerMag = false;
     
     // start looking at the most significant digits
-    Number::const_iterator lhsIT = lhs.begin();
-    Number::const_iterator rhsIT = rhs.begin();
-    while (lhsIT != lhs.end() &&
-           rhsIT != rhs.end())
+    Number::const_reverse_iterator lhsIT = lhs.rbegin();
+    Number::const_reverse_iterator rhsIT = rhs.rbegin();
+    while (lhsIT != lhs.rend() &&
+           rhsIT != rhs.rend())
     {
       if (*lhsIT != *rhsIT)
       {
@@ -212,7 +212,6 @@ namespace hw4
                            const HugeInt& number) // number to display
   
   {
-    Number value = number.getValue();
     
     std::stringstream ss;
     
@@ -220,8 +219,9 @@ namespace hw4
     {
       ss << "-";
     }
-
-    std::for_each(value.begin(), value.end(),
+    
+    Number value = number.getValue();
+    std::for_each(value.rbegin(), value.rend(),
                   [&ss](const int digit)
                   {
                     ss << digit;
@@ -232,7 +232,7 @@ namespace hw4
     return out;
   }
   
-
+  
   /*============================================================================
     operator<
         less than operator overload for the HugeInt class
@@ -255,8 +255,7 @@ namespace hw4
     }
     // if they have the same sign
     else
-    {
-      
+    {      
       // if they have the same number of digits
       if (lhs.getValue().size() == rhs.getValue().size())
       {
@@ -273,8 +272,7 @@ namespace hw4
           {
             isSmaller = false;
           }
-        }
-	
+        }	
         //  lhs is larger
         else if (result == 1)
         {
@@ -288,14 +286,12 @@ namespace hw4
             isSmaller = true;
           }
         }
-	
         // if they are equal
         else
         {
           isSmaller = false;
-        }
+        }// if result
       }
-      
       // if lhs has less digits
       else if (lhs.getValue().size() < rhs.getValue().size())
       {
@@ -308,7 +304,6 @@ namespace hw4
           isSmaller = false;
         }
       }
-      
       // if lhs has more digits
       else
       {
@@ -321,7 +316,6 @@ namespace hw4
           isSmaller = true;
         }
       } // if same number of digits
-
     } // if their signs are the same
     return isSmaller;
   }
@@ -333,12 +327,11 @@ namespace hw4
     Revision History
         25 June 2015 - Function created
   *///==========================================================================
-                               // left hand side digits
-  Number HugeInt::addSameSign(const Number& lhsNum, 
+                              // left hand side digits
+  Number HugeInt::addSameSign(const Number& lhsNum,
 			      // right hand side digits
 			      const Number& rhsNum)
   {
-    
     // Container for the outcome
     Number answer;
     
@@ -350,13 +343,13 @@ namespace hw4
     int carry = 0;
     int number;
     int digit;
-    Number::const_reverse_iterator lhsIT = lhsNum.rbegin();
-    Number::const_reverse_iterator rhsIT = rhsNum.rbegin();
-    while (lhsIT != lhsNum.rend() ||
-           rhsIT != rhsNum.rend())
+    Number::const_iterator lhsIT = lhsNum.begin();
+    Number::const_iterator rhsIT = rhsNum.begin();
+    while (lhsIT != lhsNum.end() ||
+           rhsIT != rhsNum.end())
     {
       // get next rhs digit value
-      if (rhsIT != rhsNum.rend())
+      if (rhsIT != rhsNum.end())
       {
         rhsValue = *rhsIT;
         ++rhsIT;
@@ -367,7 +360,7 @@ namespace hw4
       }
       
       // get next lhs digit value
-      if (lhsIT != lhsNum.rend())
+      if (lhsIT != lhsNum.end())
       {
         lhsValue = *lhsIT;
         ++lhsIT;
@@ -382,13 +375,13 @@ namespace hw4
       digit = number%10;
       carry = number/10;
       
-      answer.push_front(digit);
+      answer.push_back(digit);
     } // while
     
     // check if there is still a carry from the last operation
     if (carry != 0)
     {
-      answer.push_front(carry);
+      answer.push_back(carry);
     }
     
     return answer;
@@ -399,13 +392,22 @@ namespace hw4
 				   const Number& rhsNumber,
 				   bool& sign)
   {
+    Number topNumber;
+    Number bottomNumber;
+    
     // figure out the sign
     if (lhsNumber < rhsNumber)
     {
+      topNumber = rhsNumber;
+      bottomNumber = lhsNumber;
+      
       sign = false;
     }
     else
     {
+      topNumber = lhsNumber;
+      bottomNumber = rhsNumber;
+      
       sign = true;
     }
 
@@ -416,9 +418,43 @@ namespace hw4
     }
     else
     {
-      
+      Number::iterator topIT = topNumber.begin();
+      Number::iterator botIT = bottomNumber.begin();
+      while (topIT != topNumber.end())
+      {
+        int topVal;
+        if (topIT != topNumber.end())
+        {
+          topVal = *topIT;
+          ++topIT;
+        }
+        else
+        {
+          topVal = 0;
+        }
+
+        int botVal;
+        if (botIT != bottomNumber.end())
+        {
+          botVal = *botIT;
+          ++botIT;
+        }
+        else
+        {
+          botVal = 0;
+        }
+        
+        // attempt the subtraction
+        if (topVal > botVal)
+        {
+          answer.push_back(topVal-botVal);
+        }
+        else
+        {
+          
+        }
+      }
     }
-    
     
     return answer;
   }

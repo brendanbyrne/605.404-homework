@@ -21,13 +21,13 @@
 #ifndef HUGEINT_HPP
 #define HUGEINT_HPP
 
-#include <deque>
+#include <vector>
 #include <ostream>
 
 namespace hw4
 {
   
-  typedef std::deque<char> Number;
+  typedef std::vector<char> Number;
   
   class HugeInt
   {
