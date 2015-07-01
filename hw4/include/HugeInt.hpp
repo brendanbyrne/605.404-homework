@@ -45,7 +45,7 @@ namespace hw4
     //          1 if lhs  > rhs
     static int compareSameLength(const Number& lhs, const Number& rhs);
 
-    bool getSign() const; // positive data member getter
+    bool isPositive() const; // positive data member getter
     Number getValue() const; // value data member getter
     void setSign(const bool positive); // positive data member setter
     void setValue(const Number& value); // value data member setter
@@ -54,25 +54,26 @@ namespace hw4
     HugeInt& operator+=(const HugeInt& rhs);
     HugeInt& operator-=(const HugeInt& rhs);
     HugeInt& operator*=(const HugeInt& rhs);
+    HugeInt& operator/=(const HugeInt& rhs);
     
   private:
     Number value; // the vectored digits of the number, {lower -> higher}
     bool positive; // sign of the number, positive is true
     
-    static Number digitizeInt(int toBeDigitize); // turns int into aliased Number type
-
-    // subtraction backend
-    static Number subtractSameSign(const Number& lhsNum, 
-                                   const Number& rhsNum,
-				   bool& sign);
-    
     // addition backend
     static Number addSameSign(const Number& lhsNum, 
                               const Number& rhsNum);
+
+    // turns int into aliased Number type
+    static Number digitizeInt(int toBeDigitize);
+
+    static Number subtractSameSign(const Number& lhsNum, 
+                                   const Number& rhsNum,
+				   bool& sign); // subtraction backend
     
     // newNumber = number * single
     static Number multiplyByInt(const Number& number, int single);
-      
+    
   }; // class HugeInt
   
   /*============================================================================
@@ -82,7 +83,7 @@ namespace hw4
     Revision History
         26 June 2015 - Function created
   *///==========================================================================                 
-  inline bool HugeInt::getSign() const
+  inline bool HugeInt::isPositive() const
   {
     return this->positive;
   }
@@ -103,33 +104,20 @@ namespace hw4
   std::ostream& operator<<(std::ostream& out, const HugeInt& value);
   bool operator==(const HugeInt& lhs, const HugeInt& rhs);
   bool operator<(const HugeInt& lhs, const HugeInt& rhs);
-    
-  /*============================================================================
-    setSign
-        set the sign of the number, true is positive
-	
-    Revision History
-        26 June 2015 - Function created
-  *///==========================================================================
-                               // desired sign for the huge int
-  inline void HugeInt::setSign(const bool sign)
-  {
-    this->positive = sign;
-  }
   
   /*============================================================================
-    setValue
-        set the value of the value data member
-	
+    operator>
+        binary greater than operator overload
+        
     Revision History
-        25 June 2015 - Function created
+        1 July 2015 - Function created
   *///==========================================================================
-                                // desired value for the huge int
-  inline void HugeInt::setValue(const Number& value)
+  inline bool operator>(const HugeInt& lhs, // left hand number
+                        const HugeInt& rhs) // right hand number
   {
-    this->value = value;
+    return operator<(rhs, lhs);
   }
-  
+
   /*============================================================================
     operator+
         binary addition operator overload
@@ -160,7 +148,7 @@ namespace hw4
 
   /*============================================================================
     operator*
-        binary multiplication operator overload
+        binary multiplication operator overload for 2 HugeInts
         
     Revision History
         30 June 2015 - Function created
@@ -170,6 +158,46 @@ namespace hw4
   {
     lhs *= rhs;
     return lhs;
+  }
+  
+  /*============================================================================
+    operator/
+        binary division operator overload for 2 HugeInts
+        
+    Revision History
+        30 June 2015 - Function created
+  *///==========================================================================
+  inline HugeInt operator/(HugeInt lhs, // left hand number
+                           const HugeInt& rhs) // right number
+  {
+    lhs /= rhs;
+    return lhs;
+  }
+  
+  /*============================================================================
+    setSign
+        set the sign of the number, true is positive
+	
+    Revision History
+        26 June 2015 - Function created
+  *///==========================================================================
+                               // desired sign for the huge int
+  inline void HugeInt::setSign(const bool sign)
+  {
+    this->positive = sign;
+  }
+  
+  /*============================================================================
+    setValue
+        set the value of the value data member
+	
+    Revision History
+        25 June 2015 - Function created
+  *///==========================================================================
+                                // desired value for the huge int
+  inline void HugeInt::setValue(const Number& value)
+  {
+    this->value = value;
   }
 
   // remove leading zeros from a number

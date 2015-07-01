@@ -18,8 +18,9 @@ namespace hw4
   HugeInt::HugeInt (const std::string& numberStr) // string to turn into HugeInt
   { 
     this->positive = true;
-
+    
     bool errorOccurred = false;
+    
     std::string::const_reverse_iterator strIT = numberStr.rbegin();
     char digit;
     char rawInput;
@@ -225,16 +226,16 @@ namespace hw4
   {
     // make sure number is positive
     int toDigitize = value < 0 ? value*-1 : value;
-    
+        
     Number number;
-    while (toDigitize)
+    do
     {
       int digit = toDigitize % HugeInt::BASE;
       
       toDigitize /= HugeInt::BASE;
       
       number.push_back(digit);
-    }
+    } while (toDigitize);
     
     return number;
   }
@@ -280,31 +281,7 @@ namespace hw4
     
   }
   
-  /*============================================================================
-    operator==
-        logical equality test operator overload
-
-    Revision History
-        28 June 2015 - Function created
-  *///==========================================================================
-  bool operator==(const HugeInt& lhs, // left hand side of equality test
-		  const HugeInt& rhs) // right hand side of equality test
-  {
-    bool isEqual;
-    // only test if values share same number of digits
-    if (lhs.getValue().size() == rhs.getValue().size())
-    {
-      int result = HugeInt::compareSameLength(lhs.getValue(), rhs.getValue());
-      isEqual = result == 0 && lhs.getSign() == rhs.getSign();
-    }
-    else
-    {
-      isEqual = false;
-    }
-    return isEqual;
-  }
-  
-  /*============================================================================
+   /*============================================================================
     operator+=
         unary addition assignment operator overload.
         
@@ -316,7 +293,7 @@ namespace hw4
     Number answer;
     
     // determine which method + or - to use based on the signs
-    if (this->positive == rhs.getSign())
+    if (this->positive == rhs.isPositive())
     {                                                                   
       // equal signs mean magnitude increase
       answer = HugeInt::addSameSign(this->value, rhs.getValue());
@@ -361,12 +338,12 @@ namespace hw4
     bool sign;
     
     // determine which method + or - to use based on the signs
-    if (this->positive != rhs.getSign())
+    if (this->positive != rhs.isPositive())
     {
       answer = HugeInt::addSameSign(this->value, rhs.getValue());
       sign = this->positive;
     }
-    else if (this->positive && rhs.getSign())
+    else if (this->positive && rhs.isPositive())
     {
       answer = HugeInt::subtractSameSign(this->value, rhs.getValue(), sign);
     }
@@ -390,8 +367,7 @@ namespace hw4
   *///==========================================================================
   HugeInt& HugeInt::operator*=(const HugeInt& rhs) // number to multiply by self
   {
-    bool sign = this->positive == rhs.getSign();
-    Number answer = {0};
+    Number sum = {0};
     
     // tens place shift count
     int shift = 0;
@@ -409,27 +385,110 @@ namespace hw4
       
       // multiply the shifted value by the current digit of this
       // then add the result to the answer
-      answer = HugeInt::addSameSign(answer,
-				    HugeInt::multiplyByInt(work, *lhsIT));
+      sum = HugeInt::addSameSign(sum, HugeInt::multiplyByInt(work, *lhsIT));
       
       // shift to the next "tens" place
       ++shift;
     }
     
     // trim extra zeros
-    trimZeros(answer);
+    trimZeros(sum);
     
+    bool sign;
     // check if the answer is 0 and make it positive if true
-    if (answer.size() == 1 and answer[0] == 0)
+    if (sum.size() == 1 and sum[0] == 0)
     {
       sign = true;
+    }
+    else
+    {
+      // same signs yield positive results while differing signs yields negative
+      sign = this->positive == rhs.isPositive();
     }
     
     // assign results
     this->positive = sign;
-    this->value = answer;
+    this->value = sum;
     
     return *this;
+  }
+  
+  /*============================================================================
+    operator/=
+        unary division operator overload
+        
+    Revision History
+        25 June 2015 - Function created
+  *///==========================================================================
+  HugeInt& HugeInt::operator/=(const HugeInt& rhs) // number to divide self by
+  {
+    // if trying to divid by zero.....don't
+    if (rhs.getValue().size() == 1 && rhs.getValue()[0] == 0)
+    {
+      return *this;
+    }
+    
+    // makes positive copy of self
+    HugeInt dividend = *this;
+    dividend.setSign(true);
+    
+    // makes positive copy of rhs
+    HugeInt divisor = rhs;
+    divisor.setSign(true);
+    
+    // subtract divisor from dividend until remainder is less than zero
+    Number subCount = {0};
+    HugeInt remainder = dividend - divisor;
+    
+    while (remainder.isPositive())
+    {
+      subCount = addSameSign(subCount, {1});
+      remainder -= divisor;
+
+      
+    }
+
+    bool sign;
+    // check if the answer is 0 and make it positive if true
+    if (subCount.size() == 1 && subCount[0] == 0)
+    {
+      sign = true;
+    }
+    else
+    {
+      // same signs yield positive results while differing signs yields negative
+      sign = this->positive == rhs.isPositive();
+    }
+    
+    // assign results
+    this->positive = sign;
+    this->value = subCount;
+    
+    return *this;
+  }
+  
+  /*============================================================================
+    operator==
+        logical equality test operator overload
+
+    Revision History
+        28 June 2015 - Function created
+  *///==========================================================================
+  bool operator==(const HugeInt& lhs, // left hand side of equality test
+		  const HugeInt& rhs) // right hand side of equality test
+  {
+    bool isEqual;
+    // only test if values share same number of digits
+    if (lhs.getValue().size() == rhs.getValue().size())
+    {
+      int result = HugeInt::compareSameLength(lhs.getValue(), rhs.getValue());
+      isEqual = result == 0 && lhs.isPositive() == rhs.isPositive();
+    }
+    else
+    {
+      isEqual = false;
+    }
+    return isEqual;
   }
   
   /*============================================================================
@@ -446,7 +505,7 @@ namespace hw4
     std::stringstream ss;
     
     // add negative sign
-    if(!number.getSign())
+    if(!number.isPositive())
     {
       ss << "-";
     }
@@ -477,11 +536,11 @@ namespace hw4
   {
     bool isSmaller;
     // if their signs make this obvious
-    if (lhs.getSign() == true && rhs.getSign() == false)
+    if (lhs.isPositive() == true && rhs.isPositive() == false)
     {
       isSmaller = false;
     }
-    else if (lhs.getSign() == false && rhs.getSign() == true)
+    else if (lhs.isPositive() == false && rhs.isPositive() == true)
     {
       isSmaller = true;
     }
@@ -496,7 +555,7 @@ namespace hw4
         if (result == -1)
         {
           // lhs is positive
-          if (lhs.getSign())
+          if (lhs.isPositive())
           {
             isSmaller = true;
           }
@@ -509,7 +568,7 @@ namespace hw4
         else if (result == 1)
         {
           // lhs is positive
-          if (lhs.getSign())
+          if (lhs.isPositive())
           {
             isSmaller = false;
           }
@@ -527,7 +586,7 @@ namespace hw4
       // if lhs has less digits
       else if (lhs.getValue().size() < rhs.getValue().size())
       {
-        if (lhs.getSign())
+        if (lhs.isPositive())
         {
           isSmaller = true;
         }
@@ -539,7 +598,7 @@ namespace hw4
       // if lhs has more digits
       else
       {
-        if (lhs.getSign())
+        if (lhs.isPositive())
         {
           isSmaller = false;
         }
@@ -560,15 +619,31 @@ namespace hw4
     Revision History
         30 June 2015 - Function created
   *///==========================================================================
-  Number HugeInt::subtractSameSign(const Number& lhsNumber,
-				   const Number& rhsNumber,
-				   bool& sign)
+  Number HugeInt::subtractSameSign(const Number& lhsNumber, // left hand number
+				   const Number& rhsNumber, // right hand number
+				   bool& sign) // returns sign after operation
   {
+    // figure out if the inputs should be reordered
+    bool shouldSwitch = false;
+    if (lhsNumber.size() == rhsNumber.size())
+    { 
+      if (compareSameLength(lhsNumber, rhsNumber) == -1)
+      {
+        shouldSwitch = true;
+      }
+    }
+    else
+    {
+      if (lhsNumber.size() < rhsNumber.size())
+      {
+        shouldSwitch = true;
+      }
+    }
+    
+    // possibly reorder and assign sign
     Number topNumber;
     Number bottomNumber;
-    
-    // figure out the sign
-    if (lhsNumber < rhsNumber)
+    if (shouldSwitch)
     {
       topNumber = rhsNumber;
       bottomNumber = lhsNumber;

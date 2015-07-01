@@ -23,10 +23,14 @@ int main()
   hw4::HugeInt hi3 = 3;
   hw4::HugeInt hi4 = -3;
   
-  hw4::HugeInt hi5("10");
-  hw4::HugeInt hi6("-210");
+  hw4::HugeInt hi5("100");
+  hw4::HugeInt hi6("10");
   
-  std::cout << hi5*hi6 << std::endl;
+  std::cout << "lhs: " << hi5 << std::endl;
+  std::cout << "rhs: " << hi6 << std::endl;
+
+  hw4::HugeInt result = hi5/hi6;
+  std::cout << "division test: " << result << std::endl;
   
   return 0;
 }
