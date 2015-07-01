@@ -69,6 +69,9 @@ namespace hw4
     // addition backend
     static Number addSameSign(const Number& lhsNum, 
                               const Number& rhsNum);
+    
+    // newNumber = number * single
+    static Number multiplyByInt(const Number& number, int single);
       
   }; // class HugeInt
   
@@ -152,6 +155,20 @@ namespace hw4
                            const HugeInt& rhs) // right number
   {
     lhs -= rhs;
+    return lhs;
+  }
+
+  /*============================================================================
+    operator*
+        binary multiplication operator overload
+        
+    Revision History
+        30 June 2015 - Function created
+  *///==========================================================================
+  inline HugeInt operator*(HugeInt lhs, // left hand number
+                           const HugeInt& rhs) // right number
+  {
+    lhs *= rhs;
     return lhs;
   }
 

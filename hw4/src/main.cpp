@@ -23,13 +23,10 @@ int main()
   hw4::HugeInt hi3 = 3;
   hw4::HugeInt hi4 = -3;
   
-  hw4::HugeInt hi5("-700");
-  hw4::HugeInt hi6("700");
+  hw4::HugeInt hi5("10");
+  hw4::HugeInt hi6("-210");
   
-  std::cout << hi5 << std::endl;
-  std::cout << hi6 << std::endl;
-
-  std::cout << hi6 << " - " << hi5 << " = " << hi6+hi5 << std::endl;
+  std::cout << hi5*hi6 << std::endl;
   
   return 0;
 }

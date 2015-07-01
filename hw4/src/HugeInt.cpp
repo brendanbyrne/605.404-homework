@@ -1,6 +1,5 @@
 #include <sstream>
 #include <algorithm> // for_each
-///#include <cstdlib> // atoi
 
 #include "HugeInt.hpp"
 
@@ -132,7 +131,7 @@ namespace hw4
       }
       else
       {
-        lhsValue = 0;
+	lhsValue = 0;
       }
       
       // perform the addition operation
@@ -212,11 +211,12 @@ namespace hw4
     }
 
     return result;
-  }
+  } // compareSameLength
   
   /*============================================================================
     digitizeInt
-        Given an int, this method
+        Given an int, this method reduces the absolute value of it to it's
+	individual digits in ascending order of magnitude
         
     Revision History
         28 June 2015 - Function created
@@ -235,7 +235,49 @@ namespace hw4
       
       number.push_back(digit);
     }
+    
     return number;
+  }
+
+  /*============================================================================
+    multiplyByInt
+        finds the product of a typedef Number and an int, returns it as another
+	typedef Number
+        
+    Revision History
+        30 June 2015 - Function created
+  *///==========================================================================
+  Number HugeInt::multiplyByInt(const Number& number, // Number to multiply
+				int single) // the single digit to multiply
+  {
+    // the output
+    Number total = {0};
+    
+    // for all the components of the number (1's, 10's , 100's, etc.)
+    // multiply them by the single value and then sum them
+    Number::const_iterator numIT;
+    int tensShift = 0;
+    for(numIT = number.begin(); numIT != number.end(); ++numIT)
+    {
+      // pads the beggin
+      Number withPadding(tensShift, 0);
+      
+      // multiply just the digit and single, return the digitized version
+      Number endValue = HugeInt::digitizeInt(*numIT *  single);
+
+      // append newly calculated digits to the padding
+      for (auto digit : endValue)
+      {
+	withPadding.push_back(digit);
+      }      
+      
+      total = HugeInt::addSameSign(total, withPadding);
+      
+      ++tensShift;
+    }
+    
+    return total;
+    
   }
   
   /*============================================================================
@@ -248,22 +290,23 @@ namespace hw4
   bool operator==(const HugeInt& lhs, // left hand side of equality test
 		  const HugeInt& rhs) // right hand side of equality test
   {
+    bool isEqual;
     // only test if values share same number of digits
     if (lhs.getValue().size() == rhs.getValue().size())
     {
       int result = HugeInt::compareSameLength(lhs.getValue(), rhs.getValue());
-      return result == 0 && lhs.getSign() == rhs.getSign();
+      isEqual = result == 0 && lhs.getSign() == rhs.getSign();
     }
     else
     {
-      return false;
+      isEqual = false;
     }
+    return isEqual;
   }
   
   /*============================================================================
     operator+=
-        unary addition assignment operator overload.  Is a member of the 
-        HugeInt class
+        unary addition assignment operator overload.
         
     Revision History
         26 June 2015 - Function created
@@ -272,6 +315,7 @@ namespace hw4
   {    
     Number answer;
     
+    // determine which method + or - to use based on the signs
     if (this->positive == rhs.getSign())
     {                                                                   
       // equal signs mean magnitude increase
@@ -299,15 +343,14 @@ namespace hw4
       this->positive = sign;
     }
     
-    this->setValue(answer);
+    this->value = answer;
 
     return *this;
   }
   
   /*============================================================================
     operator-=
-        unary subtract assignment operator overload.  Is a member of the 
-        HugeInt class
+        unary subtract assignment operator overload.
         
     Revision History
         26 June 2015 - Function created
@@ -317,18 +360,19 @@ namespace hw4
     Number answer;
     bool sign;
     
+    // determine which method + or - to use based on the signs
     if (this->positive != rhs.getSign())
     {
-      answer = addSameSign(this->value, rhs.getValue());
+      answer = HugeInt::addSameSign(this->value, rhs.getValue());
       sign = this->positive;
     }
     else if (this->positive && rhs.getSign())
     {
-      answer = subtractSameSign(this->value, rhs.getValue(), sign);
+      answer = HugeInt::subtractSameSign(this->value, rhs.getValue(), sign);
     }
     else
     {
-      answer = subtractSameSign(rhs.getValue(), this->value, sign);
+      answer = HugeInt::subtractSameSign(rhs.getValue(), this->value, sign);
     }
     
     this->positive = sign;
@@ -337,12 +381,53 @@ namespace hw4
     return *this;
   }  
   
-  HugeInt& HugeInt::operator*=(const HugeInt& rhs)
+  /*============================================================================
+    operator*=
+        unary multication assignment operator overload.
+        
+    Revision History
+        30 June 2015 - Function created
+  *///==========================================================================
+  HugeInt& HugeInt::operator*=(const HugeInt& rhs) // number to multiply by self
   {
     bool sign = this->positive == rhs.getSign();
+    Number answer = {0};
     
+    // tens place shift count
     int shift = 0;
     
+    // for every digit the this number
+    Number::const_iterator lhsIT;
+    for (lhsIT = this->value.begin(); lhsIT != this->value.end(); ++lhsIT)
+    {
+      // shift the right hand number
+      Number work(shift, 0);  
+      for (auto digit : rhs.getValue())
+      {
+	work.push_back(digit);
+      }
+      
+      // multiply the shifted value by the current digit of this
+      // then add the result to the answer
+      answer = HugeInt::addSameSign(answer,
+				    HugeInt::multiplyByInt(work, *lhsIT));
+      
+      // shift to the next "tens" place
+      ++shift;
+    }
+    
+    // trim extra zeros
+    trimZeros(answer);
+    
+    // check if the answer is 0 and make it positive if true
+    if (answer.size() == 1 and answer[0] == 0)
+    {
+      sign = true;
+    }
+    
+    // assign results
+    this->positive = sign;
+    this->value = answer;
     
     return *this;
   }
@@ -465,7 +550,7 @@ namespace hw4
       } // if same number of digits
     } // if their signs are the same
     return isSmaller;
-  }
+  } // operator<
     
   /*============================================================================
     subtractSameSign
@@ -558,7 +643,7 @@ namespace hw4
     trimZeros(answer);
     
     return answer;
-  }
+  } // subtractSameSign
   
   /*============================================================================
     trimZeros
