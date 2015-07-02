@@ -3,9 +3,6 @@
 
 #include "HugeInt.hpp"
 
-//for testing
-#include <iostream>
-
 namespace hw4
 {
   /*============================================================================
@@ -21,13 +18,13 @@ namespace hw4
     
     bool errorOccurred = false;
     
-    std::string::const_reverse_iterator strIT = numberStr.rbegin();
+    std::string::const_reverse_iterator strIter = numberStr.rbegin();
     char digit;
     char rawInput;
-    while (strIT != numberStr.rend())
+    while (strIter != numberStr.rend())
     {
       // the value of the character in ascii
-      rawInput = static_cast<char>(*strIT);
+      rawInput = static_cast<char>(*strIter);
       
       // if negative sign detected
       if (rawInput == '-')
@@ -46,10 +43,10 @@ namespace hw4
       // shift rawInput from ascii domain to number domain
       digit = rawInput - '0';      
       this->value.push_back(digit);
-      ++strIT;
+      ++strIter;
     }
     
-    trimZeros(this->value);
+    HugeInt::trimZeros(this->value);
 
     
     // if there was an error in converting string to number, set to 0
@@ -58,7 +55,7 @@ namespace hw4
       this->value = {0};
       this->positive = true;
     }
-  }
+  } // HugeInt (string)
   
   /*============================================================================
     HugeInt
@@ -69,7 +66,7 @@ namespace hw4
   *///==========================================================================
   HugeInt::HugeInt (const int value) // number to turn into HugeInt
   {
-    
+    // set the sign
     if (value < 0)
     {
       this->positive = false;
@@ -108,16 +105,16 @@ namespace hw4
     int carry = 0;
     int number;
     int digit;
-    Number::const_iterator lhsIT = lhsNum.begin();
-    Number::const_iterator rhsIT = rhsNum.begin();
-    while (lhsIT != lhsNum.end() ||
-           rhsIT != rhsNum.end())
+    Number::const_iterator lhsIter = lhsNum.begin();
+    Number::const_iterator rhsIter = rhsNum.begin();
+    while (lhsIter != lhsNum.end() ||
+           rhsIter != rhsNum.end())
     {
       // get next rhs digit value
-      if (rhsIT != rhsNum.end())
+      if (rhsIter != rhsNum.end())
       {
-        rhsValue = *rhsIT;
-        ++rhsIT;
+        rhsValue = *rhsIter;
+        ++rhsIter;
       }
       else
       {
@@ -125,10 +122,10 @@ namespace hw4
       }
       
       // get next lhs digit value
-      if (lhsIT != lhsNum.end())
+      if (lhsIter != lhsNum.end())
       {
-        lhsValue = *lhsIT;
-        ++lhsIT;
+        lhsValue = *lhsIter;
+        ++lhsIter;
       }
       else
       {
@@ -172,14 +169,14 @@ namespace hw4
     bool rhsLargerMag = false;
     
     // start looking at the most significant digits
-    Number::const_reverse_iterator lhsIT = lhs.rbegin();
-    Number::const_reverse_iterator rhsIT = rhs.rbegin();
-    while (lhsIT != lhs.rend() &&
-           rhsIT != rhs.rend())
+    Number::const_reverse_iterator lhsIter = lhs.rbegin();
+    Number::const_reverse_iterator rhsIter = rhs.rbegin();
+    while (lhsIter != lhs.rend() &&
+           rhsIter != rhs.rend())
     {
-      if (*lhsIT != *rhsIT)
+      if (*lhsIter != *rhsIter)
       {
-        if (*lhsIT > *rhsIT)
+        if (*lhsIter > *rhsIter)
         {
           lhsLargerMag = true;
         }
@@ -191,8 +188,8 @@ namespace hw4
       }
       else
       {
-        lhsIT++;
-        rhsIT++;
+        lhsIter++;
+        rhsIter++;
       }
     } // while have digits
     
@@ -256,15 +253,15 @@ namespace hw4
     
     // for all the components of the number (1's, 10's , 100's, etc.)
     // multiply them by the single value and then sum them
-    Number::const_iterator numIT;
+    Number::const_iterator numIter;
     int tensShift = 0;
-    for(numIT = number.begin(); numIT != number.end(); ++numIT)
+    for(numIter = number.begin(); numIter != number.end(); ++numIter)
     {
       // pads the beggin
       Number withPadding(tensShift, 0);
       
       // multiply just the digit and single, return the digitized version
-      Number endValue = HugeInt::digitizeInt(*numIT *  single);
+      Number endValue = HugeInt::digitizeInt(*numIter *  single);
 
       // append newly calculated digits to the padding
       for (auto digit : endValue)
@@ -373,8 +370,8 @@ namespace hw4
     int shift = 0;
     
     // for every digit the this number
-    Number::const_iterator lhsIT;
-    for (lhsIT = this->value.begin(); lhsIT != this->value.end(); ++lhsIT)
+    Number::const_iterator lhsIter;
+    for (lhsIter = this->value.begin(); lhsIter != this->value.end(); ++lhsIter)
     {
       // shift the right hand number
       Number work(shift, 0);  
@@ -385,14 +382,14 @@ namespace hw4
       
       // multiply the shifted value by the current digit of this
       // then add the result to the answer
-      sum = HugeInt::addSameSign(sum, HugeInt::multiplyByInt(work, *lhsIT));
+      sum = HugeInt::addSameSign(sum, HugeInt::multiplyByInt(work, *lhsIter));
       
       // shift to the next "tens" place
       ++shift;
     }
     
     // trim extra zeros
-    trimZeros(sum);
+    HugeInt::trimZeros(sum);
     
     bool sign;
     // check if the answer is 0 and make it positive if true
@@ -411,7 +408,7 @@ namespace hw4
     this->value = sum;
     
     return *this;
-  }
+  } // operator */
   
   /*============================================================================
     operator/=
@@ -422,7 +419,7 @@ namespace hw4
   *///==========================================================================
   HugeInt& HugeInt::operator/=(const HugeInt& rhs) // number to divide self by
   {
-    // if trying to divid by zero.....don't
+    // if trying to divid by zero.....don't, return the original number
     if (rhs.getValue().size() == 1 && rhs.getValue()[0] == 0)
     {
       return *this;
@@ -444,8 +441,6 @@ namespace hw4
     {
       subCount = addSameSign(subCount, {1});
       remainder -= divisor;
-
-      
     }
 
     bool sign;
@@ -465,7 +460,7 @@ namespace hw4
     this->value = subCount;
     
     return *this;
-  }
+  } // operator /=
   
   /*============================================================================
     operator==
@@ -669,16 +664,16 @@ namespace hw4
     {
       int difference;
       int borrow = 0;
-      Number::iterator topIT = topNumber.begin();
-      Number::iterator botIT = bottomNumber.begin();
-      while (topIT != topNumber.end())
+      Number::iterator topIter = topNumber.begin();
+      Number::iterator bottomIter = bottomNumber.begin();
+      while (topIter != topNumber.end())
       {
         // get next digit for top number
         int topVal;
-        if (topIT != topNumber.end())
+        if (topIter != topNumber.end())
         {
-          topVal = *topIT;
-          ++topIT;
+          topVal = *topIter;
+          ++topIter;
         }
         else
         {
@@ -688,10 +683,10 @@ namespace hw4
         
         // get next digit for bottom number
         int botVal;
-        if (botIT != bottomNumber.end())
+        if (bottomIter != bottomNumber.end())
         {
-          botVal = *botIT;
-          ++botIT;
+          botVal = *bottomIter;
+          ++bottomIter;
         }
         else
         {
@@ -715,7 +710,7 @@ namespace hw4
       } // while still digits to subtract
     } // if numbers equal
     
-    trimZeros(answer);
+    HugeInt::trimZeros(answer);
     
     return answer;
   } // subtractSameSign
@@ -727,15 +722,15 @@ namespace hw4
     Revision History
         25 June 2015 - Function created
   *///==========================================================================
-  void trimZeros(Number& number) // the number to trim zeros from
+  void HugeInt::trimZeros(Number& number) // the number to trim zeros from
   {
     // trim leading zeros, except if the number is just 0
-    Number::iterator digitIT = number.end();
-    --digitIT;
-    while (*digitIT == 0 && digitIT != number.begin())
+    Number::iterator digitIter = number.end();
+    --digitIter;
+    while (*digitIter == 0 && digitIter != number.begin())
     {
-      number.erase(digitIT);
-      --digitIT;
+      number.erase(digitIter);
+      --digitIter;
     }
   }
   

@@ -9,12 +9,11 @@
   
   Class Name: HugeInt
   
-  Intent: Allow integer operations for an number of unlimited size
+  Intent: Allow integer operations on a number of very large size (~10^MAX_SIZE)
   
   Description: The value of the number that a HugeInt holds is represented as a
-               series of digits in a std::deque.  Lower index numbers are higher
-               in order of magnitude.  A conversion constructor for the int type
-               is provide to add in working with
+               series of digits in a std::vector. Lower index numbers are lower
+               in order of magnitude.
 
 *///============================================================================
 
@@ -36,7 +35,7 @@ namespace hw4
     static const int BASE = 10;
 
   public:
-    explicit HugeInt(const std::string& numberStr = "0"); // string
+    HugeInt(const std::string& numberStr = "0"); // string
     HugeInt(const int value); // convertion constructor
     
     // comparison between two numbers of the SAME number of digits
@@ -67,12 +66,15 @@ namespace hw4
     // turns int into aliased Number type
     static Number digitizeInt(int toBeDigitize);
 
+    // newNumber = number * single
+    static Number multiplyByInt(const Number& number, int single);
+
     static Number subtractSameSign(const Number& lhsNum, 
                                    const Number& rhsNum,
 				   bool& sign); // subtraction backend
     
-    // newNumber = number * single
-    static Number multiplyByInt(const Number& number, int single);
+    // remove leading zeros from a number
+    static void trimZeros(Number& number);
     
   }; // class HugeInt
   
@@ -199,9 +201,6 @@ namespace hw4
   {
     this->value = value;
   }
-
-  // remove leading zeros from a number
-  void trimZeros(Number& number);
 
 } // namespace hw4
 
