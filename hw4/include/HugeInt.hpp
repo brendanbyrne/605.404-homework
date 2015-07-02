@@ -42,7 +42,7 @@ namespace hw4
     // returns -1 if lhs  < rhs
     //          0 if lhs == rhs
     //          1 if lhs  > rhs
-    static int compareSameLength(const Number& lhs, const Number& rhs);
+    static int compareNumbers(const Number& lhs, const Number& rhs);
 
     bool isPositive() const; // positive data member getter
     Number getValue() const; // value data member getter
@@ -54,7 +54,8 @@ namespace hw4
     HugeInt& operator-=(const HugeInt& rhs);
     HugeInt& operator*=(const HugeInt& rhs);
     HugeInt& operator/=(const HugeInt& rhs);
-    
+
+
   private:
     Number value; // the vectored digits of the number, {lower -> higher}
     bool positive; // sign of the number, positive is true
@@ -62,22 +63,37 @@ namespace hw4
     // addition backend
     static Number addSameSign(const Number& lhsNum, 
                               const Number& rhsNum);
-
+    
     // turns int into aliased Number type
     static Number digitizeInt(int toBeDigitize);
+    
+    // a naive subtraction based division
+    static Number divideSameSign(const Number& lhs, const Number& rhs);
 
+    // use long divison to divide two HugeInts
+    static Number longDivision(Number dividend, const Number& divisor);  
+    
     // newNumber = number * single
     static Number multiplyByInt(const Number& number, int single);
-
+    
+    // multiply 2 Numbers together
+    static Number multiplySameSign(const Number& lhs, const Number& rhs);
+    
+    // subtract two Numbers, return sign by reference
     static Number subtractSameSign(const Number& lhsNum, 
                                    const Number& rhsNum,
-				   bool& sign); // subtraction backend
+				   bool& sign);
     
     // remove leading zeros from a number
     static void trimZeros(Number& number);
     
   }; // class HugeInt
   
+  // binary operator overloads
+  std::ostream& operator<<(std::ostream& out, const HugeInt& value);
+  bool operator==(const HugeInt& lhs, const HugeInt& rhs);
+  bool operator<(const HugeInt& lhs, const HugeInt& rhs);
+
   /*============================================================================
     getSign
         return the sign of the number, true is positive
@@ -101,11 +117,6 @@ namespace hw4
   {
     return this->value;
   }
-  
-  // binary operator overloads
-  std::ostream& operator<<(std::ostream& out, const HugeInt& value);
-  bool operator==(const HugeInt& lhs, const HugeInt& rhs);
-  bool operator<(const HugeInt& lhs, const HugeInt& rhs);
   
   /*============================================================================
     operator>

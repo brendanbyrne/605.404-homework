@@ -16,6 +16,7 @@
 *///============================================================================
 
 #include <iostream>
+#include <iomanip>
 #include <string>
 
 #include "HugeInt.hpp"
@@ -24,30 +25,140 @@ int main()
 {
   hw4::HugeInt bigInt;
   hw4::HugeInt result;
+  std::string strMath;
+  int intMath;
+  std::string testTitle;
+  std::string operatorStr;
   
-  std::cout << "Addition test" << std::endl;
-  bigInt = std::string("1000000000100000000001000000000010000000000100000000001000000000010000000000");
-  std::string strAdd = "9";
+  // Tests of the addition operator
+  bigInt = std::string("100000000000000000000000000000000000000000000000000000000090");
+  strMath = "9";
+  intMath = 10;
   
-  result = bigInt + strAdd;
-  std::cout << bigInt << " + " << strAdd << " = " << result << "\n" << std::endl;
-    
-  result = strAdd + bigInt;
-  std::cout << strAdd << " + " << bigInt << " = " << result << "\n" << std::endl;
+  testTitle = "Addition Tests";
+  operatorStr = "+";
+  std::cout << std::string(80, '=') << std::endl;
+  std::cout << std::setw(40 + testTitle.size()/2) << testTitle << std::endl;
+  std::cout << std::string(80, '=') << std::endl;
+
+  std::cout << "HugeInt " << operatorStr << " string" << std::endl;
+  result = bigInt + strMath;
+  std::cout << bigInt << " " << operatorStr << " " << strMath << " = " << "\n"
+            << result << "\n" << std::endl;
+
+  std::cout << "string " << operatorStr << " HugeInt" << std::endl;
+  result = strMath + bigInt;
+  std::cout << strMath << " " << operatorStr << " " << bigInt << " = " << "\n"
+            << "    " << result << "\n" << std::endl;
+
+  std::cout << "HugeInt " << operatorStr << " int" << std::endl;
+  result = bigInt + intMath;
+  std::cout << bigInt << " " << operatorStr << " " << intMath << " = " << "\n"
+            << result << "\n" << std::endl;
+
+  std::cout << "int " << operatorStr << " HugeInt" << std::endl;
+  result = intMath + bigInt;
+  std::cout << intMath << " " << operatorStr << " " << bigInt << " = " << "\n"
+            << "     " << result << "\n" << std::endl;
   
 
-  std::cout << "Subtraction test" << std::endl;
-  bigInt = std::string("10000000000000000000000000000000000000000000000000000000000000000000000");
-  std::cout << "Number of digits in bigInt: " << bigInt.getValue().size() << std::endl;
+  
+  // Tests of the subtraction operator
+  bigInt = std::string("100000000000000000000000000000000000000000000000000000000000");
+  strMath = "10";
+  intMath = 1;
+  
+  testTitle = "Subtraction Tests";
+  operatorStr = "-";
+  std::cout << std::string(80, '=') << std::endl;
+  std::cout << std::setw(40 + testTitle.size()/2) << testTitle << std::endl;
+  std::cout << std::string(80, '=') << std::endl;
+  
+  std::cout << "HugeInt " << operatorStr << " string" << std::endl;
+  result = bigInt - strMath;
+  std::cout << bigInt << " " << operatorStr << " " << strMath << " = " << "\n" 
+            << " " << result << "\n" << std::endl;
 
-  int intSub = 1;
+  std::cout << "string " << operatorStr << " HugeInt" << std::endl;
+  result = strMath - bigInt;
+  std::cout << strMath << " " << operatorStr << " " << bigInt << " = " << "\n"
+            << "     " << result << "\n" << std::endl;
+
+  std::cout << "HugeInt " << operatorStr << " int" << std::endl;
+  result = bigInt - intMath;
+  std::cout << bigInt << " " << operatorStr << " " << intMath << " = " << "\n"
+            << " " << result << "\n" << std::endl;
+
+  std::cout << "int " << operatorStr << " HugeInt" << std::endl;
+  result = intMath - bigInt;
+  std::cout << intMath << " " << operatorStr << " " << bigInt << " = " << "\n"
+            << "    " << result << "\n" << std::endl;
+
   
-  result = bigInt - intSub;
-  std::cout << "Number of digits in result: " << result.getValue().size() << std::endl;
-  std::cout << bigInt << " - " << intSub << " = " << result << "\n" << std::endl;
+  // Tests of the multiplication operator
+  bigInt = std::string("100000000000000000010000000000030000000060000000000000000000");
+  strMath = "-11";
+  intMath = 2;
   
-  result = intSub - bigInt;
-  std::cout << intSub << " - " << bigInt << " = " << result << "\n" << std::endl;
+  testTitle = "Multiplication Tests";
+  operatorStr = "*";
+  std::cout << std::string(80, '=') << std::endl;
+  std::cout << std::setw(40 + testTitle.size()/2) << testTitle << std::endl;
+  std::cout << std::string(80, '=') << std::endl;
   
-    return 0;
-}
+  std::cout << "HugeInt " << operatorStr << " string" << std::endl;
+  result = bigInt * strMath;
+  std::cout << bigInt << " " << operatorStr << " " << strMath << " = " << "\n" 
+            << "" << result << "\n" << std::endl;
+
+  std::cout << "string " << operatorStr << " HugeInt" << std::endl;
+  result = strMath * bigInt;
+  std::cout << strMath << " " << operatorStr << " " << bigInt << " = " << "\n"
+            << "    " << result << "\n" << std::endl;
+
+  std::cout << "HugeInt " << operatorStr << " int" << std::endl;
+  result = bigInt * intMath;
+  std::cout << bigInt << " " << operatorStr << " " << intMath << " = " << "\n"
+            << "" << result << "\n" << std::endl;
+
+  std::cout << "int " << operatorStr << " HugeInt" << std::endl;
+  result = intMath * bigInt;
+  std::cout << intMath << " " << operatorStr << " " << bigInt << " = " << "\n"
+            << "    " << result << "\n" << std::endl;
+  
+  
+  // Tests of the division operator
+  bigInt = std::string("100000000000000000000000000000000000000060000000000000000000");
+  strMath = "3";
+  intMath = -5;
+  
+  testTitle = "Division Tests";
+  operatorStr = "/";
+  std::cout << std::string(80, '=') << std::endl;
+  std::cout << std::setw(40 + testTitle.size()/2) << testTitle << std::endl;
+  std::cout << std::string(80, '=') << std::endl;
+  
+  std::cout << "HugeInt " << operatorStr << " string" << std::endl;
+  result = bigInt / strMath;
+  std::cout << bigInt << " " << operatorStr << " " << strMath << " = " << "\n" 
+            " " << result << "\n" << std::endl;
+
+  std::cout << "string " << operatorStr << " HugeInt" << std::endl;
+  result = strMath / bigInt;
+  std::cout << strMath << " " << operatorStr << " " << bigInt << " = " << "\n"
+            << result << "\n" << std::endl;
+
+  std::cout << "HugeInt " << operatorStr << " int" << std::endl;
+  result = bigInt / intMath;
+  std::cout << bigInt << " " << operatorStr << " " << intMath << " = " << "\n"
+            << result << "\n" << std::endl;
+
+  std::cout << "int " << operatorStr << " HugeInt" << std::endl;
+  result = intMath / bigInt;
+  std::cout << intMath << " " << operatorStr << " " << bigInt << " = " << "\n"
+            << " " << result << "\n" << std::endl;
+  
+  
+  
+  return 0;
+} // main

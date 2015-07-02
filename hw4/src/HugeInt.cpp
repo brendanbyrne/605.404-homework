@@ -151,7 +151,7 @@ namespace hw4
   } // addSameSign
   
   /*============================================================================
-    compareSameLength
+    compareNumbers
         Assumes the the input Numbers both have the same number of digits.
         Returns 0 if the numbers are equal in magnitude, -1 if the second input
         is larger, and 1 if the first input is larger.
@@ -159,47 +159,58 @@ namespace hw4
     Revision History
         28 June 2015 - Function created
   *///==========================================================================
-                                 // first value to use in comparison
-  int HugeInt::compareSameLength(const Number& lhs,
-                                 // second value to use in comparison
-                                 const Number& rhs)
-  {    
-    // does the lhs or rhs have the larger magnitude of value
-    bool lhsLargerMag = false;
-    bool rhsLargerMag = false;
-    
-    // start looking at the most significant digits
-    Number::const_reverse_iterator lhsIter = lhs.rbegin();
-    Number::const_reverse_iterator rhsIter = rhs.rbegin();
-    while (lhsIter != lhs.rend() &&
-           rhsIter != rhs.rend())
+                              // first value to use in comparison
+  int HugeInt::compareNumbers(const Number& lhs,
+                              // second value to use in comparison
+                              const Number& rhs)
+  { 
+    int result;
+    if (lhs.size() == rhs.size())
     {
-      if (*lhsIter != *rhsIter)
+      // does the lhs or rhs have the larger magnitude of value
+      bool lhsLargerMag = false;
+      bool rhsLargerMag = false;
+      
+      // start looking at the most significant digits
+      Number::const_reverse_iterator lhsIter = lhs.rbegin();
+      Number::const_reverse_iterator rhsIter = rhs.rbegin();
+      while (lhsIter != lhs.rend() &&
+             rhsIter != rhs.rend())
       {
-        if (*lhsIter > *rhsIter)
+        if (*lhsIter != *rhsIter)
         {
-          lhsLargerMag = true;
+          if (*lhsIter > *rhsIter)
+          {
+            lhsLargerMag = true;
+          }
+          else
+          {
+            rhsLargerMag = true;
+          }
+          break;
         }
         else
         {
-          rhsLargerMag = true;
+          lhsIter++;
+          rhsIter++;
         }
-        break;
+      } // while have digits
+      
+      // if equal
+      if (lhsLargerMag == rhsLargerMag)
+      {
+        result = 0;
+      }
+      else if (lhsLargerMag)
+      {
+        result = 1;
       }
       else
       {
-        lhsIter++;
-        rhsIter++;
+        result = -1;
       }
-    } // while have digits
-    
-    int result;
-    // if equal
-    if (lhsLargerMag == rhsLargerMag)
-    {
-      result = 0;
-    }
-    else if (lhsLargerMag)
+    } // if same length
+    else if (lhs.size() > rhs.size())
     {
       result = 1;
     }
@@ -207,9 +218,9 @@ namespace hw4
     {
       result = -1;
     }
-
+    
     return result;
-  } // compareSameLength
+  } // compareNumbers
   
   /*============================================================================
     digitizeInt
@@ -236,20 +247,111 @@ namespace hw4
     
     return number;
   }
+    
+  /*============================================================================
+    divideSameSign
+        divides two Number typedefs using a naive subtraction only based
+        approach. Returns another Number typedef, no sign math is done here.
+        While this can technically solve all HugeInt division problems, it is 
+        much slower than the long division technique.    
+        
+    Revision History
+    1 July 2015 - Function created
+  *///==========================================================================
+  Number HugeInt::divideSameSign(const Number& dividend, // number to divide
+                                 const Number& divisor) // number to divide by
+  {
+    // subtract divisor from dividend until remainder is less than zero
+    bool isPositive;
+    Number count = {0};
+    Number remainder = HugeInt::subtractSameSign(dividend, divisor, isPositive);
+    
+    while (isPositive)
+    {
+      count = addSameSign(count, {1});
+      remainder = HugeInt::subtractSameSign(remainder, divisor, isPositive);
+    }
+    
+    return count;
+  }
+  
+  /*============================================================================
+    longDivision
+        Solve the division of two Number typedefs by the process of long
+        division.  This does not do any sign math and returns another
+        Number typedef
+        
+    Revision History
+        2 July 2015 - Function created
+  *///==========================================================================
+  Number HugeInt::longDivision (Number dividend, // left hand side of division
+                                const Number& divisor) // the right hand side
+  {
+    Number answer = {0};
+
+    // don't do division if the answer will floor to zero
+    if (HugeInt::compareNumbers(dividend, divisor) == -1)
+    {
+      return answer;
+    }
+    
+    Number shiftedCount; // answer to division sub problem
+    Number change; // the total amount to change the dividend after a sub problem
+    Number section; // the dividend of the shifted division sub problem
+    bool sign; // the used sign container needed for the subtraction
+    
+    do
+    {
+      // guess correct ten's shift by subtracting number of digits
+      int shift = dividend.size() - divisor.size();
+      section = Number(dividend.begin()+shift, dividend.end());
+      
+      // while section < divisor
+      while (HugeInt::compareNumbers(section, divisor) == -1)
+      {
+        --shift;
+        section = Number(dividend.begin()+shift, dividend.end());        
+      }
+      
+      // solve the shifted sub division problem
+      shiftedCount = HugeInt::divideSameSign(section,
+                                             divisor);
+      
+      // unshift the count back out of the sub problem domain
+      Number count(shift, 0);
+      for (auto digit : shiftedCount)
+      {
+        count.push_back(digit);
+      }
+      
+      // add the, now unshifted, count to the answer
+      answer = HugeInt::addSameSign(answer, count);
+      
+      // find the amount to change dividend by
+      change = HugeInt::multiplySameSign(count, divisor);
+      
+      // apply the calculated delta
+      dividend = HugeInt::subtractSameSign(dividend, change, sign);
+                                               
+      // while dividend > divisor
+    } while (HugeInt::compareNumbers(dividend, divisor) == 1);
+    
+    return answer;
+  } // long division
 
   /*============================================================================
     multiplyByInt
         finds the product of a typedef Number and an int, returns it as another
-	typedef Number
+        typedef Number
         
     Revision History
         30 June 2015 - Function created
   *///==========================================================================
   Number HugeInt::multiplyByInt(const Number& number, // Number to multiply
-				int single) // the single digit to multiply
+				int single) // single digit to multiply by
   {
     // the output
-    Number total = {0};
+    Number sum = {0};
     
     // for all the components of the number (1's, 10's , 100's, etc.)
     // multiply them by the single value and then sum them
@@ -269,21 +371,62 @@ namespace hw4
 	withPadding.push_back(digit);
       }      
       
-      total = HugeInt::addSameSign(total, withPadding);
+      sum = HugeInt::addSameSign(sum, withPadding);
       
       ++tensShift;
     }
     
-    return total;
+    return sum;
     
   }
   
-   /*============================================================================
-    operator+=
-        unary addition assignment operator overload.
+  /*============================================================================
+    multiplySameSign
+        Multiplies two Number typedefs using the long multiplication method.
+        Returns another Number typedef, no sign math done here.
         
     Revision History
-        26 June 2015 - Function created
+        30 June 2015 - Function created
+  *///==========================================================================
+  Number HugeInt::multiplySameSign(const Number& lhs, // left hand side number
+                                   const Number& rhs) // right hand side number
+  {
+    Number sum = {0};
+    
+    // tens place shift count
+    int shift = 0;
+    
+    // for every digit the this number
+    Number::const_iterator lhsIter;
+    for (lhsIter = lhs.begin(); lhsIter != lhs.end(); ++lhsIter)
+    {
+      // shift the right hand number
+      Number work(shift, 0);  
+      for (auto digit : rhs)
+      {
+	work.push_back(digit);
+      }
+      
+      // multiply the shifted value by the current digit of this
+      // then add the result to the answer
+      sum = HugeInt::addSameSign(sum, HugeInt::multiplyByInt(work, *lhsIter));
+      
+      // shift to the next "tens" place
+      ++shift;
+    }
+    
+    // trim extra zeros
+    HugeInt::trimZeros(sum);
+    
+    return sum;
+  }
+
+  /*============================================================================
+    operator+=
+    unary addition assignment operator overload.
+        
+    Revision History
+    26 June 2015 - Function created
   *///==========================================================================
   HugeInt& HugeInt::operator+=(const HugeInt& rhs) // number to add to self
   {    
@@ -324,10 +467,10 @@ namespace hw4
   
   /*============================================================================
     operator-=
-        unary subtract assignment operator overload.
+    unary subtract assignment operator overload.
         
     Revision History
-        26 June 2015 - Function created
+    26 June 2015 - Function created
   *///==========================================================================
   HugeInt& HugeInt::operator-=(const HugeInt& rhs)//number to subtract from self
   {    
@@ -357,43 +500,19 @@ namespace hw4
   
   /*============================================================================
     operator*=
-        unary multication assignment operator overload.
+    unary multication assignment operator overload.
         
     Revision History
-        30 June 2015 - Function created
+    30 June 2015 - Function created
   *///==========================================================================
   HugeInt& HugeInt::operator*=(const HugeInt& rhs) // number to multiply by self
   {
-    Number sum = {0};
     
-    // tens place shift count
-    int shift = 0;
-    
-    // for every digit the this number
-    Number::const_iterator lhsIter;
-    for (lhsIter = this->value.begin(); lhsIter != this->value.end(); ++lhsIter)
-    {
-      // shift the right hand number
-      Number work(shift, 0);  
-      for (auto digit : rhs.getValue())
-      {
-	work.push_back(digit);
-      }
-      
-      // multiply the shifted value by the current digit of this
-      // then add the result to the answer
-      sum = HugeInt::addSameSign(sum, HugeInt::multiplyByInt(work, *lhsIter));
-      
-      // shift to the next "tens" place
-      ++shift;
-    }
-    
-    // trim extra zeros
-    HugeInt::trimZeros(sum);
+    Number product = multiplySameSign(this->value, rhs.getValue());
     
     bool sign;
     // check if the answer is 0 and make it positive if true
-    if (sum.size() == 1 and sum[0] == 0)
+    if (product.size() == 1 and product[0] == 0)
     {
       sign = true;
     }
@@ -405,47 +524,27 @@ namespace hw4
     
     // assign results
     this->positive = sign;
-    this->value = sum;
+    this->value = product;
     
     return *this;
-  } // operator */
+  }
   
   /*============================================================================
     operator/=
-        unary division operator overload
+    unary division operator overload
         
     Revision History
-        25 June 2015 - Function created
+    25 June 2015 - Function created
   *///==========================================================================
   HugeInt& HugeInt::operator/=(const HugeInt& rhs) // number to divide self by
   {
-    // if trying to divid by zero.....don't, return the original number
-    if (rhs.getValue().size() == 1 && rhs.getValue()[0] == 0)
-    {
-      return *this;
-    }
     
-    // makes positive copy of self
-    HugeInt dividend = *this;
-    dividend.setSign(true);
+    // due to potentially big number, use long division method
+    Number quotient = HugeInt::longDivision(this->getValue(), rhs.getValue());
     
-    // makes positive copy of rhs
-    HugeInt divisor = rhs;
-    divisor.setSign(true);
-    
-    // subtract divisor from dividend until remainder is less than zero
-    Number subCount = {0};
-    HugeInt remainder = dividend - divisor;
-    
-    while (remainder.isPositive())
-    {
-      subCount = addSameSign(subCount, {1});
-      remainder -= divisor;
-    }
-
     bool sign;
     // check if the answer is 0 and make it positive if true
-    if (subCount.size() == 1 && subCount[0] == 0)
+    if (quotient.size() == 1 && quotient[0] == 0)
     {
       sign = true;
     }
@@ -457,33 +556,23 @@ namespace hw4
     
     // assign results
     this->positive = sign;
-    this->value = subCount;
+    this->value = quotient;
     
     return *this;
-  } // operator /=
+  }
   
   /*============================================================================
     operator==
-        logical equality test operator overload
+    logical equality test operator overload
 
     Revision History
-        28 June 2015 - Function created
+    28 June 2015 - Function created
   *///==========================================================================
   bool operator==(const HugeInt& lhs, // left hand side of equality test
 		  const HugeInt& rhs) // right hand side of equality test
   {
-    bool isEqual;
-    // only test if values share same number of digits
-    if (lhs.getValue().size() == rhs.getValue().size())
-    {
-      int result = HugeInt::compareSameLength(lhs.getValue(), rhs.getValue());
-      isEqual = result == 0 && lhs.isPositive() == rhs.isPositive();
-    }
-    else
-    {
-      isEqual = false;
-    }
-    return isEqual;
+    int result = HugeInt::compareNumbers(lhs.getValue(), rhs.getValue());
+    return result == 0 && lhs.isPositive() == rhs.isPositive();
   }
   
   /*============================================================================
@@ -541,45 +630,11 @@ namespace hw4
     }
     // if they have the same sign
     else
-    {      
-      // if they have the same number of digits
-      if (lhs.getValue().size() == rhs.getValue().size())
-      {
-        int result = HugeInt::compareSameLength(lhs.getValue(), rhs.getValue());
-        // rhs is larger
-        if (result == -1)
-        {
-          // lhs is positive
-          if (lhs.isPositive())
-          {
-            isSmaller = true;
-          }
-          else
-          {
-            isSmaller = false;
-          }
-        }	
-        //  lhs is larger
-        else if (result == 1)
-        {
-          // lhs is positive
-          if (lhs.isPositive())
-          {
-            isSmaller = false;
-          }
-          else
-          {
-            isSmaller = true;
-          }
-        }
-        // if they are equal
-        else
-        {
-          isSmaller = false;
-        }// if result
-      }
-      // if lhs has less digits
-      else if (lhs.getValue().size() < rhs.getValue().size())
+    {
+      int result = HugeInt::compareNumbers(lhs.getValue(), rhs.getValue());
+      
+      // if rhs has larger magnitude
+      if (result == -1)
       {
         if (lhs.isPositive())
         {
@@ -590,7 +645,13 @@ namespace hw4
           isSmaller = false;
         }
       }
-      // if lhs has more digits
+      // if they have equal magnitudes
+      else if (result == 0)
+      {
+        // since signs must be equal, they must be equal
+        isSmaller = false;
+      }
+      // if lhs has larger magnitude
       else
       {
         if (lhs.isPositive())
@@ -601,8 +662,9 @@ namespace hw4
         {
           isSmaller = true;
         }
-      } // if same number of digits
-    } // if their signs are the same
+      }
+    } // if signs don't match
+    
     return isSmaller;
   } // operator<
     
@@ -614,48 +676,37 @@ namespace hw4
     Revision History
         30 June 2015 - Function created
   *///==========================================================================
-  Number HugeInt::subtractSameSign(const Number& lhsNumber, // left hand number
-				   const Number& rhsNumber, // right hand number
+  Number HugeInt::subtractSameSign(const Number& lhs, // left hand number
+				   const Number& rhs, // right hand number
 				   bool& sign) // returns sign after operation
   {
     // figure out if the inputs should be reordered
-    bool shouldSwitch = false;
-    if (lhsNumber.size() == rhsNumber.size())
-    { 
-      if (compareSameLength(lhsNumber, rhsNumber) == -1)
-      {
-        shouldSwitch = true;
-      }
-    }
-    else
-    {
-      if (lhsNumber.size() < rhsNumber.size())
-      {
-        shouldSwitch = true;
-      }
-    }
-    
+    // switch ordering of numbers if rhs > lhs
+    bool shouldSwitch = HugeInt::compareNumbers(lhs, rhs) == -1;
+    int result = HugeInt::compareNumbers(lhs, rhs);
+
     // possibly reorder and assign sign
     Number topNumber;
     Number bottomNumber;
     if (shouldSwitch)
     {
-      topNumber = rhsNumber;
-      bottomNumber = lhsNumber;
+      topNumber = rhs;
+      bottomNumber = lhs;
       
       sign = false;
     }
     else
     {
-      topNumber = lhsNumber;
-      bottomNumber = rhsNumber;
+      topNumber = lhs;
+      bottomNumber = rhs;
       
       sign = true;
     }
     
     // if numbers are equal make answer 0
+    // this exploits the std::vector == overload
     Number answer;
-    if (lhsNumber == rhsNumber)
+    if (lhs == rhs)
     {
       answer = {0};
     }
