@@ -1,9 +1,10 @@
 // BillParser.cpp
 
 #include <fstream>
-#include <algorithm> // any_of
+#include <algorithm> // any_of, copy, all_of
 
 #include <boost/algorithm/string.hpp> // split, is_any_of
+#include <boost/algorithm/string/join.hpp> // join
 
 #include "BillParser.hpp"
 
@@ -42,51 +43,90 @@ namespace hw5
         4 July, 2015 - function created
   *///==========================================================================
   bool BillParser::parseLine(const std::string& line,  // the line to parse
-			     Tokens& tokens) // container for parsed tokens
+			     ParseOutput& output) // /container for parsed tokens
   {    
-    // determine if the line has a product description
-    bool hasDescription = std::any_of(line.begin(), line.end(),
-				      [](char letter)
-				      {
-					return letter == '"';
-				      });
+    // parse the line as if it's a csv
+    Tokens tokens;
+    boost::split(tokens, line, boost::is_any_of(","));
+        
+    // is this a full line
+    bool allLinesFull = std::all_of(tokens.begin(), tokens.end(),
+				    [](std::string str)
+				    {
+				      return str.size() != 0;
+				    });
     
-    std::string delimiters;
-    std::string description;
-    
-    // parse the description section if it ex
-    if (hasDescription)
+    // attempt to parse full line or just part of it
+    if (allLinesFull)
     {
-      delimiters = "\"";
-      Tokens descripTokens;
-      boost::split(descripTokens, line, boost::is_any_of(delimiters));
+      output[BillParser::QUANTITY_INDEX] = tokens[BillParser::QUANTITY_INDEX];
+
+      std::string partNumber = tokens[BillParser::PART_INDEX];
       
-      // extract the part description from the tokens
-      description = descripTokens[1];
-    }
-    
-    // parse the line around commas
-    delimiters = ",";
-    boost::split(tokens, line, boost::is_any_of(delimiters));
-    
-    if (hasDescription)
-    {
-      tokens[2] = description;
-    
-    
-      // remove extra whitespace from product number
-      std::string::iterator strIter;
-      std::cout << "tokens[1]: >" << tokens[1] << "<" << std::endl;
-      for (strIter = tokens[1].begin(); strIter != tokens[1].end(); ++strIter)
+      // remove spaces from the beginning of the part number
+      std::string::iterator partIter = partNumber.begin();
+      while (partIter != partNumber.end() &&
+	     *partIter == ' ')
       {
-	if (*strIter == ' ')
-	{
-	  tokens[1].erase(strIter);
-	}
+	partNumber.erase(partIter++);
+      }
+
+      // remove spaces from the beginning of the part number
+      partIter = partNumber.end();
+      --partIter;
+      while (partIter != partNumber.begin() &&
+	     *partIter == ' ')
+      {
+	partNumber.erase(partIter--);
+      }
+      
+      output[BillParser::PART_INDEX] = partNumber;
+      
+      // determine if the line has a product description
+      bool hasQuotes = std::any_of(line.begin(), line.end(),
+				   [](char letter)
+				   {
+				     return letter == '"' ;
+				   });
+    
+      // build description
+      std::string description;
+      if (hasQuotes)
+      {
+	// split text around quotations
+	Tokens quoteTokens;
+	boost::split(quoteTokens, line, boost::is_any_of("\""));
+      
+	// remove the empty strings
+	Tokens::iterator newEnd;
+	newEnd = std::remove_if(quoteTokens.begin(), quoteTokens.end(),
+				[](std::string str)
+				{
+				  return str.size() == 0;
+				});
+      
+	// copy the product description from the tokens
+	Tokens descriptionParts(newEnd - (quoteTokens.begin() + 1));
+	std::copy(quoteTokens.begin()+1, newEnd, descriptionParts.begin());
+      
+	// stitch the description back together
+	description = boost::join(descriptionParts, "\"");
+      
+	output[BillParser::DESCRIPTION_INDEX] = description;
+      }
+      else
+      {
+	output[BillParser::DESCRIPTION_INDEX] = 
+	  tokens[BillParser::DESCRIPTION_INDEX];
       }
     }
+    else
+    {
+      output[BillParser::NAME_INDEX] = tokens[BillParser::NAME_INDEX];
+    } // if a full line
+
+    return allLinesFull;
     
-    return hasDescription;
   } // parseLine
   
   /*============================================================================
@@ -112,34 +152,34 @@ namespace hw5
     {
       // variables used in parsing
       std::string line;
-      Tokens parsedLine;
+      ParseOutput parsedLine;
       bool goodLine;
+      bool isValid;
       int quantity;
       
       // get the name of the bill
       getline(file, line);
       BillParser::cleanLine(line);
       parseLine(line, parsedLine);
-      output.name = parsedLine[0];
+      output.name = parsedLine[BillParser::NAME_INDEX];
+      std::cout << "Bill Name: " << output.name << std::endl;
       
       // continue parsing till EOF
-      int j = 0;
-      while (getline(file, line) && j++ < 5)
+      int i = 0;
+      while (getline(file, line) && i++ < 10)
       {
 	cleanLine(line);
-	goodLine = BillParser::parseLine(line, parsedLine);
+	goodLine = parseLine(line, parsedLine);
+	isValid = validInt(parsedLine[BillParser::QUANTITY_INDEX].c_str(), quantity);
+	//std::cout << "goodLine: " << goodLine << " isValid: " << isValid << std::endl;
 	
-	for (auto i : parsedLine)
+	// if the line was sucessfully parsed & first value correctly converted
+	if (goodLine && isValid)
 	{
-	  std::cout << ">" << i << "<" << std::endl;
-	}
-
-	if (goodLine && BillParser::validInt(parsedLine[0].c_str(), quantity))
-	{
-	  std::cout << "size: " << parsedLine.size() << std::endl;
-	  
-	  // clean the product description
-	  cleanLine(parsedLine[2]);
+	  std::cout << ">" << parsedLine[BillParser::QUANTITY_INDEX] << "< >"
+	    	    << parsedLine[BillParser::PART_INDEX] << "< >"
+	    	    << parsedLine[BillParser::DESCRIPTION_INDEX]
+		    << "<" << std::endl;
 	  
 	  //output.materialList
 	}
