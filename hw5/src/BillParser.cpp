@@ -21,10 +21,10 @@ namespace hw5
   {    
     // delete carriage return
     if (std::any_of(line.begin(), line.end(),
-		    [](char str)
-		    {
-		      return str == '\r';
-		    }))
+                    [](char str)
+                    {
+                      return str == '\r';
+                    }))
     {
       line.pop_back();
     }
@@ -39,7 +39,7 @@ namespace hw5
         4 July, 2015 - function created
   *///==========================================================================
   bool BillParser::parseLine(const std::string& line,  // the line to parse
-			     ParseOutput& output) // container for parsed tokens
+                             ParseOutput& output) // container for parsed tokens
   {
     // parse the line as if it's a csv
     Tokens tokens;
@@ -68,58 +68,58 @@ namespace hw5
       // remove spaces from the beginning of the part number
       std::string::iterator partIter = partNumber.begin();
       while (partIter != partNumber.end() &&
-	     *partIter == ' ')
+             *partIter == ' ')
       {
-	partNumber.erase(partIter++);
+        partNumber.erase(partIter++);
       }
 
       // remove spaces from the beginning of the part number
       partIter = partNumber.end();
       --partIter;
       while (partIter != partNumber.begin() &&
-	     *partIter == ' ')
+             *partIter == ' ')
       {
-	partNumber.erase(partIter--);
+        partNumber.erase(partIter--);
       }
       
       output[BillParser::PART_INDEX] = partNumber;
       
       // determine if the line has a product description
       bool hasQuotes = std::any_of(line.begin(), line.end(),
-				   [](char letter)
-				   {
-				     return letter == '"' ;
-				   });
+                                   [](char letter)
+                                   {
+                                     return letter == '"' ;
+                                   });
     
       // build description
       std::string description;
       if (hasQuotes)
       {
-	// split text around quotations
-	Tokens quoteTokens;
-	boost::split(quoteTokens, line, boost::is_any_of("\""));
+        // split text around quotations
+        Tokens quoteTokens;
+        boost::split(quoteTokens, line, boost::is_any_of("\""));
       
-	// remove the empty strings
-	Tokens::iterator newEnd;
-	newEnd = std::remove_if(quoteTokens.begin(), quoteTokens.end(),
-				[](std::string str)
-				{
-				  return str.size() == 0;
-				});
+        // remove the empty strings
+        Tokens::iterator newEnd;
+        newEnd = std::remove_if(quoteTokens.begin(), quoteTokens.end(),
+                                [](std::string str)
+                                {
+                                  return str.size() == 0;
+                                });
       
-	// copy the product description from the tokens
-	Tokens descriptionParts(newEnd - (quoteTokens.begin() + 1));
-	std::copy(quoteTokens.begin()+1, newEnd, descriptionParts.begin());
+        // copy the product description from the tokens
+        Tokens descriptionParts(newEnd - (quoteTokens.begin() + 1));
+        std::copy(quoteTokens.begin()+1, newEnd, descriptionParts.begin());
       
-	// stitch the description back together
-	description = boost::join(descriptionParts, "\"");
+        // stitch the description back together
+        description = boost::join(descriptionParts, "\"");
       
-	output[BillParser::DESCRIPTION_INDEX] = description;
+        output[BillParser::DESCRIPTION_INDEX] = description;
       }
       else
       {
-	output[BillParser::DESCRIPTION_INDEX] = 
-	  tokens[BillParser::DESCRIPTION_INDEX];
+        output[BillParser::DESCRIPTION_INDEX] = 
+          tokens[BillParser::DESCRIPTION_INDEX];
       }
     }
     else
@@ -173,18 +173,18 @@ namespace hw5
       while (getline(file, line) && i++ < 100)
       {
         // clean input and attempt to parse
-	cleanLine(line);
-	goodLine = parseLine(line, parsedLine);
-	isValid = validInt(parsedLine[BillParser::QUANTITY_INDEX], quantity);
-	
-	// if the line was sucessfully parsed & first value correctly converted
-	if (goodLine && isValid)
-	{
+        cleanLine(line);
+        goodLine = parseLine(line, parsedLine);
+        isValid = validInt(parsedLine[BillParser::QUANTITY_INDEX], quantity);
+        
+        // if the line was sucessfully parsed & first value correctly converted
+        if (goodLine && isValid)
+        {
           partNumber = parsedLine[BillParser::PART_INDEX];
           partDescription = parsedLine[BillParser::DESCRIPTION_INDEX];
-          	  
+                  
           output.materialList.insert({partNumber, {quantity, partDescription}});
-	}
+        }
       } // while still data in file
     }
     else
@@ -204,7 +204,7 @@ namespace hw5
         4 July, 2015 - function created
   *///==========================================================================
   bool BillParser::validInt(const std::string& input, // string to convert 
-			    int& output) // output of the convertion process
+                            int& output) // output of the convertion process
   {
     bool successful;
     
