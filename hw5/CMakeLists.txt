@@ -34,7 +34,8 @@ include_directories(include
 
 set(SOURCE_FILES
         src/main.cpp
-	src/BillParser.cpp)
+	src/BillParser.cpp
+        src/Part.cpp)
 
 add_executable(bom ${SOURCE_FILES})
 

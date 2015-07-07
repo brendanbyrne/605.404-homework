@@ -8,10 +8,6 @@
 
 #include "BillParser.hpp"
 
-// testing only
-#include <iostream>
-
-
 namespace hw5
 {
   /*============================================================================
@@ -37,28 +33,34 @@ namespace hw5
   /*============================================================================
     parseLine
         parse a line of text around comma delimiters and return a status of true
-	if all fields are not empty
+        if all fields are not empty
 
     Revision History
         4 July, 2015 - function created
   *///==========================================================================
   bool BillParser::parseLine(const std::string& line,  // the line to parse
-			     ParseOutput& output) // /container for parsed tokens
-  {    
+			     ParseOutput& output) // container for parsed tokens
+  {
     // parse the line as if it's a csv
     Tokens tokens;
     boost::split(tokens, line, boost::is_any_of(","));
-        
+    
     // is this a full line
-    bool allLinesFull = std::all_of(tokens.begin(), tokens.end(),
-				    [](std::string str)
-				    {
-				      return str.size() != 0;
-				    });
+    bool lineIsFull = std::all_of(tokens.begin(), tokens.end(),
+                                  [](std::string str)
+                                  {
+                                    return str.size() != 0;
+                                  });
     
     // attempt to parse full line or just part of it
-    if (allLinesFull)
+    if (lineIsFull)
     {
+      // try to fix this hole
+      if (tokens.size() < 3)
+      {
+        return false;
+      }
+      
       output[BillParser::QUANTITY_INDEX] = tokens[BillParser::QUANTITY_INDEX];
 
       std::string partNumber = tokens[BillParser::PART_INDEX];
@@ -125,14 +127,14 @@ namespace hw5
       output[BillParser::NAME_INDEX] = tokens[BillParser::NAME_INDEX];
     } // if a full line
 
-    return allLinesFull;
+    return lineIsFull;
     
   } // parseLine
   
   /*============================================================================
     parse
         parse a csv file containing the bill of materials for a particular kit.
-	the output is a struct containing the name and data of the kit
+        the output is a struct containing the name and data of the kit
 
     Revision History
         4 July, 2015 - function created
@@ -148,6 +150,7 @@ namespace hw5
     // attempt to open the input csv file
     std::ifstream file(filePath);
     
+    // if file successfully opened
     if (file)
     {
       // variables used in parsing
@@ -156,35 +159,33 @@ namespace hw5
       bool goodLine;
       bool isValid;
       int quantity;
+      std::string partNumber;
+      std::string partDescription;
       
       // get the name of the bill
       getline(file, line);
       BillParser::cleanLine(line);
       parseLine(line, parsedLine);
       output.name = parsedLine[BillParser::NAME_INDEX];
-      std::cout << "Bill Name: " << output.name << std::endl;
       
       // continue parsing till EOF
       int i = 0;
-      while (getline(file, line) && i++ < 10)
+      while (getline(file, line) && i++ < 100)
       {
+        // clean input and attempt to parse
 	cleanLine(line);
 	goodLine = parseLine(line, parsedLine);
-	isValid = validInt(parsedLine[BillParser::QUANTITY_INDEX].c_str(), quantity);
-	//std::cout << "goodLine: " << goodLine << " isValid: " << isValid << std::endl;
+	isValid = validInt(parsedLine[BillParser::QUANTITY_INDEX], quantity);
 	
 	// if the line was sucessfully parsed & first value correctly converted
 	if (goodLine && isValid)
 	{
-	  std::cout << ">" << parsedLine[BillParser::QUANTITY_INDEX] << "< >"
-	    	    << parsedLine[BillParser::PART_INDEX] << "< >"
-	    	    << parsedLine[BillParser::DESCRIPTION_INDEX]
-		    << "<" << std::endl;
-	  
-	  //output.materialList
+          partNumber = parsedLine[BillParser::PART_INDEX];
+          partDescription = parsedLine[BillParser::DESCRIPTION_INDEX];
+          	  
+          output.materialList.insert({partNumber, {quantity, partDescription}});
 	}
-      }
-      
+      } // while still data in file
     }
     else
     {
@@ -197,18 +198,18 @@ namespace hw5
   /*============================================================================
     validInt
         attempt to convert a string to an int, returning whether or not it was
-	success.  The number itself is returned by reference
+        success.  The number itself is returned by reference
 
     Revision History
         4 July, 2015 - function created
   *///==========================================================================
-  bool BillParser::validInt(const char* input,
-			    int& output)
+  bool BillParser::validInt(const std::string& input, // string to convert 
+			    int& output) // output of the convertion process
   {
     bool successful;
     
     // attempt to convert a string to an int
-    output = std::atoi(input);
+    output = std::atoi(input.c_str());
     
     if (output != 0)
     {
