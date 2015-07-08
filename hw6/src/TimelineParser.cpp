@@ -47,9 +47,9 @@ namespace hw6
     Revision History
         7 July 2015 - Function created
   *///==========================================================================
-  Group TimelineParser::parse(std::string filePath)
+  Line TimelineParser::parse(std::string filePath)
   {
-    Group output;
+    Line output;
     
     // reset the error flags
     this->fileFlag = false;
@@ -64,7 +64,7 @@ namespace hw6
       
       while (getline(file, line))
       {
-        output.push_back(parseLine(line));
+        output.push(parseLine(line));
       }
       
     }

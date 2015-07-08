@@ -21,7 +21,7 @@ namespace hw6
     endFloor(goalFloor)
   {
   }
-
+  
   /*============================================================================
     operator<<
         insertion operator overload

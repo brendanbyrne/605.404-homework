@@ -25,13 +25,10 @@
 
 namespace hw6
 {
-  
-  typedef std::vector<Passenger> Group;
-
   class TimelineParser
   {
   public:
-    Group parse(std::string filepath); // parse file at path
+    Line parse(std::string filepath); // parse file at path
     
     bool getFileFlag(); // returns value of fileFlag
     

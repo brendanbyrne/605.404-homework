@@ -19,11 +19,12 @@
 #define PASSENGER_HPP
 
 #include <ostream>
+#include <queue>
 
 namespace hw6
 {
   class Passenger
-  {
+  {    
   public:
     Passenger(int arrivalTime = 0, 
               int goalTime = 0,
@@ -45,6 +46,10 @@ namespace hw6
     int endFloor; // floor number that passenger is trying to get to 
   }; // class Passenger
   
+  // convenience typedefs for working with collections of class
+  typedef std::queue<Passenger> Line;
+  typedef std::vector<Passenger> Group;
+
   // insertion overload 
   std::ostream& operator<<(std::ostream& out, Passenger passenger);
   

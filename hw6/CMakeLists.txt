@@ -35,7 +35,10 @@ include_directories(include
 set(SOURCE_FILES
         src/main.cpp
         src/Passenger.cpp
-        src/TimelineParser.cpp)
+        src/TimelineParser.cpp
+        src/Floor.cpp
+        src/Elevator.cpp
+        src/Simulation.cpp)
 
 add_executable(sim ${SOURCE_FILES})
 
