@@ -52,15 +52,10 @@ namespace hw6
         this->hasBuilding &&
         this->hasElevators)
     {
-      std::cout << "starting simulation" << std::endl;
       while (stillSimulating())
       {
         tick();
       }
-    }
-    else
-    {
-      std::cout << "Can't run simulation" << std::endl;
     }
     
     return averageTime;
@@ -75,7 +70,42 @@ namespace hw6
   *///==========================================================================
   bool Simulator::stillSimulating()
   {
-    return false;
+    // are there any people still waiting to ride an elevator
+    bool shouldContinue = people.size() > 0;
+    
+    // check all floors for people still waiting
+    Building::iterator floorIter = this->building.begin();
+    while (!shouldContinue &&
+           floorIter != this->building.end())
+    {
+      if (floorIter->getGoingUp().size() > 0 ||
+          floorIter->getGoingDown().size() > 0)
+      {
+        shouldContinue = true;
+      }
+      else
+      {
+        // check next floor
+        ++floorIter;
+      }
+    }
+    
+    // check all elevators for people still riding
+    Elevators::iterator elevatorIter = this->elevators.begin();
+    while (!shouldContinue &&
+           elevatorIter != this->elevators.end())
+    {
+      if (elevatorIter->getOnBoard().size() > 0)
+      {
+        shouldContinue = true;
+      }
+      else
+      {
+        ++elevatorIter;
+      }
+    }
+    
+    return shouldContinue;
   }
   
   /*============================================================================

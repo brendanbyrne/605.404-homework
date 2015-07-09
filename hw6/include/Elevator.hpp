@@ -18,27 +18,33 @@
 #ifndef ELEVATOR_HPP
 #define ELEVATOR_HPP
 
-#include <array>
+#include <vector>
 
 #include "Passenger.hpp"
 
 namespace hw6
 { 
+  // contains the riders of the elevator
+  typedef std::vector<Passenger> Occupents;
+  
   class Elevator
-  {
-    // contains the riders of the elevator
-    typedef std::array<Passenger, 8> Occupents;
-    
+  {  
   public:
     enum State {MOVING, STOPPING, STOPPED};
     enum Direction {NONE, UP, DOWN};
-
-    Elevator(const int startFloor = 0,
-             const int timeToFloor = 8,
+    
+    Elevator(const int timeToFloor = 8,
+             const int startFloor = 0,
              const int stopTime = 2,
              const State state = STOPPED,
              const Direction direction = NONE);
-
+    
+    void board(const Passenger& passenger); // let passenger to board    
+    Occupents exit(); // have passengers attempt to exit
+    
+    // getters
+    Occupents getOnBoard() const;
+    
   private:
     int currentFloor; // current location of the elevator
     Occupents onBoard; // people that are on the elevator
@@ -48,7 +54,32 @@ namespace hw6
     Direction direction; // current direction of the ele
     
   }; // Elevator
-
+  
+  /*============================================================================
+    board
+        add passenger to elevator
+        
+    Revision History
+        9 July 2015 - Function created
+  *///==========================================================================
+  //                          passenger trying to board
+  inline void Elevator::board(const Passenger& passenger)
+  {
+    onBoard.push_back(passenger);    
+  }
+  
+  /*============================================================================
+    getOnBoard
+        returns value of onBoard data member
+        
+    Revision History
+        8 July 2015 - Function created
+  *///==========================================================================
+  inline Occupents Elevator::getOnBoard() const
+  {
+    return this->onBoard;
+  }
+  
 } // namespace hw6
 
 #endif // ELEVATOR_HPP
