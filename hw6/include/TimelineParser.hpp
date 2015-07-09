@@ -33,13 +33,16 @@ namespace hw6
     bool getFileFlag(); // returns value of fileFlag
     
   private:
-    bool fileFlag; // error flag
+    bool fileFlag; // file opening flag
+    bool lineFlag; // line parsing flag
     
+    // csv column layout
     static const int TIME_INDEX = 0;
     static const int START_INDEX = 1;
     static const int GOAL_INDEX = 2;
    
-    Passenger parseLine(std::string line); // parse csv line to passenger object
+    // parse csv line to passenger object
+    bool parseLine(std::string& line, Passenger& passenger);
     
   }; // class TimelineParser
   

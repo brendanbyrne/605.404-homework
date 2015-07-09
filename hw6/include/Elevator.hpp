@@ -23,20 +23,20 @@
 #include "Passenger.hpp"
 
 namespace hw6
-{
-  
-  typedef std::array<Passenger, 8> Occupents;
-  
+{ 
   class Elevator
   {
+    // contains the riders of the elevator
+    typedef std::array<Passenger, 8> Occupents;
+    
   public:
-    enum State {MOVE, STOP};
+    enum State {MOVING, STOPPING, STOPPED};
     enum Direction {NONE, UP, DOWN};
 
     Elevator(const int startFloor = 0,
              const int timeToFloor = 8,
              const int stopTime = 2,
-             const State state = STOP,
+             const State state = STOPPED,
              const Direction direction = NONE);
 
   private:

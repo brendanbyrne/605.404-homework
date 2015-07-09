@@ -28,27 +28,40 @@
 
 namespace hw6
 {
-  class Simulator
-  {
-    // convenience aliases
-    typedef std::vector<Elevator> Elevators;
-    typedef std::vector<Floor> Building;
+  // convenience aliases
+  typedef std::vector<Elevator> Elevators;
+  typedef std::vector<Floor> Building;
     
+  class Simulator
+  { 
   public:
     Simulator(); // default constructor
     Simulator(const Line& people,
                const Building& building,
                const Elevators& elevators); // full constructor
     
+    // starts the simulation
+    double start();
+    
+    // setters
     void setBuilding(const Building& building);
     void setElevators(const Elevators& elevators);
-    void setPeople(const Line& people);
+    void setPeople(const Line& people) ;
     
   private:
+    // simulation variables
     Line people;
-    Elevators elevators;
     Building building;
-
+    Elevators elevators;
+    
+    // outcome of data checks
+    bool hasPeople;
+    bool hasBuilding;
+    bool hasElevators;
+    
+    bool stillSimulating(); // tests the system for a termination state
+    void tick(); // advances the simulation one time unit
+    
   }; // class Simulator
 
   /*============================================================================

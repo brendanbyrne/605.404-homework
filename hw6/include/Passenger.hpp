@@ -34,10 +34,14 @@ namespace hw6
     // getters
     int getEndFloor();
     int getEndTime();
-    int getStartTime();
     int getStartFloor();
-
-    void setEndTime(const int time); // set endTime data member
+    int getStartTime();
+    
+    // setters
+    Passenger& setEndFloor(const int floorNumber);
+    Passenger& setEndTime(const int time);
+    Passenger& setStartFloor(const int floorNumber);
+    Passenger& setStartTime(const int time);
     
   private:
     int startTime; // time when passenger arrives at the starting floor
@@ -102,15 +106,55 @@ namespace hw6
   }
 
   /*============================================================================
+    setEndFloor
+        set the value of the endFloor data member
+
+    Revision History
+        8 July 2015 - Function created
+  *///==========================================================================
+  inline Passenger& Passenger::setEndFloor(const int floor)
+  {
+    this->endFloor = floor;
+    return *this;
+  }
+
+  /*============================================================================
     setEndTime
         set the value of the endTime data member
 
     Revision History
         7 July 2015 - Function created
   *///==========================================================================
-  inline void Passenger::setEndTime(const int time)
+  inline Passenger& Passenger::setEndTime(const int time)
   {
     this->endTime = time;
+    return *this;
+  }
+  
+  /*============================================================================
+    setStartFloor
+        set the value of the startFloor data member
+
+    Revision History
+        8 July 2015 - Function created
+  *///==========================================================================
+  inline Passenger& Passenger::setStartFloor(const int floor)
+  {
+    this->startFloor = floor;
+    return *this;
+  }
+  
+  /*============================================================================
+    setStartTime
+        set the value of the startTime data member
+
+    Revision History
+        8 July 2015 - Function created
+  *///==========================================================================
+  inline Passenger& Passenger::setStartTime(const int time)
+  {
+    this->startTime = time;
+    return *this;
   }
   
 } // namespace hw6

@@ -16,8 +16,11 @@ namespace hw6
     Revision History
         7 July 2015 - Function created
   *///==========================================================================
-  Passenger TimelineParser::parseLine(std::string line) // csv line from file
+  bool TimelineParser::parseLine(std::string& line, // csv line
+                                 Passenger& passenger)
   {
+    bool successful = true;
+    
     // delete carrige return
     if (std::any_of(line.begin(), line.end(),
                     [](char str) -> bool
@@ -31,13 +34,30 @@ namespace hw6
     std::vector<std::string> tokens;
     boost::split(tokens, line, boost::is_any_of(","));
     
-    int time = std::atoi(tokens[TimelineParser::TIME_INDEX].c_str());
-    int start = std::atoi(tokens[TimelineParser::START_INDEX].c_str());
-    int goal = std::atoi(tokens[TimelineParser::GOAL_INDEX].c_str());
+
+    int time;
+    int start;
+    int goal;
     
-    Passenger passenger(time, start, goal);    
+    // try to parse the line
+    try
+    {
+      time = std::stoi(tokens[TimelineParser::TIME_INDEX]);
+      start = std::stoi(tokens[TimelineParser::START_INDEX]);
+      goal = std::stoi(tokens[TimelineParser::GOAL_INDEX]);
+      
+      // minus 1 to convert to 0 indexed system.
+      passenger.setStartTime(time)
+               .setStartFloor(start - 1)
+               .setEndFloor(goal - 1);
+    }
+    //abort if any error occurs
+    catch (...)
+    {
+      successful = false;
+    }
  
-    return passenger;
+    return successful;
   }
   
   /*============================================================================
@@ -53,6 +73,7 @@ namespace hw6
     
     // reset the error flags
     this->fileFlag = false;
+    this->lineFlag = false;
     
     std::ifstream file(filePath);
     
@@ -62,10 +83,26 @@ namespace hw6
       
       getline(file, line); // skip header
       
+      Passenger passenger;
+      bool lineSuccessful;
+      
       while (getline(file, line))
       {
-        output.push(parseLine(line));
-      }
+        lineSuccessful = parseLine(line, passenger);
+        if (lineSuccessful)
+        {
+          output.push(passenger);
+        }
+        else
+        {
+          // flag not already set
+          if (!this->lineFlag)
+          {
+            // raise the flag
+            this->lineFlag= true;
+          }
+        } // lineSuccessful
+      }// while
       
     }
     else
