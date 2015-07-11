@@ -24,48 +24,61 @@
 
 namespace hw6
 { 
-  // contains the riders of the elevator
-  typedef std::vector<Passenger> Occupents;
-  
   class Elevator
   {  
   public:
     enum State {MOVING, STOPPING, STOPPED};
     enum Direction {NONE, UP, DOWN};
     
-    Elevator(const int timeToFloor = 8,
+    Elevator(const int timeToFloor = 10,
              const int startFloor = 0,
              const int stopTime = 2,
-             const State state = STOPPED,
-             const Direction direction = NONE);
+	     const int capacity = 8,
+             State state = STOPPED,
+             Direction direction = NONE); // constructor
     
-    void board(const Passenger& passenger); // let passenger to board    
-    Occupents exit(); // have passengers attempt to exit
-    
+    void board(const Passenger& passenger); // let passenger on board
+    bool hasRoom() const; // return if elevator has room
+    Group exit(); // have passengers attempt to exit
+
     // getters
-    Occupents getOnBoard() const;
+    Group getOnBoard() const;
     
+    void stateMachine();
+
   private:
-    int currentFloor; // current location of the elevator
-    Occupents onBoard; // people that are on the elevator
     int timeToFloor; // time it takes to move to an adjacent floor
     int stopTime; // time it takes to come to complete stop
+    int capacity; // maximum number of passengers allowed on
+    
+    // location is broken up into two parts the floor and
+    // how much the elevator is aligned with the floor, 0 is aligned
+    int currentFloor; // current location of the elevator
+    int currentAlignment; // [0 - timeToFloor-1]
+    int goalFloor; // where the elevator is trying to go
+    Group onBoard; // people that are on the elevator    
+    int stopProgress; // [0 - stopTime-1]
     State state; // current state of the elevator
-    Direction direction; // current direction of the ele
+    Direction direction; // current direction of the elevator
+    
+    void handleMoving(); // what to do when the state is MOVING
+    void handleStopping(); // what to do when the state is STOPPING
+    void handleStopped(); // what to do when the state is STOPPED
+    void move(); // move elevator one unit in it's current direction
+    void updateGoalFloor(); // given current riders, finds closest desired floor
     
   }; // Elevator
-  
+
   /*============================================================================
-    board
-        add passenger to elevator
-        
+    hasRoom
+        returns true if the elevator has room
+
     Revision History
         9 July 2015 - Function created
   *///==========================================================================
-  //                          passenger trying to board
-  inline void Elevator::board(const Passenger& passenger)
+  inline bool Elevator::hasRoom() const
   {
-    onBoard.push_back(passenger);    
+    return this->onBoard.size() < this->capacity;
   }
   
   /*============================================================================
@@ -75,11 +88,11 @@ namespace hw6
     Revision History
         8 July 2015 - Function created
   *///==========================================================================
-  inline Occupents Elevator::getOnBoard() const
+  inline Group Elevator::getOnBoard() const
   {
     return this->onBoard;
   }
   
-} // namespace hw6
+} // Namespace hw6
 
 #endif // ELEVATOR_HPP

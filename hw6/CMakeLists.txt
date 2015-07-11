@@ -38,7 +38,7 @@ set(SOURCE_FILES
         src/TimelineParser.cpp
         src/Floor.cpp
         src/Elevator.cpp
-        src/Simulation.cpp)
+        src/Simulator.cpp)
 
 add_executable(sim ${SOURCE_FILES})
 

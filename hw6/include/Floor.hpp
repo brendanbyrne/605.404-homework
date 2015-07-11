@@ -31,18 +31,22 @@ namespace hw6
     
     // getters
     int getFloorNumber() const;
-    Group getGoingUp() const;
-    Group getGoingDown() const;
+    Line getGoingUp() const;
+    Line getGoingDown() const;
+    
+    Passenger getOnUp(); // have going up passenger get on elevator
+    Passenger getOnDown(); // have going down passenger get on elevator
+    void waitInLine(const Passenger& passenger); // have passenger wait in line
     
   private:
-    int floorNumber; // what number the floor is
-    Group goingUp; // the group of people who want to go up
-    Group goingDown; // the group of people who
+    const int floorNumber; // what number the floor is
+    Line goingUp; // a line of people who want to go up
+    Line goingDown; // a line of people who want to go down
     
   }; // class Floor
   
   // output overloads
-  std::ostream& operator<<(std::ostream& out, const Group& group);
+  std::ostream& operator<<(std::ostream& out, Line line);
   std::ostream& operator<<(std::ostream& out, const Floor& floor);
 
   /*============================================================================
@@ -64,7 +68,7 @@ namespace hw6
     Revision History
         8 July 2015 - Function created
   *///==========================================================================
-  inline Group Floor::getGoingDown() const
+  inline Line Floor::getGoingDown() const
   {
     return this->goingDown;
   }
@@ -76,10 +80,38 @@ namespace hw6
     Revision History
         8 July 2015 - Function created
   *///==========================================================================
-  inline Group Floor::getGoingUp() const
+  inline Line Floor::getGoingUp() const
   {
     return this->goingUp;
   }
+  
+  /*============================================================================
+    getOnUp
+        return next person in line going up
+        
+    Revision History
+        9 July 2015 - Function created
+  *///==========================================================================
+  inline Passenger Floor::getOnUp()
+  {
+    Passenger passenger = this->goingUp.front();
+    this->goingUp.pop();
+    return passenger;
+  }
+  
+  /*============================================================================
+    getOnDown
+        return next person in line going down
+        
+    Revision History
+        9 July 2015 - Function created
+  *///==========================================================================
+  inline Passenger Floor::getOnDown()
+  {
+    Passenger passenger = this->goingDown.front();
+    this->goingDown.pop();
+    return passenger;
+  }  
   
 } // namespace hw6
 

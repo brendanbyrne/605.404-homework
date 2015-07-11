@@ -40,24 +40,26 @@ namespace hw6
                const Building& building,
                const Elevators& elevators); // full constructor
     
-    // starts the simulation
-    double start();
-    
     // setters
     void setBuilding(const Building& building);
     void setElevators(const Elevators& elevators);
     void setPeople(const Line& people) ;
+
+    void start(); // starts the simulation
     
   private:
     // simulation variables
     Line people;
     Building building;
     Elevators elevators;
+    int simTime;
+    std::vector<int> waitTimes;
     
     // outcome of data checks
     bool hasPeople;
     bool hasBuilding;
     bool hasElevators;
+    
     
     bool stillSimulating(); // tests the system for a termination state
     void tick(); // advances the simulation one time unit

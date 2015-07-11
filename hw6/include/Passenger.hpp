@@ -32,10 +32,10 @@ namespace hw6
               int goalFloor = 0); // constructor
     
     // getters
-    int getEndFloor();
-    int getEndTime();
-    int getStartFloor();
-    int getStartTime();
+    int getEndFloor() const;
+    int getEndTime() const;
+    int getStartFloor() const;
+    int getStartTime() const;
     
     // setters
     Passenger& setEndFloor(const int floorNumber);
@@ -64,7 +64,7 @@ namespace hw6
     Revision History
         7 July 2015 - Function created
   *///==========================================================================
-  inline int Passenger::getEndFloor()
+  inline int Passenger::getEndFloor() const
   {
     return this->endFloor;
   }
@@ -76,7 +76,7 @@ namespace hw6
     Revision History
         7 July 2015 - Function created
   *///==========================================================================
-  inline int Passenger::getEndTime()
+  inline int Passenger::getEndTime() const
   {
     return this->endTime;
   }
@@ -88,7 +88,7 @@ namespace hw6
     Revision History
         7 July 2015 - Function created
   *///==========================================================================
-  inline int Passenger::getStartFloor()
+  inline int Passenger::getStartFloor() const
   {
     return this->startFloor;
   }
@@ -100,7 +100,7 @@ namespace hw6
     Revision History
         7 July 2015 - Function created
   *///==========================================================================
-  inline int Passenger::getStartTime()
+  inline int Passenger::getStartTime() const
   {
     return this->startTime;
   }

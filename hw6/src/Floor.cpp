@@ -29,20 +29,21 @@ namespace hw6
         8 July 2015 - Function created
   *///==========================================================================
   std::ostream& operator<<(std::ostream& out, // desired output stream
-                           const Group& group) // object to display
+                           Line line) // object to display
   {
     // set up string receiving container
     std::vector<std::string> strPassVect;
-    strPassVect.reserve(group.size());
+    strPassVect.reserve(line.size());
     
-    // add string representation of  passengers to the vector
-    std::for_each(group.begin(), group.end(),
-                  [&strPassVect](const Passenger& pass)
-                  {
-                    std::stringstream ss;
-                    ss << pass;
-                    strPassVect.push_back(ss.str());
-                  });
+    // retrieve all items from the queue
+    while (!line.empty())
+    {
+      std::stringstream ss;
+      ss << line.front();
+      line.pop();
+      
+      strPassVect.push_back(ss.str());
+    }
     
     out << boost::algorithm::join(strPassVect, " ");
     
@@ -66,6 +67,27 @@ namespace hw6
         << "    " << floor.getGoingDown();
     
     return out;
+  }
+
+  /*============================================================================
+    waitInLine
+        add passenger to a line
+        
+    Revision History
+        9 July 2015 - Function created
+  *///==========================================================================
+  void Floor::waitInLine(const Passenger& passenger) // person needing elevator
+  {
+    int direction = passenger.getEndFloor() - passenger.getStartFloor();
+    
+    if (direction > 0)
+    {
+      this->goingUp.push(passenger);
+    }
+    else if (direction < 0)
+    {
+      this->goingDown.push(passenger);
+    }
   }
                            
 } // namespace hw6

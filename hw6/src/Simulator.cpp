@@ -1,5 +1,6 @@
 // Simulator.cpp
 
+#include <algorithm>
 #include <iostream>
 
 #include "Simulator.hpp"
@@ -34,7 +35,9 @@ namespace hw6
   { 
     this->hasPeople    = people.size()    != 0 ? true : false;
     this->hasBuilding  = building.size()  != 0 ? true : false;
-    this->hasElevators = elevators.size() != 0 ? true : false;    
+    this->hasElevators = elevators.size() != 0 ? true : false;
+
+    this->waitTimes.reserve(people.size());
   }
   
   /*============================================================================
@@ -44,26 +47,28 @@ namespace hw6
     Revision History
         8 July 2015 - Function created
   *///==========================================================================
-  double Simulator::start()
+  void Simulator::start()
   {
-    double averageTime = 0.0;
-    
     if (this->hasPeople &&
         this->hasBuilding &&
         this->hasElevators)
     {
+      // reset the simulation clock
+      this->simTime = 0;
+
+      // run simulation till its termination condition has been reached
       while (stillSimulating())
       {
         tick();
+	
+	++this->simTime;
       }
     }
-    
-    return averageTime;
   }
   
   /*============================================================================
     stillSimulating
-        returns true if the simulation still needs to be run
+        checks simulation for a termination condition
         
     Revision History
         8 July 2015 - Function created
@@ -71,21 +76,20 @@ namespace hw6
   bool Simulator::stillSimulating()
   {
     // are there any people still waiting to ride an elevator
-    bool shouldContinue = people.size() > 0;
+    bool shouldContinue = !people.empty();
     
     // check all floors for people still waiting
     Building::iterator floorIter = this->building.begin();
     while (!shouldContinue &&
            floorIter != this->building.end())
     {
-      if (floorIter->getGoingUp().size() > 0 ||
-          floorIter->getGoingDown().size() > 0)
+      if (floorIter->getGoingUp().empty() ||
+          floorIter->getGoingDown().empty())
       {
         shouldContinue = true;
       }
       else
       {
-        // check next floor
         ++floorIter;
       }
     }
@@ -117,6 +121,19 @@ namespace hw6
   *///==========================================================================
   void Simulator::tick()
   {
+    std::cout << "Tick tock " << this->simTime << std::endl;
+
+    // find people that need to enter the simulation now
+    // and add them to their floor
+    Group assignToFloor;
+    while (people.front().getStartTime() == this->simTime)
+    {
+      building[people.front().getStartFloor()].waitInLine(people.front());
+      people.pop();
+    }
+    
+    //controller.advance()
+
   }
   
 } // namespace hw6
