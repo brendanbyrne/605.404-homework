@@ -19,30 +19,40 @@
 #define ELEVATOR_HPP
 
 #include <vector>
+#include <queue>
 
 #include "Passenger.hpp"
 
 namespace hw6
 { 
+  // pulled outside because passenger and elevators have an up/down value
+  enum class Direction {NONE, UP, DOWN};
+  
+  // aliases for handling elevator requests
+  typedef std::pair<int, Direction> Request;
+  typedef std::queue<Request> Requests;
+  
   class Elevator
   {  
   public:
-    enum State {MOVING, STOPPING, STOPPED};
-    enum Direction {NONE, UP, DOWN};
+    enum class State {MOVING, STOPPING, STOPPED};
     
     Elevator(const int timeToFloor = 10,
              const int startFloor = 0,
              const int stopTime = 2,
 	     const int capacity = 8,
-             State state = STOPPED,
-             Direction direction = NONE); // constructor
+             State state = State::STOPPED,
+             Direction direction = Direction::NONE); // constructor
     
     void board(const Passenger& passenger); // let passenger on board
     bool hasRoom() const; // return if elevator has room
     Group exit(); // have passengers attempt to exit
 
     // getters
+    int getCurrentFloor() const;
+    int getGoalFloor() const;
     Group getOnBoard() const;
+    State getState() const;
     
     void stateMachine();
 
@@ -71,7 +81,7 @@ namespace hw6
 
   // convenience aliases
   typedef std::vector<Elevator> Elevators;
-
+  
   /*============================================================================
     hasRoom
         returns true if the elevator has room
@@ -85,6 +95,30 @@ namespace hw6
   }
   
   /*============================================================================
+    getCurrentFloor
+        returns value of currentFloor data member
+        
+    Revision History
+        8 July 2015 - Function created
+  *///==========================================================================
+  inline int Elevator::getCurrentFloor() const
+  {
+    return this->currentFloor;
+  }
+  
+  /*============================================================================
+    getGoalFloor
+        returns value of goalFloor data member
+        
+    Revision History
+        8 July 2015 - Function created
+  *///==========================================================================
+  inline int Elevator::getGoalFloor() const
+  {
+    return this->goalFloor;
+  }
+  
+  /*============================================================================
     getOnBoard
         returns value of onBoard data member
         
@@ -94,6 +128,18 @@ namespace hw6
   inline Group Elevator::getOnBoard() const
   {
     return this->onBoard;
+  }
+  
+  /*============================================================================
+    getState
+        returns value of currentFloor data member
+        
+    Revision History
+        8 July 2015 - Function created
+  *///==========================================================================
+  inline Elevator::State Elevator::getState() const
+  {
+    return this->state;
   }
   
 } // Namespace hw6

@@ -38,7 +38,8 @@ namespace hw6
     
     void addPerson(const Passenger& person); // put a passenger on a floor
     bool isEmpty(); // any passengers on a floor or in a elevator
-    
+    void carryOutCommands(); // actualize the commands from the controller
+
     // getters
     Elevators getElevators() const;
     Floors getFloors() const;

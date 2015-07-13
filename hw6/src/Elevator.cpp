@@ -27,7 +27,7 @@ namespace hw6
     capacity(capacity),
     state(state),
     direction(direction)
-  { 
+  {
   }
 
   /*============================================================================
@@ -55,7 +55,7 @@ namespace hw6
   {
     Group leaving;
     
-    if (this->state == STOPPED &&
+    if (this->state == State::STOPPED &&
 	this->currentAlignment == 0)
     {
       Group::iterator iter;
@@ -73,14 +73,20 @@ namespace hw6
     return leaving;
   }
  
-  
+  /*============================================================================
+    handleMoving
+        move the elevator until it reaches the goalFloor
+        
+    Revision History
+        11 July 2015 - Function created
+  *///==========================================================================
   void Elevator::handleMoving()
   {
     // if aligned with currentFloor and has
     if (currentAlignment == 0 &&
-	this->hasRoom())
+	this->currentFloor == this->goalFloor)
     {
-      
+      this->state = State::STOPPING;
     }
     else
     {
@@ -100,19 +106,26 @@ namespace hw6
     ++this->stopProgress;
     if (this->stopProgress >= this->stopTime)
     {
-      this->state = STOPPED;
+      this->state = State::STOPPED;
       this->stopProgress = 0;
     }
   }
-
   
+  /*============================================================================
+    handleStopped
+        stops the elevator and clears it's direction
+        
+    Revision History
+        11 July 2015 - Function created
+  *///==========================================================================
   void Elevator::handleStopped()
   {
-    if (this->direction == UP ||
-	this->direction == DOWN)
-    {
-      
-    }
+    // // Does anything need to be done while stopped?
+    // if (this->direction == UP ||
+    //     this->direction == DOWN)
+    // {
+    //   this->direction = NONE;
+    // }
   }
 
   /*============================================================================
@@ -124,7 +137,7 @@ namespace hw6
   *///==========================================================================
   void Elevator::move()
   {
-    if (this->direction == UP)
+    if (this->direction == Direction::UP)
     {
       ++this->currentAlignment;
       if (this->currentAlignment >= this->timeToFloor)
@@ -133,7 +146,7 @@ namespace hw6
 	this->currentAlignment = 0;
       }      
     }
-    else if (this->direction == DOWN)
+    else if (this->direction == Direction::DOWN)
     {
       --this->currentAlignment;
       if (this->currentAlignment < 0)
@@ -155,15 +168,15 @@ namespace hw6
   {
     switch (this->state)
     {
-    case MOVING:
+    case State::MOVING:
       handleMoving();
       break;
     
-    case STOPPING:
+    case State::STOPPING:
       handleStopping();
       break;
       
-    case STOPPED:
+    case State::STOPPED:
       handleStopped();
       break;
       
@@ -183,7 +196,7 @@ namespace hw6
   void Elevator::updateGoalFloor()
   {
     // find the minimum floor
-    if (this->direction == UP)
+    if (this->direction == Direction::UP)
     {
       int minFloor = this->goalFloor;
       
@@ -200,7 +213,7 @@ namespace hw6
     }
     
     // find the maximum floor
-    else if (this->direction == DOWN)
+    else if (this->direction == Direction::DOWN)
     {
       int maxFloor = this->goalFloor;
       

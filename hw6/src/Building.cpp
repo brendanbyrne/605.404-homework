@@ -31,7 +31,7 @@ namespace hw6
     floors(floors), elevators(elevators),
     controller(std::shared_ptr<Floors>(&this->floors),
 	       std::shared_ptr<Elevators>(&this->elevators))
-  {
+  {    
   }
   
   /*============================================================================
@@ -43,7 +43,8 @@ namespace hw6
   *///==========================================================================
   void Building::addPerson(const Passenger& person)
   {
-    this->floors[person.getStartFloor()].waitInLine(person);
+    Request request = this->floors[person.getStartFloor()].waitInLine(person);
+    this->controller.makeRequest(request);
   }
   
   /*============================================================================
@@ -90,5 +91,17 @@ namespace hw6
     return isEmpty;
 
   }
+  
+  /*============================================================================
+    carryOutCommands
+        takes the commands issued from the controller and carry them out
+        
+    Revision History
+        13 July 2015 - Function created
+  *///==========================================================================
+  void Building::carryOutCommands()
+  {
 
+  }
+  
 } // namespace hw6
