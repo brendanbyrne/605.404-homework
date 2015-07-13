@@ -172,11 +172,6 @@ namespace hw6
       // should never end up here
     }
   }
-
-  bool compare(const Passenger& person1, const Passenger& person2)
-  {
-    return person1.getEndFloor() < person2.getEndFloor();
-  }
   
   /*============================================================================
     updateGoalFloor
@@ -190,20 +185,35 @@ namespace hw6
     // find the minimum floor
     if (this->direction == UP)
     {
-      Group::iterator iter;
-      iter = std::min_element(this->onBoard, this->onBoard.end(), compare);
+      int minFloor = this->goalFloor;
+      
+      std::for_each(this->onBoard.begin(), this->onBoard.end(),
+		    [&minFloor](const Passenger& person)
+		    {
+		      if (person.getEndFloor() < minFloor)
+		      {
+			minFloor = person.getEndFloor();
+		      }
+		    });
+      
+      this->goalFloor = minFloor;
     }
     
     // find the maximum floor
-    // else if (this->direction == DOWN)
-    // {
-    //   Group::iterator iter;
-    //   iter = std::max_element(this->onBoard.begin(), this->onBoard.end(),
-    // 			      [](const Passenger& person1,
-    // 				 const Passenger& person2)
-    // 			      {
-    // 				return person1.getEndFloor() < person2.getEndFloor();
-    // 			      });
-    // }
+    else if (this->direction == DOWN)
+    {
+      int maxFloor = this->goalFloor;
+      
+      std::for_each(this->onBoard.begin(), this->onBoard.end(),
+		    [&maxFloor](const Passenger& person)
+		    {
+		      if (person.getEndFloor() > maxFloor)
+		      {
+			maxFloor = person.getEndFloor();
+		      }
+		    });
+      
+      this->goalFloor = maxFloor;
+    }
   }
 }

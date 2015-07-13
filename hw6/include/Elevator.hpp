@@ -60,7 +60,7 @@ namespace hw6
     int stopProgress; // [0 - stopTime-1]
     State state; // current state of the elevator
     Direction direction; // current direction of the elevator
-    
+
     void handleMoving(); // what to do when the state is MOVING
     void handleStopping(); // what to do when the state is STOPPING
     void handleStopped(); // what to do when the state is STOPPED
@@ -68,6 +68,9 @@ namespace hw6
     void updateGoalFloor(); // given current riders, finds closest desired floor
     
   }; // Elevator
+
+  // convenience aliases
+  typedef std::vector<Elevator> Elevators;
 
   /*============================================================================
     hasRoom

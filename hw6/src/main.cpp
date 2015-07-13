@@ -1,3 +1,5 @@
+// main.cpp
+
 #include <iostream>
 
 #include "TimelineParser.hpp"
@@ -12,10 +14,10 @@ int main(int argc, char** argv)
   movementHistory = parser.parse("../csv/HW6-Elevators.csv");
   
   // create the building
-  hw6::Building building;
+  hw6::Floors floors;
   for (int i = 0; i < 100; ++i)
   {
-    building.push_back(hw6::Floor(i));
+    floors.push_back(hw6::Floor(i));
   }
   
   // Set up the elevators
@@ -25,14 +27,12 @@ int main(int argc, char** argv)
     elevators.push_back(hw6::Elevator());
   }
   
+  hw6::Building building(floors, elevators);
+  
   // create and run simulation for the slower speed
   hw6::Simulator simSlowSpeed = hw6::Simulator(movementHistory,
-                                               building,
-                                               elevators);
+					       building);
   simSlowSpeed.start();
-  
-
-
 
 
 

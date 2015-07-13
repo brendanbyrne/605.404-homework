@@ -39,12 +39,15 @@ namespace hw6
     void waitInLine(const Passenger& passenger); // have passenger wait in line
     
   private:
-    const int floorNumber; // what number the floor is
+    int floorNumber; // what number the floor is
     Line goingUp; // a line of people who want to go up
     Line goingDown; // a line of people who want to go down
     
   }; // class Floor
   
+  // convenience alias
+  typedef std::vector<Floor> Floors;
+
   // output overloads
   std::ostream& operator<<(std::ostream& out, Line line);
   std::ostream& operator<<(std::ostream& out, const Floor& floor);

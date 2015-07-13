@@ -19,47 +19,35 @@
 #ifndef SIMULATOR_HPP
 #define SIMULATOR_HPP
 
-#include <vector>
-#include <queue>
+#include <iostream>
 
-#include "Elevator.hpp"
-#include "Floor.hpp"
-#include "Passenger.hpp"
+#include "Building.hpp"
 
 namespace hw6
 {
-  // convenience aliases
-  typedef std::vector<Elevator> Elevators;
-  typedef std::vector<Floor> Building;
-    
   class Simulator
-  { 
+  {
   public:
     Simulator(); // default constructor
     Simulator(const Line& people,
-               const Building& building,
-               const Elevators& elevators); // full constructor
+	      const Building& building); // full constructor
     
     // setters
     void setBuilding(const Building& building);
-    void setElevators(const Elevators& elevators);
     void setPeople(const Line& people) ;
-
+    
     void start(); // starts the simulation
     
   private:
     // simulation variables
     Line people;
     Building building;
-    Elevators elevators;
     int simTime;
     std::vector<int> waitTimes;
     
     // outcome of data checks
     bool hasPeople;
-    bool hasBuilding;
-    bool hasElevators;
-    
+    bool hasBuilding;    
     
     bool stillSimulating(); // tests the system for a termination state
     void tick(); // advances the simulation one time unit
@@ -75,22 +63,10 @@ namespace hw6
   *///==========================================================================
   inline void Simulator::setBuilding(const Building& building) // desired value
   {
-    this->elevators = elevators;
+    this->building = building;
+    hasBuilding = true;
   }
-  
-  /*============================================================================
-    setElevator
-        set the value of the elevators data member
-        
-    Revision History
-        8 July 2015 - Function created
-  *///==========================================================================
-  //                                   desired value
-  inline void Simulator::setElevators(const Elevators& elevators)
-  {
-    this->elevators = elevators;
-  }
-  
+    
   /*============================================================================
     setPeople
         set the value of the people data member
@@ -101,7 +77,22 @@ namespace hw6
   inline void Simulator::setPeople(const Line& people) // desired value
   {
     this->people = people;
+    this->hasPeople = true;
   }
+  
+  /*============================================================================
+    stillSimulating
+        checks simulation for a termination condition
+        
+    Revision History
+        8 July 2015 - Function created
+  *///==========================================================================
+  inline bool Simulator::stillSimulating()
+  {
+    // continue while there are still passengers waiting to ride an elevator
+    return !this->people.empty() || !this->building.isEmpty();
+  }
+  
 } // namespace hw6
 
 #endif // SIMULATOR_HPP
