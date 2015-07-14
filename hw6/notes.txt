@@ -1,0 +1,16 @@
+add people
+    request.push( floorNum, direction ) // example is 5, DOWN
+
+
+for e_i in E
+    // empty behavior
+    if e_i.isEmpty() && !e_i.getGoalSet()
+       int floor
+       Direction direction
+       tie(floor, direction) = request.pop()
+       e_i.setGoalFloor(floor)
+       // this also setGoalSet(true) setState(MOVING), setMovingDirection(UP)
+       e_i.setGoalDirection(direction)
+       
+
+    if ( e_i.getState() === MOVING 
