@@ -31,13 +31,13 @@ namespace hw6
   class Elevator
   {  
   public:
-    enum class State {MOVING, STOPPING, STOPPED};
+    enum class State {MOVE, STOP};
     
     Elevator(const int timeToFloor = 10,
              const int startFloor = 0,
              const int stopTime = 2,
 	     const int capacity = 8,
-             State state = State::STOPPED,
+             State state = State::STOP,
              Direction direction = Direction::NONE); // constructor
     
     void board(const Passenger& passenger); // let passenger on board
@@ -46,18 +46,25 @@ namespace hw6
     Group exit(); // have passengers attempt to exit
 
     // getters
+    int getAlignment() const;
     int getCurrentFloor() const;
     int getGoalFloor() const;
     bool getGoalSet() const;
     Group getOnBoard() const;
     State getState() const;
+    Direction getMovingDirection() const;
+    Direction getGoalDirection() const;
+    
+    void move(); // move elevator one unit in it's current direction
+    void slowDown(); // what to do when stopping
     
     // setters
     void setGoalFloor(const int floor);
     void setGoalDirection(const Direction& direction);
-
-    void stateMachine();
-
+    void setMovingDirection(const Direction& direction);
+    
+    void updateGoalFloor(); // given current riders, finds closest desired floor
+    
   private:
     int timeToFloor; // time it takes to move to an adjacent floor
     int stopTime; // time it takes to come to complete stop
@@ -66,21 +73,17 @@ namespace hw6
     // location is broken up into two parts the floor and
     // how much the elevator is aligned with the floor, 0 is aligned
     int currentFloor; // current location of the elevator
-    int currentAlignment = 0; // [0 - timeToFloor-1]
-    int stopProgress = 0; // [0 - stopTime-1]
     int goalFloor; // where the elevator is trying to go
+    int alignment = 0; // [0 - timeToFloor-1]
+    int stopProgress = 0; // [0 - stopTime-1]
+    
     Direction goalDirection; // desired direction from the goal floor
+    Direction movingDirection; // current direction of the elevator
     bool goalSet; // does the elevator have a goal  
     Group onBoard; // people that are on the elevator    
     State state; // current state of the elevator
-    Direction movingDirection; // current direction of the elevator
-    
 
-    void handleMoving(); // what to do when the state is MOVING
-    void handleStopping(); // what to do when the state is STOPPING
-    void handleStopped(); // what to do when the state is STOPPED
-    void move(); // move elevator one unit in it's current direction
-    void updateGoalFloor(); // given current riders, finds closest desired floor
+    
     
   }; // Elevator
 
@@ -88,17 +91,17 @@ namespace hw6
   typedef std::vector<Elevator> Elevators;
   
   /*============================================================================
-    hasRoom
-        returns true if the elevator has room
-
+    getAlignment
+        returns value of alignment data member
+        
     Revision History
-        9 July 2015 - Function created
+        8 July 2015 - Function created
   *///==========================================================================
-  inline bool Elevator::hasRoom() const
+  inline int Elevator::getAlignment() const
   {
-    return this->onBoard.size() < this->capacity;
+    return this->alignment;
   }
-  
+
   /*============================================================================
     getCurrentFloor
         returns value of currentFloor data member
@@ -109,6 +112,18 @@ namespace hw6
   inline int Elevator::getCurrentFloor() const
   {
     return this->currentFloor;
+  }
+  
+  /*============================================================================
+    getGoalDirection
+        returns value of goalDirection data member
+        
+    Revision History
+        14 July 2015 - Function created
+  *///==========================================================================
+  inline Direction Elevator::getGoalDirection() const
+  {
+    return this->goalDirection;
   }
   
   /*============================================================================
@@ -123,11 +138,30 @@ namespace hw6
     return this->goalFloor;
   }
   
+  /*============================================================================
+    getGoalSet
+        returns value of goalSet data member
+        
+    Revision History
+        14 July 2015 - Function created
+  *///==========================================================================
   inline bool Elevator::getGoalSet() const
   {
     return this->goalSet;
   }
-
+  
+  /*============================================================================
+    getMovingDirection
+        returns value of goalDirection data member
+        
+    Revision History
+        14 July 2015 - Function created
+  *///==========================================================================
+  inline Direction Elevator::getMovingDirection() const
+  {
+    return this->movingDirection;
+  }
+  
   /*============================================================================
     getOnBoard
         returns value of onBoard data member
@@ -152,22 +186,43 @@ namespace hw6
     return this->state;
   }
   
+  /*============================================================================
+    hasRoom
+        returns true if the elevator has room
+
+    Revision History
+        9 July 2015 - Function created
+  *///==========================================================================
+  inline bool Elevator::hasRoom() const
+  {
+    return this->onBoard.size() < this->capacity;
+  }
+  
+  /*============================================================================
+    isEmpty
+        returns true if the elevator has no passengers
+        
+    Revision History
+        14 July 2015 - Function created
+  *///==========================================================================
   inline bool Elevator::isEmpty() const
   {
     return this->onBoard.size() == 0;
   }
-
-  inline void Elevator::setGoalFloor(const int floor)
-  {
-    this->goalFloor = floor;
-    this->goalSet = true;
-  }
-
+  
+  /*============================================================================
+    setGoalDirection
+        sets the value of the goalDirection data member
+        
+    Revision History
+        14 July 2015 - Function created
+  *///==========================================================================
+  //                                       new goal direction
   inline void Elevator::setGoalDirection(const Direction& direction)
   {
-    
+    this->goalDirection = direction;
   }
-
+  
 } // Namespace hw6
 
 #endif // ELEVATOR_HPP

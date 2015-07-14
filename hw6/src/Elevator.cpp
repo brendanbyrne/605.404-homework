@@ -53,8 +53,8 @@ namespace hw6
   {
     Group leaving;
     
-    if (this->state == State::STOPPED &&
-	this->currentAlignment == 0)
+    if (this->state == State::STOP &&
+	this->alignment == 0)
     {
       Group::iterator iter;
       // for all occupents on board
@@ -72,58 +72,20 @@ namespace hw6
   }
  
   /*============================================================================
-    handleMoving
-        move the elevator until it reaches the goalFloor
-        
-    Revision History
-        11 July 2015 - Function created
-  *///==========================================================================
-  void Elevator::handleMoving()
-  {
-    // if aligned with currentFloor and has
-    if (currentAlignment == 0 &&
-	this->currentFloor == this->goalFloor)
-    {
-      this->state = State::STOPPING;
-    }
-    else
-    {
-      move();	
-    }
-  }
-
-  /*============================================================================
-    handleStopping
+    slowDown
         slows the eleveator to a stop
         
     Revision History
         11 July 2015 - Function created
   *///==========================================================================
-  void Elevator::handleStopping()
+  void Elevator::slowDown()
   {
     ++this->stopProgress;
     if (this->stopProgress >= this->stopTime)
     {
-      this->state = State::STOPPED;
+      this->state = State::STOP;
       this->stopProgress = 0;
     }
-  }
-  
-  /*============================================================================
-    handleStopped
-        stops the elevator and clears it's direction
-        
-    Revision History
-        11 July 2015 - Function created
-  *///==========================================================================
-  void Elevator::handleStopped()
-  {
-    // // Does anything need to be done while stopped?
-    // if (this->direction == UP ||
-    //     this->direction == DOWN)
-    // {
-    //   this->direction = NONE;
-    // }
   }
   
   /*============================================================================
@@ -137,55 +99,63 @@ namespace hw6
   {
     if (this->movingDirection == Direction::UP)
     {
-      ++this->currentAlignment;
-      if (this->currentAlignment >= this->timeToFloor)
+      ++this->alignment;
+      if (this->alignment >= this->timeToFloor)
       {
 	++this->currentFloor;
-	this->currentAlignment = 0;
+	this->alignment = 0;
       }      
     }
     else if (this->movingDirection == Direction::DOWN)
     {
-      --this->currentAlignment;
-      if (this->currentAlignment < 0)
+      --this->alignment;
+      if (this->alignment < 0)
       {
 	--this->currentFloor;
-	this->currentAlignment = this->timeToFloor - 1;
+	this->alignment = this->timeToFloor - 1;
       }
     }
   }
-
+  
   /*============================================================================
-    stateMachine
-        general enterace into the elevator state machine
+    setGoalFloor
+        sets the value of the goalFloor data member and propagates the impact of
+        this change to the goalSet and movingDirection data members
         
     Revision History
-        11 July 2015 - Function created
+        14 July 2015 - Function created
   *///==========================================================================
-  void Elevator::stateMachine()
+  void Elevator::setGoalFloor(const int floor) // new goalFloor value
   {
-     
-
-    switch (this->state)
-    {
-    case State::MOVING:
-      handleMoving();
-      break;
+    this->goalFloor = floor;
+    this->goalSet = true;
     
-    case State::STOPPING:
-      handleStopping();
-      break;
-      
-    case State::STOPPED:
-      handleStopped();
-      break;
-      
-    default:
-      break;
-      // should never end up here
+    // if floor is above
+    if (this->goalFloor > this->currentFloor)
+    {
+      this->movingDirection = Direction::UP;
+    }
+    // if floor is below
+    else if (this->goalFloor < this->currentFloor)
+    {
+      this->movingDirection = Direction::DOWN;
+    }
+    // if same floor, check the alignment
+    else
+    {
+      // if not aligned move down
+      if (this->alignment > 0)
+      {
+        this->movingDirection = Direction::DOWN;
+      }
+      // if aligned don't move
+      else
+      {
+        this->movingDirection = Direction::NONE;
+      }
     }
   }
-  
+    
   /*============================================================================
     updateGoalFloor
         find the closest desired floor, set it as the new goalFloor

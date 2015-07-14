@@ -26,7 +26,6 @@
 #include "Elevator.hpp"
 #include "Floor.hpp"
 #include "Passenger.hpp"
-//#include "Controller.hpp"
 
 namespace hw6
 {  
@@ -42,7 +41,6 @@ namespace hw6
     
     void addPerson(const Passenger& person); // put a passenger on a floor
     bool isEmpty(); // any passengers on a floor or in a elevator
-    void carryOutCommands(); // actualize the commands from the controller
     
     // testing purposes
     void advance();
@@ -50,7 +48,11 @@ namespace hw6
     // getters
     Elevators getElevators() const;
     Floors getFloors() const;
-
+    
+    // state machine handlers
+    void handleMoving(Elevator& elevator, const Floor& floor);
+    void handleStopped(Elevator& elevator, Floor& floor);
+    
     // setters
     Building& setElevators(const Elevators& elevators);
     Building& setFloors(const Floors& floors);

@@ -59,8 +59,16 @@ namespace hw6
     this->floors[person.getStartFloor()].waitInLine(person);
   }
   
+  /*============================================================================
+    advance
+        advance the state of the building and all the components inside of it
+        
+    Revision History
+        14 July 2015 - Function created
+  *///==========================================================================
   void Building::advance()
   {
+    // for each elevator, run it's state machine
     for (auto & elevator : this->elevators)
     {
       // if elevator wants work and there is work
@@ -73,29 +81,79 @@ namespace hw6
 	this->requests.pop_front();
 	
 	elevator.setGoalFloor(floor);
+        elevator.setGoalDirection(direction);
       }
-
+      
       // run throught the state machine
       switch (elevator.getState())
       {
-      case Elevator::State::MOVING:
-	break;
+      case Elevator::State::MOVE:
+        this->handleMoving(elevator, this->floors[elevator.getCurrentFloor()]);
+        break;
 
-      case Elevator::State::STOPPING:
-	break;
-	
-      case Elevator::State::STOPPED:
-	break;
-	
+      case Elevator::State::STOP:
+        this->handleStopped(elevator, this->floors[elevator.getCurrentFloor()]);
+        break;
+        
       default:
-	// this is a bad place to be
-	std::cout << "Elevator state not found" << std::endl;
-      } // switch state
+        // this is a bad place to be
+        break;
+      }
       
     } // for loop
     
   } // advance
 
+  void Building::handleMoving(Elevator& elevator,
+                              const Floor& floor)
+  {
+    // should the elevator start stopping
+    bool shouldStop = false;
+    
+    // if elevator is at any floor
+    if (elevator.getAlignment() == 0)
+    {
+      // has elevator reached the destination
+      if (elevator.getGoalFloor() == elevator.getCurrentFloor())
+      {
+        shouldStop = true;
+      }
+      // if elevator should pickup extra passengers
+      else if (elevator.getGoalDirection() == elevator.getMovingDirection() && 
+               elevator.hasRoom())
+      {
+        // if going down and passengers are waiting to go down
+        if (elevator.getMovingDirection() == Direction::DOWN &&
+            !floor.getGoingDown().empty())
+        {
+          shouldStop = true;
+        }   
+        // if going up and passengers are waiting to go up
+        else if (elevator.getMovingDirection() == Direction::UP &&
+                 !floor.getGoingUp().empty())
+        {
+          shouldStop = true;
+        }  
+      } // if should pick up or drop off people
+    } // if on floor
+    
+    if (shouldStop)
+    {
+      elevator.slowDown();
+    }
+    else
+    {
+      elevator.move();
+    }
+  } // handleMoving
+  
+  
+  void Building::handleStopped(Elevator& elevator,
+                               Floor& floor)
+  {
+    
+  }
+  
   /*============================================================================
     isEmpty
         returns true if there is any passengers still inside the building, on a
@@ -140,17 +198,5 @@ namespace hw6
     return isEmpty;
 
   }
-  
-  /*============================================================================
-    carryOutCommands
-        takes the commands issued from the controller and carry them out
-        
-    Revision History
-        13 July 2015 - Function created
-  *///==========================================================================
-  void Building::carryOutCommands()
-  {
-
-  }
-  
+    
 } // namespace hw6
