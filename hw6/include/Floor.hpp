@@ -37,7 +37,7 @@ namespace hw6
     
     Passenger getOnUp(); // have going up passenger get on elevator
     Passenger getOnDown(); // have going down passenger get on elevator
-    Request waitInLine(const Passenger& passenger); // have passenger wait in line
+    void waitInLine(const Passenger& passenger); // have passenger wait in line
     
   private:
     int floorNumber; // what number the floor is

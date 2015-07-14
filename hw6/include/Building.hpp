@@ -20,18 +20,22 @@
 #ifndef BUILDING_HPP
 #define BUILDING_HPP
 
-#include <vector>
+#include <list>
+#include <tuple>
 
 #include "Elevator.hpp"
 #include "Floor.hpp"
 #include "Passenger.hpp"
-#include "Controller.hpp"
+//#include "Controller.hpp"
 
 namespace hw6
-{
+{  
   class Building
   {
   public:
+    // time, startFloor, desired direction
+    typedef std::tuple<int, int, Direction> Request;
+
     Building(); // default constructor
     Building(const Floors& floors,
 	     const Elevators& elevators); // full constructor
@@ -39,7 +43,10 @@ namespace hw6
     void addPerson(const Passenger& person); // put a passenger on a floor
     bool isEmpty(); // any passengers on a floor or in a elevator
     void carryOutCommands(); // actualize the commands from the controller
-
+    
+    // testing purposes
+    void advance();
+    
     // getters
     Elevators getElevators() const;
     Floors getFloors() const;
@@ -51,7 +58,8 @@ namespace hw6
   private:
     Elevators elevators; // elevators in the building
     Floors floors; // the floors in the building
-    Controller controller; // the controller for each of the elevators
+    std::list<Request> requests; // stores the requests for elevators
+    
     
   }; // class Building
   

@@ -38,7 +38,7 @@ set(SOURCE_FILES
         src/TimelineParser.cpp
         src/Floor.cpp
         src/Elevator.cpp
-	src/Controller.cpp
+	#src/Controller.cpp
 	src/Building.cpp
         src/Simulator.cpp)
 

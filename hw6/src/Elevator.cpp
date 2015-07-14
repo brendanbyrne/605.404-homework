@@ -20,13 +20,11 @@ namespace hw6
                      const State state, // current state of elevator
                      const Direction direction): // current direction elevator
     currentFloor(startFloor),
-    currentAlignment(0),
     timeToFloor(timeToFloor),
     stopTime(stopTime),
-    stopProgress(0),
     capacity(capacity),
     state(state),
-    direction(direction)
+    movingDirection(direction)
   {
   }
 
@@ -127,7 +125,7 @@ namespace hw6
     //   this->direction = NONE;
     // }
   }
-
+  
   /*============================================================================
     move
         moves the elevator one units worth of distance in it's current direction
@@ -137,7 +135,7 @@ namespace hw6
   *///==========================================================================
   void Elevator::move()
   {
-    if (this->direction == Direction::UP)
+    if (this->movingDirection == Direction::UP)
     {
       ++this->currentAlignment;
       if (this->currentAlignment >= this->timeToFloor)
@@ -146,7 +144,7 @@ namespace hw6
 	this->currentAlignment = 0;
       }      
     }
-    else if (this->direction == Direction::DOWN)
+    else if (this->movingDirection == Direction::DOWN)
     {
       --this->currentAlignment;
       if (this->currentAlignment < 0)
@@ -166,6 +164,8 @@ namespace hw6
   *///==========================================================================
   void Elevator::stateMachine()
   {
+     
+
     switch (this->state)
     {
     case State::MOVING:
@@ -188,7 +188,7 @@ namespace hw6
   
   /*============================================================================
     updateGoalFloor
-        // find the closest desired floor, set it as the new goalFloor
+        find the closest desired floor, set it as the new goalFloor
         
     Revision History
         11 July 2015 - Function created
@@ -196,7 +196,7 @@ namespace hw6
   void Elevator::updateGoalFloor()
   {
     // find the minimum floor
-    if (this->direction == Direction::UP)
+    if (this->goalDirection == Direction::UP)
     {
       int minFloor = this->goalFloor;
       
@@ -213,7 +213,7 @@ namespace hw6
     }
     
     // find the maximum floor
-    else if (this->direction == Direction::DOWN)
+    else if (this->goalDirection == Direction::DOWN)
     {
       int maxFloor = this->goalFloor;
       

@@ -75,31 +75,18 @@ namespace hw6
     Revision History
         9 July 2015 - Function created
   *///==========================================================================
-  Request Floor::waitInLine(const Passenger& passenger) // person needing elevator
-  {
-    Request request;
-    request.first = passenger.getEndFloor();
-    
+  void Floor::waitInLine(const Passenger& passenger) // person needing elevator
+  {  
     int direction = passenger.getEndFloor() - passenger.getStartFloor();
     
     if (direction > 0)
     {      
-      // if there is already a request, instruct to drop the request with NONE
-      request.second = this->goingUp.empty() ?
-        Direction::UP : Direction::NONE;
-      
       this->goingUp.push(passenger);
     }
     else if (direction < 0)
     {
-      // if there is already a request, instruct to drop the request with NONE
-      request.second = this->goingDown.empty() ?
-        Direction::DOWN : Direction::NONE;
-
       this->goingDown.push(passenger);
     }
-
-    return request;
   }
                            
 } // namespace hw6

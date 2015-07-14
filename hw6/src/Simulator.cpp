@@ -83,6 +83,8 @@ namespace hw6
       people.pop();
     }
 
+    this->building.advance();
+
   }
   
 } // namespace hw6

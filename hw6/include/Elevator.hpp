@@ -28,10 +28,6 @@ namespace hw6
   // pulled outside because passenger and elevators have an up/down value
   enum class Direction {NONE, UP, DOWN};
   
-  // aliases for handling elevator requests
-  typedef std::pair<int, Direction> Request;
-  typedef std::queue<Request> Requests;
-  
   class Elevator
   {  
   public:
@@ -46,14 +42,20 @@ namespace hw6
     
     void board(const Passenger& passenger); // let passenger on board
     bool hasRoom() const; // return if elevator has room
+    bool isEmpty() const;
     Group exit(); // have passengers attempt to exit
 
     // getters
     int getCurrentFloor() const;
     int getGoalFloor() const;
+    bool getGoalSet() const;
     Group getOnBoard() const;
     State getState() const;
     
+    // setters
+    void setGoalFloor(const int floor);
+    void setGoalDirection(const Direction& direction);
+
     void stateMachine();
 
   private:
@@ -64,12 +66,15 @@ namespace hw6
     // location is broken up into two parts the floor and
     // how much the elevator is aligned with the floor, 0 is aligned
     int currentFloor; // current location of the elevator
-    int currentAlignment; // [0 - timeToFloor-1]
+    int currentAlignment = 0; // [0 - timeToFloor-1]
+    int stopProgress = 0; // [0 - stopTime-1]
     int goalFloor; // where the elevator is trying to go
+    Direction goalDirection; // desired direction from the goal floor
+    bool goalSet; // does the elevator have a goal  
     Group onBoard; // people that are on the elevator    
-    int stopProgress; // [0 - stopTime-1]
     State state; // current state of the elevator
-    Direction direction; // current direction of the elevator
+    Direction movingDirection; // current direction of the elevator
+    
 
     void handleMoving(); // what to do when the state is MOVING
     void handleStopping(); // what to do when the state is STOPPING
@@ -118,6 +123,11 @@ namespace hw6
     return this->goalFloor;
   }
   
+  inline bool Elevator::getGoalSet() const
+  {
+    return this->goalSet;
+  }
+
   /*============================================================================
     getOnBoard
         returns value of onBoard data member
@@ -142,6 +152,22 @@ namespace hw6
     return this->state;
   }
   
+  inline bool Elevator::isEmpty() const
+  {
+    return this->onBoard.size() == 0;
+  }
+
+  inline void Elevator::setGoalFloor(const int floor)
+  {
+    this->goalFloor = floor;
+    this->goalSet = true;
+  }
+
+  inline void Elevator::setGoalDirection(const Direction& direction)
+  {
+    
+  }
+
 } // Namespace hw6
 
 #endif // ELEVATOR_HPP

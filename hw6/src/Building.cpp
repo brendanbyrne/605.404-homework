@@ -4,7 +4,6 @@
 
 // for testing
 #include <iostream>
-#include <memory>
 
 namespace hw6
 {
@@ -28,10 +27,8 @@ namespace hw6
   *///==========================================================================
   Building::Building(const Floors& floors, // the layout of the floors
 		     const Elevators& elevators): // the buildings elevators
-    floors(floors), elevators(elevators),
-    controller(std::shared_ptr<Floors>(&this->floors),
-	       std::shared_ptr<Elevators>(&this->elevators))
-  {    
+    floors(floors), elevators(elevators)
+  {
   }
   
   /*============================================================================
@@ -43,10 +40,62 @@ namespace hw6
   *///==========================================================================
   void Building::addPerson(const Passenger& person)
   {
-    Request request = this->floors[person.getStartFloor()].waitInLine(person);
-    this->controller.makeRequest(request);
+    Direction goalDirection;
+    
+    int numberDirection = person.getEndFloor() - person.getStartFloor();
+    if (numberDirection > 0)
+    {
+      goalDirection = Direction::UP;
+    }
+    else if (numberDirection < 0)
+    {
+      goalDirection = Direction::DOWN;
+    }
+    
+    Request request = std::make_tuple(person.getStartTime(),
+				      person.getEndFloor(),
+				      goalDirection);
+    
+    this->floors[person.getStartFloor()].waitInLine(person);
   }
   
+  void Building::advance()
+  {
+    for (auto & elevator : this->elevators)
+    {
+      // if elevator wants work and there is work
+      if (elevator.isEmpty() && !elevator.getGoalSet() &&
+	  this->requests.size() == 0)
+      {
+	int floor;
+	Direction direction;
+	std::tie(std::ignore, floor, direction) = this->requests.front();
+	this->requests.pop_front();
+	
+	elevator.setGoalFloor(floor);
+      }
+
+      // run throught the state machine
+      switch (elevator.getState())
+      {
+      case Elevator::State::MOVING:
+	break;
+
+      case Elevator::State::STOPPING:
+	break;
+	
+      case Elevator::State::STOPPED:
+	break;
+	
+      default:
+	// this is a bad place to be
+	std::cout << "Elevator state not found" << std::endl;
+      } // switch state
+      
+    } // for loop
+    
+  } // advance
+
   /*============================================================================
     isEmpty
         returns true if there is any passengers still inside the building, on a
