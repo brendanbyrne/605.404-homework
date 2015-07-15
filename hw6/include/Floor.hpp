@@ -20,7 +20,6 @@
 
 #include <ostream>
 
-#include "Elevator.hpp"
 #include "Passenger.hpp"
 
 namespace hw6
@@ -32,11 +31,13 @@ namespace hw6
     
     // getters
     int getFloorNumber() const;
+    Line getLine(const Direction& direction) const;
     Line getGoingUp() const;
     Line getGoingDown() const;
-    
+    Passenger getNextInLine(const Direction& direction);
     Passenger getOnUp(); // have going up passenger get on elevator
     Passenger getOnDown(); // have going down passenger get on elevator
+    
     void waitInLine(const Passenger& passenger); // have passenger wait in line
     
   private:

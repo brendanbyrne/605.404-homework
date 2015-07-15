@@ -23,6 +23,9 @@
 
 namespace hw6
 {
+  
+  enum class Direction {NONE, UP, DOWN};
+
   class Passenger
   {    
   public:
@@ -48,6 +51,7 @@ namespace hw6
     int endTime; // time when passenger arrives at the ending floor
     int startFloor; // floor number that passenger start on
     int endFloor; // floor number that passenger is trying to get to 
+    
   }; // class Passenger
   
   // convenience typedefs for working with collections of class

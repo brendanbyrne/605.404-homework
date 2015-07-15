@@ -20,7 +20,55 @@ namespace hw6
     floorNumber(floorNumber)
   {
   }
-  
+
+  /*============================================================================
+    getNextInLine
+        return next person in line going either up or down
+        
+    Revision History
+        14 July 2015 - Function created
+  *///==========================================================================
+  Passenger Floor::getNextInLine(const Direction& direction)
+  {
+    Passenger passenger;
+    if (direction == Direction::UP)
+    {
+      passenger = this->goingUp.front();
+      this->goingUp.pop();
+    }
+    else
+    {
+      passenger = this->goingDown.front();
+      this->goingDown.pop();
+    }
+    
+    return passenger;
+  }  
+
+  /*============================================================================
+    getLine
+        return value of the goingUp or goingDown
+        
+    Revision History
+        14 July 2015 - Function created
+  *///==========================================================================
+  Line Floor::getLine(const Direction& direction) const
+  {
+    if (direction == Direction::UP)
+    {
+      return this->goingUp;
+    }
+    else if (direction == Direction::DOWN)
+    {
+      return this->goingDown;
+    }
+    else
+    {
+      Line line;
+      return line;
+    }
+  }
+
   /*============================================================================
     operator<<
         insertion operator overload for a Floor object

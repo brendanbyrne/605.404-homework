@@ -24,10 +24,7 @@
 #include "Passenger.hpp"
 
 namespace hw6
-{ 
-  // pulled outside because passenger and elevators have an up/down value
-  enum class Direction {NONE, UP, DOWN};
-  
+{   
   class Elevator
   {  
   public:
@@ -90,6 +87,19 @@ namespace hw6
   // convenience aliases
   typedef std::vector<Elevator> Elevators;
   
+  /*============================================================================
+    board
+        add passenger to elevator
+        
+    Revision History
+        9 July 2015 - Function created
+  *///==========================================================================
+  //                          passenger trying to board
+  inline void Elevator::board(const Passenger& passenger)
+  {
+    onBoard.push_back(passenger);
+  }
+
   /*============================================================================
     getAlignment
         returns value of alignment data member

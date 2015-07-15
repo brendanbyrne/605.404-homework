@@ -43,7 +43,7 @@ namespace hw6
     bool isEmpty(); // any passengers on a floor or in a elevator
     
     // testing purposes
-    void advance();
+    void advance(int time);
     
     // getters
     Elevators getElevators() const;
@@ -51,7 +51,7 @@ namespace hw6
     
     // state machine handlers
     void handleMoving(Elevator& elevator, const Floor& floor);
-    void handleStopped(Elevator& elevator, Floor& floor);
+    void handleStopped(Elevator& elevator, Floor& floor, const int time);
     
     // setters
     Building& setElevators(const Elevators& elevators);
@@ -61,6 +61,7 @@ namespace hw6
     Elevators elevators; // elevators in the building
     Floors floors; // the floors in the building
     std::list<Request> requests; // stores the requests for elevators
+    Group exitResults;
     
     
   }; // class Building

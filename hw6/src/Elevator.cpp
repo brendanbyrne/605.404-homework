@@ -27,20 +27,6 @@ namespace hw6
     movingDirection(direction)
   {
   }
-
-  /*============================================================================
-    board
-        add passenger to elevator
-        
-    Revision History
-        9 July 2015 - Function created
-  *///==========================================================================
-  //                          passenger trying to board
-  inline void Elevator::board(const Passenger& passenger)
-  {
-    onBoard.push_back(passenger);
-    this->updateGoalFloor();
-  }
   
   /*============================================================================
     exit
@@ -165,8 +151,14 @@ namespace hw6
   *///==========================================================================
   void Elevator::updateGoalFloor()
   {
+    // if no one is riding
+    if (this->isEmpty())
+    {
+      this->goalFloor = 0;
+      this->goalSet = false;
+    }
     // find the minimum floor
-    if (this->goalDirection == Direction::UP)
+    else if (this->goalDirection == Direction::UP)
     {
       int minFloor = this->goalFloor;
       

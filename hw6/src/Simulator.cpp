@@ -83,7 +83,7 @@ namespace hw6
       people.pop();
     }
 
-    this->building.advance();
+    this->building.advance(this->simTime);
 
   }
   
