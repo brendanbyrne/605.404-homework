@@ -19,8 +19,6 @@
 #ifndef SIMULATOR_HPP
 #define SIMULATOR_HPP
 
-#include <iostream>
-
 #include "Building.hpp"
 
 namespace hw6
@@ -32,6 +30,8 @@ namespace hw6
     Simulator(const Line& people,
 	      const Building& building); // full constructor
     
+    double calculateResults(); // finds the average weight time per person
+
     // setters
     void setBuilding(const Building& building);
     void setPeople(const Line& people) ;
@@ -43,7 +43,6 @@ namespace hw6
     Line people;
     Building building;
     int simTime;
-    std::vector<int> waitTimes;
     
     // outcome of data checks
     bool hasPeople;

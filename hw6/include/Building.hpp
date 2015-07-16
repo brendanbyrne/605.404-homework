@@ -20,11 +20,9 @@
 #ifndef BUILDING_HPP
 #define BUILDING_HPP
 
-#include <list>
-#include <tuple>
-
 #include "Elevator.hpp"
 #include "Floor.hpp"
+#include "Requests.hpp"
 #include "Passenger.hpp"
 
 namespace hw6
@@ -32,9 +30,6 @@ namespace hw6
   class Building
   {
   public:
-    // time, startFloor, desired direction
-    typedef std::tuple<int, int, Direction> Request;
-
     Building(); // default constructor
     Building(const Floors& floors,
 	     const Elevators& elevators); // full constructor
@@ -48,21 +43,28 @@ namespace hw6
     // getters
     Elevators getElevators() const;
     Floors getFloors() const;
+    Group getExitResults() const;
     
     // state machine handlers
     void handleMoving(Elevator& elevator, const Floor& floor);
-    void handleStopped(Elevator& elevator, Floor& floor, const int time);
+    void handleStopped(Elevator& elevator, Floor& floor);
+    void handleUnloading(Elevator& elevator, Floor& floor, const int time);
+    void handleLoading(Elevator& elevator, Floor& floor);
     
     // setters
     Building& setElevators(const Elevators& elevators);
     Building& setFloors(const Floors& floors);
-
+    
   private:
     Elevators elevators; // elevators in the building
     Floors floors; // the floors in the building
-    std::list<Request> requests; // stores the requests for elevators
+    Requests requests; // stores the requests for elevators
     Group exitResults;
+    int count = 0;
     
+    static const int TIME_INDEX = 0;
+    static const int FLOOR_INDEX = 1;
+    static const int DIRECTION_INDEX = 2;
     
   }; // class Building
   
@@ -77,7 +79,19 @@ namespace hw6
   {
     return this->elevators;
   }
-
+  
+  /*============================================================================
+    getExitResults
+        return the value of the exitResults data member
+        
+    Revision History
+        16 July 2015 - Function created
+  *///==========================================================================
+  inline Group Building::getExitResults() const
+  {
+    return this->exitResults;
+  }
+  
   /*============================================================================
     getFloors
         return the value of the floors data member
@@ -115,6 +129,7 @@ namespace hw6
     this->floors = floors;
     return *this;
   }
+  
   
 } // namespace hw6
 

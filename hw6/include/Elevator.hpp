@@ -27,15 +27,14 @@ namespace hw6
 {   
   class Elevator
   {  
+    
   public:
-    enum class State {MOVE, STOP};
+    enum class State {MOVE, STOP, UNLOAD, LOAD};
     
     Elevator(const int timeToFloor = 10,
              const int startFloor = 0,
              const int stopTime = 2,
-	     const int capacity = 8,
-             State state = State::STOP,
-             Direction direction = Direction::NONE); // constructor
+	     const int capacity = 8); // constructor
     
     void board(const Passenger& passenger); // let passenger on board
     bool hasRoom() const; // return if elevator has room
@@ -46,20 +45,24 @@ namespace hw6
     int getAlignment() const;
     int getCurrentFloor() const;
     int getGoalFloor() const;
+    int getRequestFloor() const;
     bool getGoalSet() const;
+    bool getHandlingRequest() const;
     Group getOnBoard() const;
     State getState() const;
-    Direction getMovingDirection() const;
+    Direction getMoveDirection() const;
     Direction getGoalDirection() const;
+    int getMomentum() const;
     
     void move(); // move elevator one unit in it's current direction
     void slowDown(); // what to do when stopping
+    void requestHandled(); // request handled
     
     // setters
-    void setGoalFloor(const int floor);
-    void setGoalDirection(const Direction& direction);
-    void setMovingDirection(const Direction& direction);
-    
+    Elevator& setGoal(const int floor, const Direction& direction);
+    Elevator& setRequest(const int floor, const Direction& direction);
+    Elevator& setMovingDirection(const Direction& direction);
+    Elevator& setState(const Elevator::State state);
     void updateGoalFloor(); // given current riders, finds closest desired floor
     
   private:
@@ -67,26 +70,30 @@ namespace hw6
     int stopTime; // time it takes to come to complete stop
     int capacity; // maximum number of passengers allowed on
     
-    // location is broken up into two parts the floor and
-    // how much the elevator is aligned with the floor, 0 is aligned
-    int currentFloor; // current location of the elevator
-    int goalFloor; // where the elevator is trying to go
-    int alignment = 0; // [0 - timeToFloor-1]
-    int stopProgress = 0; // [0 - stopTime-1]
-    
-    Direction goalDirection; // desired direction from the goal floor
-    Direction movingDirection; // current direction of the elevator
-    bool goalSet; // does the elevator have a goal  
-    Group onBoard; // people that are on the elevator    
-    State state; // current state of the elevator
+    // these values can be thought of as the "state vector" of the elevator
+    int currentFloor = 0; // current location of the elevator
+    int goalFloor = 0; // where the elevator is trying to go
+    int requestFloor = 0; // location of request
+    int alignment = 0; // [0 - timeToFloor-1] 0 is elevator level with floor
+    int momentum = 0; // [stopTime - 0] elevator momentum 0 is stopped
+    // current direction of the elevator
+    Direction movingDirection = Direction::NONE; 
+    // desired direction to the goal floor
+    Direction goalDirection = Direction::NONE;
+    // desired direction of request
+    Direction requestDirection = Direction::NONE;
+    Group onBoard; // people that are on the elevator
+    State state = State::STOP; // current state of the elevator
+    bool goalSet = false; // does the elevator have a goal  
+    bool handlingRequest = false; // is elevator handling a request
 
-    
-    
   }; // Elevator
 
   // convenience aliases
   typedef std::vector<Elevator> Elevators;
   
+  std::ostream& operator<<(std::ostream& out, const Elevator& elevator);
+  std::ostream& operator<<(std::ostream& out, const Elevator::State& state);
   /*============================================================================
     board
         add passenger to elevator
@@ -161,15 +168,27 @@ namespace hw6
   }
   
   /*============================================================================
-    getMovingDirection
-        returns value of goalDirection data member
+    getMoveDirection
+        returns value of moveDirection data member
         
     Revision History
         14 July 2015 - Function created
   *///==========================================================================
-  inline Direction Elevator::getMovingDirection() const
+  inline Direction Elevator::getMoveDirection() const
   {
     return this->movingDirection;
+  }
+  
+  /*============================================================================
+    getMomentum
+        returns value of the momentum data member
+        
+    Revision History
+        14 July 2015 - Function created
+  *///==========================================================================
+  inline int Elevator::getMomentum() const
+  {
+    return this->momentum;
   }
   
   /*============================================================================
@@ -185,8 +204,20 @@ namespace hw6
   }
   
   /*============================================================================
+    getRequestFloor
+        returns value of requestFloor data member
+        
+    Revision History
+        16 July 2015 - Function created
+  *///==========================================================================
+  inline int Elevator::getRequestFloor() const
+  {
+    return this->requestFloor;
+  }
+  
+  /*============================================================================
     getState
-        returns value of currentFloor data member
+        returns value of state data member
         
     Revision History
         8 July 2015 - Function created
@@ -196,6 +227,32 @@ namespace hw6
     return this->state;
   }
   
+  /*============================================================================
+    hasRequest
+        returns true if the elevator is handling a request
+
+    Revision History
+        16 July 2015 - Function created
+  *///==========================================================================
+  inline bool Elevator::getHandlingRequest() const
+  {
+    return this->handlingRequest;
+  }
+  
+  /*============================================================================
+    requestHandled
+        alerts elevator that request has been handled
+    
+    Revision History
+        16 July 2015 - Function created
+  *///==========================================================================
+  inline void Elevator::requestHandled()
+  {
+    this->requestFloor = 0;
+    this->requestDirection = Direction::NONE;
+    this->handlingRequest = false;
+  }
+
   /*============================================================================
     hasRoom
         returns true if the elevator has room
@@ -221,16 +278,36 @@ namespace hw6
   }
   
   /*============================================================================
-    setGoalDirection
-        sets the value of the goalDirection data member
+    setState
+        sets the value of the state data member
         
     Revision History
-        14 July 2015 - Function created
+        8 July 2015 - Function created
   *///==========================================================================
-  //                                       new goal direction
-  inline void Elevator::setGoalDirection(const Direction& direction)
+  inline Elevator& Elevator::setState(const State newState) // desired state
   {
-    this->goalDirection = direction;
+    this->state = newState;
+    return *this;
+  }
+  
+  /*============================================================================
+    setRequest
+        set the value of the requestFloor, requestDirection, and hasRequest data
+        members
+        
+    Revision History
+        16 July 2015 - Function created
+  *///==========================================================================
+  //                                    requested floor
+  inline Elevator& Elevator::setRequest(const int floor, 
+                                        // requested direction
+                                        const Direction& direction)
+  {
+    this->requestFloor = floor;
+    this->requestDirection = direction;
+    this->handlingRequest = true;
+    
+    return *this;
   }
   
 } // Namespace hw6

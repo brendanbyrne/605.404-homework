@@ -59,8 +59,8 @@ namespace hw6
   typedef std::vector<Passenger> Group;
 
   // insertion overload 
-  std::ostream& operator<<(std::ostream& out, Passenger passenger);
-  
+  std::ostream& operator<<(std::ostream& out, const Passenger& passenger);
+  std::ostream& operator<<(std::ostream& out, const Direction& direction);
   /*============================================================================
     getEndFloor
         return value of the endFloor data member

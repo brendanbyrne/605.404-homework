@@ -30,7 +30,7 @@ namespace hw6
     Floor(int floorNumber = 0); // constructor
     
     // getters
-    int getFloorNumber() const;
+    int getNumber() const;
     Line getLine(const Direction& direction) const;
     Line getGoingUp() const;
     Line getGoingDown() const;
@@ -61,7 +61,7 @@ namespace hw6
     Revision History
         8 July 2015 - Function created
   *///==========================================================================
-  inline int Floor::getFloorNumber() const
+  inline int Floor::getNumber() const
   {
     return this->floorNumber;
   }

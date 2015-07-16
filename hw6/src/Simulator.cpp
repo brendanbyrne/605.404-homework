@@ -5,6 +5,9 @@
 
 #include "Simulator.hpp"
 
+// for testing only
+#include <iostream>
+
 namespace hw6
 {
   /*============================================================================
@@ -33,8 +36,29 @@ namespace hw6
   { 
     this->hasPeople   = true;
     this->hasBuilding = true;
-
-    this->waitTimes.reserve(people.size());
+  }
+  
+  /*============================================================================
+    calculateResults
+        calculates the average wait time of a passenger riding the elevator
+        
+    Revision History
+        16 July 2015 - Function created
+  *///==========================================================================
+  double Simulator::calculateResults()
+  {
+    Group results = this->building.getExitResults();
+    int sum = 0;
+    std::for_each(results.begin(), results.end(),
+                  [&sum](const Passenger& person) -> void
+                  {
+                    sum += person.getEndTime() - person.getStartTime();
+                  });
+    
+    int size = this->building.getExitResults().size();
+    double average = static_cast<double>(sum) / static_cast<double>(size);
+    
+    return average;
   }
   
   /*============================================================================
@@ -53,13 +77,14 @@ namespace hw6
     {
       // reset the simulation clock
       this->simTime = 0;
-      
+
       // run simulation till its termination condition has been reached
-      while (this->stillSimulating())
+      int watchdog = 78;
+      while (this->stillSimulating() && this->simTime < watchdog)
       {
+        std::cout << "Current time: " << this->simTime << std::endl;
         tick();
 	++this->simTime;
-	
       }
       
     }
@@ -74,15 +99,18 @@ namespace hw6
   *///==========================================================================
   void Simulator::tick()
   { 
+    
     // find people that need to enter the simulation now
     // and add them to their floor
     Group assignToFloor;
-    while (people.front().getStartTime() == this->simTime)
+    while (people.front().getStartTime() == this->simTime &&
+           people.size() > 0)
     {
+      
       this->building.addPerson(people.front());
       people.pop();
     }
-
+    
     this->building.advance(this->simTime);
 
   }

@@ -24,14 +24,46 @@ namespace hw6
   
   /*============================================================================
     operator<<
-        insertion operator overload
+        insertion operator overload for a passenger
 
     Revision History
         7 July 2015 - Function created
   *///==========================================================================
-  std::ostream& operator<<(std::ostream& out, Passenger passenger)
+  std::ostream& operator<<(std::ostream& out, // desired output stream
+                           const Passenger& passenger) // passenger to print
   {
     out << passenger.getStartTime();
+    return out;
+  }
+
+  /*============================================================================
+    operator<<
+        insertion operator overload for a direction
+
+    Revision History
+        7 July 2015 - Function created
+  *///==========================================================================
+  std::ostream& operator<<(std::ostream& out, // desired output stream
+                           const Direction& direction) // direction to print
+  {
+    switch (direction)
+    {
+    case Direction::UP:
+      out << "Up";
+      break;
+      
+    case Direction::DOWN:
+      out << "Down";
+      break;
+      
+    case Direction::NONE:
+      out << "None";
+      break;
+      
+    default:
+      out << "error";
+    }
+    
     return out;
   }
 } // namespace hw6

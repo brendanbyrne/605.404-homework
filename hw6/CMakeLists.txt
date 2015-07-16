@@ -38,10 +38,10 @@ set(SOURCE_FILES
         src/TimelineParser.cpp
         src/Floor.cpp
         src/Elevator.cpp
-	#src/Controller.cpp
+	src/Requests.cpp
 	src/Building.cpp
         src/Simulator.cpp)
-
+      
 add_executable(sim ${SOURCE_FILES})
 
 target_link_libraries(sim

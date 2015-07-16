@@ -108,7 +108,7 @@ namespace hw6
   std::ostream& operator<<(std::ostream& out, // desired output stream
                            const Floor& floor) // object to display
   {
-    out << "Floor " << floor.getFloorNumber() << "\n"
+    out << "Floor " << floor.getNumber() << "\n"
         << "  " << "Going Up" << "\n"
         << "    " << floor.getGoingUp() << "\n"
         << "  " << "Going Down" << "\n"

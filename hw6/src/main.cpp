@@ -5,9 +5,11 @@
 #include "TimelineParser.hpp"
 #include "Simulator.hpp"
 
+
+#include "Requests.hpp"
+
 int main(int argc, char** argv)
 {  
-  
   // parse csv file for testing configuration
   hw6::TimelineParser parser;
   hw6::Line movementHistory;  
@@ -22,7 +24,8 @@ int main(int argc, char** argv)
   
   // Set up the elevators
   hw6::Elevators elevators;
-  for (int i = 0; i < 4; ++i)
+  int numberOfElevators = 1;
+  for (int i = 0; i < numberOfElevators; ++i)
   {
     elevators.push_back(hw6::Elevator());
   }
@@ -32,9 +35,9 @@ int main(int argc, char** argv)
   // create and run simulation for the slower speed
   hw6::Simulator simSlowSpeed = hw6::Simulator(movementHistory,
 					       building);
+  
   simSlowSpeed.start();
-
-
+    
 
 
 
