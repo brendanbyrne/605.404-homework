@@ -5,9 +5,6 @@
 
 #include "Simulator.hpp"
 
-// for testing only
-#include <iostream>
-
 namespace hw6
 {
   /*============================================================================
@@ -45,26 +42,34 @@ namespace hw6
     Revision History
         16 July 2015 - Function created
   *///==========================================================================
-  double Simulator::calculateResults()
+  SimulationOutput Simulator::calculateResults()
   {
     // If no exit data return 0
     if (this->building.getExitResults().size() == 0)
     {
-      return 0.0;
+      SimulationOutput nullOutput;
+      return nullOutput;
     }
 
     Group results = this->building.getExitResults();
-    int sum = 0;
+    int sumWaitingTime = 0;
+    int sumTravelTime = 0;
     std::for_each(results.begin(), results.end(),
-                  [&sum](const Passenger& person) -> void
+                  [&sumWaitingTime, &sumTravelTime](const Passenger& person) -> void
                   {
-                    sum += person.getEndTime() - person.getStartTime();
+                    sumWaitingTime += person.getBoardTime() - person.getStartTime();
+                    sumTravelTime += person.getEndTime() - person.getBoardTime();
                   });
     
     int size = this->building.getExitResults().size();
-    double average = static_cast<double>(sum) / static_cast<double>(size);
+    double averageWaitTime = static_cast<double>(sumWaitingTime) / static_cast<double>(size);
+    double averageTravelTime = static_cast<double>(sumTravelTime) / static_cast<double>(size);
     
-    return average;
+    SimulationOutput simOutput;
+    simOutput.waitTime = averageWaitTime;
+    simOutput.travelTime = averageTravelTime;
+    
+    return simOutput;
   }
   
   /*============================================================================
@@ -85,20 +90,13 @@ namespace hw6
       this->simTime = 0;
 
       // run simulation till its termination condition has been reached
-      while (this->stillSimulating())
+      int watchdog = 0;
+      while (this->stillSimulating())// && watchdog++ < 3)
       {
-        //std::cout << "Current time: " << this->simTime << std::endl;
         tick();
-	++this->simTime;
+        ++this->simTime;
       }
-    }
-    
-//    std::cout << "Final elevator state" << std::endl;
-    for (auto e : this->building.getElevators())
-    {
-      //std::cout << e << std::endl;
-    }
-    
+    }    
   }
     
   /*============================================================================
@@ -110,7 +108,6 @@ namespace hw6
   *///==========================================================================
   void Simulator::tick()
   { 
-    
     // find people that need to enter the simulation now
     // and add them to their floor
     Group assignToFloor;

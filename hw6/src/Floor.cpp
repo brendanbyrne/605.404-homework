@@ -1,4 +1,5 @@
 // Floor.cpp
+
 #include <algorithm> // for_each
 #include <vector>
 #include <sstream>
@@ -16,7 +17,7 @@ namespace hw6
     Revision History
         8 July 2015 - Function created
   *///==========================================================================
-  Floor::Floor(int floorNumber):
+  Floor::Floor(int floorNumber): // number of the floor
     floorNumber(floorNumber)
   {
   }
@@ -28,15 +29,18 @@ namespace hw6
     Revision History
         14 July 2015 - Function created
   *///==========================================================================
-  Passenger Floor::getNextInLine(const Direction& direction)
+  Passenger Floor::getNextInLine(const Direction& direction) //desired direction
   {
     Passenger passenger;
+    
+    // if requesting from up queue
     if (direction == Direction::UP)
     {
       passenger = this->goingUp.front();
       this->goingUp.pop();
     }
-    else
+    // if requesting from down queue
+    else if (direction == Direction::DOWN)
     {
       passenger = this->goingDown.front();
       this->goingDown.pop();
@@ -52,21 +56,21 @@ namespace hw6
     Revision History
         14 July 2015 - Function created
   *///==========================================================================
-  Line Floor::getLine(const Direction& direction) const
-  {
+  Line Floor::getLine(const Direction& direction) const // desired direction
+  {    
+    // if requesting up queue
     if (direction == Direction::UP)
     {
       return this->goingUp;
     }
+    // if requesting up queue
     else if (direction == Direction::DOWN)
     {
       return this->goingDown;
     }
-    else
-    {
-      Line line;
-      return line;
-    }
+    
+    Line line;
+    return line;
   }
 
   /*============================================================================
@@ -77,7 +81,7 @@ namespace hw6
         8 July 2015 - Function created
   *///==========================================================================
   std::ostream& operator<<(std::ostream& out, // desired output stream
-                           Line line) // object to display
+                           Line line)         // object to display
   {
     // set up string receiving container
     std::vector<std::string> strPassVect;
@@ -105,7 +109,7 @@ namespace hw6
     Revision History
         8 July 2015 - Function created
   *///==========================================================================
-  std::ostream& operator<<(std::ostream& out, // desired output stream
+  std::ostream& operator<<(std::ostream& out,  // desired output stream
                            const Floor& floor) // object to display
   {
     out << "Floor " << floor.getNumber() << "\n"
@@ -127,6 +131,7 @@ namespace hw6
   {  
     int direction = passenger.getEndFloor() - passenger.getStartFloor();
     
+    // if a person is not on their desired floor, add them to the correct queue
     if (direction > 0)
     {      
       this->goingUp.push(passenger);

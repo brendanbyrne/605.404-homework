@@ -4,8 +4,6 @@
 
 #include "Elevator.hpp"
 
-#include <iostream>
-
 namespace hw6
 {
   /*============================================================================
@@ -16,12 +14,16 @@ namespace hw6
         8 July 2015 - Function created
   *///==========================================================================
   Elevator::Elevator(const int id, // id number of the elevator
-		     const int timeToFloor, // time to move between floor
+                     const int timeToFloor, // time to move between floor
+                     const int minFloorNumber, // bottom floor of building
+                     const int maxFloorNumber, // top floor of building
                      const int startFloor, // starting location of the elevator
                      const int stopTime, // time to stop completely
-		     const int capacity): // how many people elevator can hold
+                     const int capacity): // how many people elevator can hold
     id(id),
     timeToFloor(timeToFloor),
+    minFloorNumber(minFloorNumber),
+    maxFloorNumber(maxFloorNumber),
     currentFloor(startFloor),
     stopTime(stopTime),
     momentum(stopTime),
@@ -41,25 +43,26 @@ namespace hw6
     Group leaving;
     
     if (this->state == State::UNLOAD &&
-	this->alignment == 0)
+        this->alignment == 0)
     {
       Group::iterator iter;
       // for all occupents on board
       for (iter = this->onBoard.end()-1; iter != this->onBoard.begin()-1; --iter)
       {
-//        std::cout << "foo: " << iter->getEndFloor() << " " << this->currentFloor << std::endl;
+        // if person wants to get off on this floor
         if (iter->getEndFloor() == this->currentFloor)
         {
-	  leaving.push_back(*iter);
-	  std::swap(*iter, this->onBoard.back());
-	  this->onBoard.pop_back();
+          // since onBoard isn't sorted, additional performance is gained
+          // via swap, pop_back, and leveraging move operations
+          leaving.push_back(*iter);
+          std::swap(*iter, this->onBoard.back());
+          this->onBoard.pop_back();
         }
       }
-
-    }
+    } // if could unload
     
     return leaving;
-  }
+  } // exit
  
   /*============================================================================
     slowDown
@@ -88,22 +91,26 @@ namespace hw6
   *///==========================================================================
   void Elevator::move()
   {
+    // if moving up, continue up
     if (this->movingDirection == Direction::UP)
     {
       ++this->alignment;
+      // if at next floor
       if (this->alignment >= this->timeToFloor)
       {
-	++this->currentFloor;
-	this->alignment = 0;
+        ++this->currentFloor;
+        this->alignment = 0;
       }      
     }
+    // if moving down, confinue down
     else if (this->movingDirection == Direction::DOWN)
     {
       --this->alignment;
+      // if at next floor
       if (this->alignment < 0)
       {
-	--this->currentFloor;
-	this->alignment = this->timeToFloor - 1;
+        --this->currentFloor;
+        this->alignment = this->timeToFloor - 1;
       }
     }
   }
@@ -115,7 +122,8 @@ namespace hw6
     Revision History
         16 July 2015 - Function created
   *///==========================================================================
-  std::ostream& operator<<(std::ostream& out, const Elevator& elevator)
+  std::ostream& operator<<(std::ostream& out, // desired output stream
+                           const Elevator& elevator) // object to display
   {
     out << std::boolalpha;
     
@@ -128,9 +136,10 @@ namespace hw6
         << "isEmpty: " << elevator.isEmpty()  << ", "
         << "move dir: " << elevator.getMoveDirection() << "\n";
     
-    out << "handlingRequest: " << std::boolalpha << elevator.getHandlingRequest() << ", "
+    out << "handlingRequest: " << elevator.getHandlingRequest() << ", "
         << "Goal floor: " << elevator.getGoalFloor() << ", "
-        << "Goal dir: " << elevator.getGoalDirection() << "\n";
+        << "Goal dir: " << elevator.getGoalDirection() << ", "
+        << "Request floor: " << elevator.getRequestFloor() << "\n";
       
     out << std::noboolalpha;
     
@@ -139,8 +148,9 @@ namespace hw6
     {
       out << person << " ";
     }
+    
     return out;
-  }
+  } // operator<<
   
   /*============================================================================
     operator<<
@@ -174,6 +184,7 @@ namespace hw6
     }
     return out;
   }
+  
   /*============================================================================
     setGoal
         sets the value of the goalFloor data member and propagates the impact of
@@ -227,39 +238,39 @@ namespace hw6
   *///==========================================================================
   void Elevator::updateGoalFloor()
   {
-    int newFloorNumber;
+    int newFloorNumber = this->currentFloor;
     
-    // find the minimum floor
+    // if going up, find the minimum floor
     if (this->goalDirection == Direction::UP)
     {
-      int minFloor = this->goalFloor;
+      int minFloor = this->maxFloorNumber;
       
       std::for_each(this->onBoard.begin(), this->onBoard.end(),
-		    [&minFloor](const Passenger& person)
-		    {
-		      if (person.getEndFloor() < minFloor)
-		      {
-			minFloor = person.getEndFloor();
-		      }
-		    });
+                    [&minFloor](const Passenger& person)
+                    {
+                      if (person.getEndFloor() < minFloor)
+                      {
+                        minFloor = person.getEndFloor();
+                      }
+                    });
       
       newFloorNumber = minFloor;
     }
     
-    // find the maximum floor
+    // if going down, find the maximum floor
     else if (this->goalDirection == Direction::DOWN)
     {      
-      int maxFloor = 0;
+      int maxFloor = this->minFloorNumber;
       
       std::for_each(this->onBoard.begin(), this->onBoard.end(),
-		    [&maxFloor](const Passenger& person)
-		    {
-		      if (person.getEndFloor() > maxFloor)
-		      {
-			maxFloor = person.getEndFloor();
-		      }
+                    [&maxFloor](const Passenger& person)
+                    {
+                      if (person.getEndFloor() > maxFloor)
+                      {
+                        maxFloor = person.getEndFloor();
+                      }
                       
-		    });
+                    });
       
       
       newFloorNumber = maxFloor;

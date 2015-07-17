@@ -11,7 +11,8 @@
   
   Intent: Simulate a person wanting to, riding on, and leaving an elevator
   
-  Description: 
+  Description: Not much more of a description, classes main job is to just hold
+               on to the data
 
 *///============================================================================
 
@@ -20,10 +21,11 @@
 
 #include <ostream>
 #include <queue>
+#include <vector>
 
 namespace hw6
 {
-  
+  // both Passengers and Elevators share a sense of direction
   enum class Direction {NONE, UP, DOWN};
 
   class Passenger
@@ -35,12 +37,14 @@ namespace hw6
               int goalFloor = 0); // constructor
     
     // getters
+    int getBoardTime() const;
     int getEndFloor() const;
     int getEndTime() const;
     int getStartFloor() const;
     int getStartTime() const;
     
     // setters
+    Passenger& setBoardTime(const int time);
     Passenger& setEndFloor(const int floorNumber);
     Passenger& setEndTime(const int time);
     Passenger& setStartFloor(const int floorNumber);
@@ -48,6 +52,7 @@ namespace hw6
     
   private:
     int startTime; // time when passenger arrives at the starting floor
+    int boardTime; // time when passenger boards the elevator
     int endTime; // time when passenger arrives at the ending floor
     int startFloor; // floor number that passenger start on
     int endFloor; // floor number that passenger is trying to get to 
@@ -55,12 +60,25 @@ namespace hw6
   }; // class Passenger
   
   // convenience typedefs for working with collections of class
-  typedef std::queue<Passenger> Line;
-  typedef std::vector<Passenger> Group;
+  typedef std::queue<Passenger> Line; // an ordered group of people
+  typedef std::vector<Passenger> Group; // a disordered group of people
 
   // insertion overload 
   std::ostream& operator<<(std::ostream& out, const Passenger& passenger);
   std::ostream& operator<<(std::ostream& out, const Direction& direction);
+  
+  /*============================================================================
+    getBoardTime
+        return value of the boardTime data member
+
+    Revision History
+        7 July 2015 - Function created
+  *///==========================================================================
+  inline int Passenger::getBoardTime() const
+  {
+    return this->boardTime;
+  }
+
   /*============================================================================
     getEndFloor
         return value of the endFloor data member
@@ -110,13 +128,26 @@ namespace hw6
   }
 
   /*============================================================================
+    setBoardTime
+        set the value of the boardTime data member
+
+    Revision History
+        7 July 2015 - Function created
+  *///==========================================================================
+  inline Passenger& Passenger::setBoardTime(const int time) // finished world time
+  {
+    this->boardTime = time;
+    return *this;
+  }
+
+  /*============================================================================
     setEndFloor
         set the value of the endFloor data member
 
     Revision History
         8 July 2015 - Function created
   *///==========================================================================
-  inline Passenger& Passenger::setEndFloor(const int floor)
+  inline Passenger& Passenger::setEndFloor(const int floor) // where to go
   {
     this->endFloor = floor;
     return *this;
@@ -129,7 +160,7 @@ namespace hw6
     Revision History
         7 July 2015 - Function created
   *///==========================================================================
-  inline Passenger& Passenger::setEndTime(const int time)
+  inline Passenger& Passenger::setEndTime(const int time) // finished world time
   {
     this->endTime = time;
     return *this;
@@ -142,7 +173,7 @@ namespace hw6
     Revision History
         8 July 2015 - Function created
   *///==========================================================================
-  inline Passenger& Passenger::setStartFloor(const int floor)
+  inline Passenger& Passenger::setStartFloor(const int floor) // where to start
   {
     this->startFloor = floor;
     return *this;
@@ -155,7 +186,7 @@ namespace hw6
     Revision History
         8 July 2015 - Function created
   *///==========================================================================
-  inline Passenger& Passenger::setStartTime(const int time)
+  inline Passenger& Passenger::setStartTime(const int time) // when to start
   {
     this->startTime = time;
     return *this;

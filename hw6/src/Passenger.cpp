@@ -12,7 +12,7 @@ namespace hw6
         7 July 2015 - Function created
   *///==========================================================================
   Passenger::Passenger(int arrivalTime, // time when passenger arrives at floor
-                       int goalTime,
+                       int goalTime,  // usually zero, here for completion
                        int arrivalFloor, // starting floor for passenger
                        int goalFloor): // floor passenger wants to go to
     startTime(arrivalTime),
@@ -32,7 +32,7 @@ namespace hw6
   std::ostream& operator<<(std::ostream& out, // desired output stream
                            const Passenger& passenger) // passenger to print
   {
-    out << passenger.getStartTime();
+    out << passenger.getEndFloor();
     return out;
   }
 

@@ -4,10 +4,8 @@
 
 #include "Building.hpp"
 
-// for testing
 #include <iostream>
 #include <string>
-
 namespace hw6
 {
   /*============================================================================
@@ -29,7 +27,7 @@ namespace hw6
         12 July 2015 - Function created
   *///==========================================================================
   Building::Building(const Floors& floors, // the layout of the floors
-		     const Elevators& elevators): // the buildings elevators
+                     const Elevators& elevators): // the buildings elevators
     floors(floors), elevators(elevators)
   {
   }
@@ -41,10 +39,11 @@ namespace hw6
     Revision History
         12 July 2015 - Function created
   *///==========================================================================
-  void Building::addPerson(const Passenger& person)
+  void Building::addPerson(const Passenger& person) // person to add to building
   {
     Direction goalDirection;
     
+    // figure out if they are going up or down
     int numberDirection = person.getEndFloor() - person.getStartFloor();
     if (numberDirection > 0)
     {
@@ -55,15 +54,18 @@ namespace hw6
       goalDirection = Direction::DOWN;
     }
     
-    //std::cout << "Making new request!" << std::endl;
+    // request an elevator and add it to the request mananger
     Request request = std::make_tuple(person.getStartTime(),
-				      person.getStartFloor(),
-				      goalDirection);
+                                      person.getStartFloor(),
+                                      goalDirection);
+
+    
     this->requests.add(request);
 
+    // have them state waiting in line
     this->floors[person.getStartFloor()].waitInLine(person);
    
-  }
+  } // addPerson
   
   /*============================================================================
     advance
@@ -72,17 +74,11 @@ namespace hw6
     Revision History
         14 July 2015 - Function created
   *///==========================================================================
-  void Building::advance(int time)
-  {
-    
-    //std::cout << std::string(80, '=') << std::endl;
-    
-    
+  void Building::advance(int time) // the current time
+  {        
     // for each elevator, run it's state machine
     for (auto & elevator : this->elevators)
-    {
-      //std::cout << elevator << std::endl;
-      //std::cout << this->floors[4] << std::endl;
+    { 
       
       // run through the elevator state machine
       switch (elevator.getState())
@@ -102,37 +98,50 @@ namespace hw6
         break;
         
       case Elevator::State::LOAD:
-        this->handleLoading(elevator, this->floors[elevator.getCurrentFloor()]);
+        this->handleLoading(elevator,
+                            this->floors[elevator.getCurrentFloor()],
+                            time);
         break;
         
       default:
         // this is a bad place to be
         break;
-      }
+      } // switch
       
     } // for loop
     
   } // advance
 
-  void Building::handleLoading(Elevator& elevator,
-                               Floor& floor)
+  /*============================================================================
+    handleLoading
+        control out passengers get on the elevator
+        
+    Revision History 
+        14 July 2015 - Function created
+  *///==========================================================================
+  void Building::handleLoading(Elevator& elevator, // current elevator
+                               Floor& floor,
+                               const int time) // current floor
   {
     // while there is room and people wanting to ride
     while (elevator.hasRoom() &&
            !floor.getLine(elevator.getGoalDirection()).empty())
     {
-      elevator.board(floor.getNextInLine(elevator.getGoalDirection()));
+      Passenger boarding = floor.getNextInLine(elevator.getGoalDirection());
+      elevator.board(boarding, time);
     }
     
-    // if the queue is empty,  clear any assiocated requests
+    // if the queue is empty, clear any assiocated requests
     if (floor.getLine(elevator.getGoalDirection()).empty())
     {
-      Request clearKey = std::make_tuple(0,
-                                         floor.getNumber(),
-                                         elevator.getGoalDirection());
-      this->requests.clear(clearKey);
+      // key to match requests against
+      Request clearMatch = std::make_tuple(0,
+                                           floor.getNumber(),
+                                           elevator.getGoalDirection());
+      // clear requests that match
+      this->requests.clear(clearMatch);
     }
-    // else resubmit the elevator request
+    // if people are still left waiting, else resubmit the elevator request
     else
     {
       // get the next person in line
@@ -143,11 +152,13 @@ namespace hw6
       this->requests.update(resubmission);
     }
 
+    // if the elevator is not empty, keep moving
     if (!elevator.isEmpty())
     {
       elevator.updateGoalFloor();
       elevator.setState(Elevator::State::MOVE);
     }
+    // else stop
     else
     {
       elevator.setState(Elevator::State::STOP);
@@ -157,13 +168,13 @@ namespace hw6
   
   /*============================================================================
     handleMoving
-        control the movement of an elevator9
+        control the movement of an elevator
         
     Revision History
         14 July 2015 - Function created
   *///==========================================================================
-  void Building::handleMoving(Elevator& elevator,
-                              const Floor& floor)
+  void Building::handleMoving(Elevator& elevator, // current elevator
+                              const Floor& floor) // current elevator
   {
     // should the elevator start stopping
     bool shouldStop = false;
@@ -171,16 +182,17 @@ namespace hw6
     // if elevator is at any floor
     if (elevator.getAlignment() == 0)
     {
+      
       // has elevator reached the destination
       if (elevator.getGoalFloor() == elevator.getCurrentFloor())
       {
         shouldStop = true;
       }
-      // if elevator should pickup extra passengers
+      // if elevator can pickup extra passengers
       else if (elevator.getGoalDirection() == elevator.getMoveDirection() &&
-	       elevator.hasRoom())
+               elevator.hasRoom())
       {
-        // if going down and passengers are waiting to go down
+        // if there are people who want to be picked up
         if (!floor.getLine(elevator.getMoveDirection()).empty())
         {
           shouldStop = true;
@@ -188,6 +200,7 @@ namespace hw6
       } // if should pick up or drop off people
     } // if on floor
     
+    // begin stopping if necessary, else just keep moving
     if (shouldStop)
     {
       elevator.slowDown();
@@ -196,8 +209,8 @@ namespace hw6
     {
       elevator.move();
     }
+    
   } // handleMoving
-  
   
   /*============================================================================
     handleStopped
@@ -206,9 +219,23 @@ namespace hw6
     Revision History 
         14 July 2015 - Function created
   *///==========================================================================
-  void Building::handleStopped(Elevator& elevator,
-                               Floor& floor)
+  void Building::handleStopped(Elevator& elevator, // current elevator
+                               Floor& floor) // current floor
   {
+    // if at requested floor or empty and no is onboard, clear request status
+    if ((elevator.getCurrentFloor() == elevator.getRequestFloor()) || 
+        (elevator.getCurrentFloor() == elevator.getGoalFloor() &&
+         elevator.getMoveDirection() == Direction::NONE))
+    {
+      elevator.requestHandled();
+    }
+    
+    // check if elevator goal should be updated
+    if (elevator.getCurrentFloor() == elevator.getGoalFloor())
+    {
+      elevator.updateGoalFloor();
+    }
+    
     // if there are people on board see if they want to get off
     if (!elevator.isEmpty())
     {
@@ -226,18 +253,17 @@ namespace hw6
     {
       // if elevator wants work and there is work
       if (elevator.isEmpty() && !elevator.getHandlingRequest() &&
-	  this->requests.size() != 0)
+          this->requests.size() != 0)
       {
-	int floor;
-	Direction direction;
+        int floorNumber;
+        Direction direction;
         
-        //std::cout << "Fetching request!" << std::endl;
-        
-        std::tie(std::ignore, floor, direction) = this->requests.front();
+        // unpack an elevator request
+        std::tie(std::ignore, floorNumber, direction) = this->requests.front();
         this->requests.pop();
-	
-        elevator.takeRequest(floor, direction);
-	elevator.setGoal(floor, direction);        
+        
+        elevator.takeRequest(floorNumber, direction);
+        elevator.setGoal(floorNumber, direction);        
       }
       return;
     } 
@@ -251,15 +277,11 @@ namespace hw6
   {
     // lets passengers off if they desire
     Group leaving = elevator.exit();
-    //std::cout << "size of leaving: " << leaving.size() << std::endl;
     for (auto & passenger : leaving)
     {
-      //std::cout << "Passenger: " << passenger << " is leaving" << std::endl;
       passenger.setEndTime(time);
       this->exitResults.push_back(passenger);
     }
-    
-    
     
     // if there are people to pick up then attempt to load them
     if (!floor.getLine(elevator.getGoalDirection()).empty())
@@ -285,7 +307,7 @@ namespace hw6
   /*============================================================================
     isEmpty
         returns true if there is any passengers still inside the building, on a
-	floor, or in an elevator
+        floor, or in an elevator
         
     Revision History
         12 July 2015 - Function created
@@ -301,7 +323,7 @@ namespace hw6
       if (!floorIter->getGoingUp().empty() ||
           !floorIter->getGoingDown().empty())
       {
-	isEmpty = false;
+        isEmpty = false;
       }
       else
       {
@@ -314,8 +336,8 @@ namespace hw6
     while (isEmpty && elevatorIter != this->elevators.end())
     {
       if (elevatorIter->getOnBoard().size() > 0)
-      {	
-	isEmpty = false;
+      { 
+        isEmpty = false;
       }
       else
       {

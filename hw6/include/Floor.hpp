@@ -11,7 +11,8 @@
   
   Intent: Simulate the movement of passengers on and off the floor
   
-  Description: 
+  Description: Pretty straight class, simple logic for adding and removing 
+               
 
 *///============================================================================
 
@@ -35,15 +36,15 @@ namespace hw6
     Line getGoingUp() const;
     Line getGoingDown() const;
     Passenger getNextInLine(const Direction& direction);
-    Passenger getOnUp(); // have going up passenger get on elevator
-    Passenger getOnDown(); // have going down passenger get on elevator
+    Passenger getOnUp(); 
+    Passenger getOnDown();
     
-    void waitInLine(const Passenger& passenger); // have passenger wait in line
+    void waitInLine(const Passenger& passenger); // passenger wait in a line
     
   private:
     int floorNumber; // what number the floor is
-    Line goingUp; // a line of people who want to go up
-    Line goingDown; // a line of people who want to go down
+    Line goingUp; // line of people who want to go up
+    Line goingDown; // line of people who want to go down
     
   }; // class Floor
   
@@ -55,7 +56,7 @@ namespace hw6
   std::ostream& operator<<(std::ostream& out, const Floor& floor);
 
   /*============================================================================
-    getFloorNumber
+    getNumber
         return value of the floorNumber data member
         
     Revision History

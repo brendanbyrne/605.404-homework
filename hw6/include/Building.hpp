@@ -12,8 +12,9 @@
   Intent: Controls interaction between the different systems inside the building
   
   Description: Manages how people move from floor to elevator, elevator to floor
-               and contains the elevator controller.  The classes allows for
-	       easy communication between all the components of the Building
+               and contains the elevator movement state machine.  The classes
+               allows for easy communication between all the components of the
+               Building.
 
 *///============================================================================
 
@@ -32,13 +33,12 @@ namespace hw6
   public:
     Building(); // default constructor
     Building(const Floors& floors,
-	     const Elevators& elevators); // full constructor
+             const Elevators& elevators); // full constructor
     
     void addPerson(const Passenger& person); // put a passenger on a floor
     bool isEmpty(); // any passengers on a floor or in a elevator
     
-    // testing purposes
-    void advance(int time);
+    void advance(int time); // advances the state of objects inside the building
     
     // getters
     Elevators getElevators() const;
@@ -49,7 +49,7 @@ namespace hw6
     void handleMoving(Elevator& elevator, const Floor& floor);
     void handleStopped(Elevator& elevator, Floor& floor);
     void handleUnloading(Elevator& elevator, Floor& floor, const int time);
-    void handleLoading(Elevator& elevator, Floor& floor);
+    void handleLoading(Elevator& elevator, Floor& floor, const int time);
     
     // setters
     Building& setElevators(const Elevators& elevators);
@@ -59,9 +59,9 @@ namespace hw6
     Elevators elevators; // elevators in the building
     Floors floors; // the floors in the building
     Requests requests; // stores the requests for elevators
-    Group exitResults;
-    int count = 0;
+    Group exitResults; // stores passengers after riding for post processing
     
+    // locations of data inside request tuple
     static const int TIME_INDEX = 0;
     static const int FLOOR_INDEX = 1;
     static const int DIRECTION_INDEX = 2;
@@ -111,6 +111,7 @@ namespace hw6
     Revision History
         12 July 2015 - Function created
   *///==========================================================================
+  //                                      all the elevators in the building
   inline Building& Building::setElevators(const Elevators& elevators)
   {
     this->elevators = elevators;
@@ -124,12 +125,11 @@ namespace hw6
     Revision History
         12 July 2015 - Function created
   *///==========================================================================
-  inline Building& Building::setFloors(const Floors& floors)
+  inline Building& Building::setFloors(const Floors& floors) // the floor layout
   {
     this->floors = floors;
     return *this;
   }
-  
   
 } // namespace hw6
 

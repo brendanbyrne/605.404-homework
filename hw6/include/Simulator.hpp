@@ -23,14 +23,20 @@
 
 namespace hw6
 {
+  struct SimulationOutput
+  {
+    double waitTime = 0;
+    double travelTime = 0;
+  };
+  
   class Simulator
   {
   public:
     Simulator(); // default constructor
     Simulator(const Line& people,
-	      const Building& building); // full constructor
+              const Building& building); // full constructor
     
-    double calculateResults(); // finds the average weight time per person
+    SimulationOutput calculateResults(); // finds the average weight time per person
 
     // setters
     void setBuilding(const Building& building);

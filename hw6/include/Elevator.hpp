@@ -11,8 +11,11 @@
   
   Intent: Simulate the movement of an elevator, and passengers on and off 
   
-  Description: 
-
+  Description: This class class doesn't actually have any knowledge of the 
+               floors that it is servicing and a limited ability to direct its
+               own internal state. Operations between Floor objects and Elevator
+               objects must be handled outside of the class.
+               
 *///============================================================================
 
 #ifndef ELEVATOR_HPP
@@ -34,14 +37,16 @@ namespace hw6
     enum class State {MOVE, STOP, UNLOAD, LOAD};
     
     Elevator(const int id = 0,
-	     const int timeToFloor = 10,
+             const int timeToFloor = 10,
+             const int minFloorNumber = 0,
+             const int maxFloorNumber = 99,
              const int startFloor = 0,
              const int stopTime = 2,
-	     const int capacity = 8); // constructor
+             const int capacity = 8); // constructor
     
-    void board(const Passenger& passenger); // let passenger on board
-    bool hasRoom() const; // return if elevator has room
-    bool isEmpty() const;
+    void board(Passenger& passenger, const int time); // let passenger on board
+    bool hasRoom() const; // is there room for additional passengers
+    bool isEmpty() const; // does elevator have anyone riding it
     Group exit(); // have passengers attempt to exit
 
     // getters
@@ -60,19 +65,21 @@ namespace hw6
     void move(); // move elevator one unit in it's current direction
     void slowDown(); // what to do when stopping
     void requestHandled(); // clear the request handling flag and data
+    void updateGoalFloor(); // given current riders, finds closest desired floor
     
     // setters
     Elevator& setGoal(const int floor, const Direction& direction);
     Elevator& takeRequest(const int floor, const Direction& direction);
     Elevator& setMovingDirection(const Direction& direction);
     Elevator& setState(const Elevator::State state);
-    void updateGoalFloor(); // given current riders, finds closest desired floor
     
   private:
     int id; // id number of the elevator
     int timeToFloor; // time it takes to move to an adjacent floor
     int stopTime; // time it takes to come to complete stop
     int capacity; // maximum number of passengers allowed on
+    int minFloorNumber = 0; // lowest floor number in building
+    int maxFloorNumber = 100; // highest floor number in building
     
     // these values can be thought of as the "state vector" of the elevator
     int currentFloor = 0; // current location of the elevator
@@ -95,8 +102,10 @@ namespace hw6
   // convenience aliases
   typedef std::vector<Elevator> Elevators;
   
+  // operator overloading
   std::ostream& operator<<(std::ostream& out, const Elevator& elevator);
   std::ostream& operator<<(std::ostream& out, const Elevator::State& state);
+  
   /*============================================================================
     board
         add passenger to elevator
@@ -105,16 +114,11 @@ namespace hw6
         9 July 2015 - Function created
   *///==========================================================================
   //                          passenger trying to board
-  inline void Elevator::board(const Passenger& passenger)
+  inline void Elevator::board(Passenger& passenger,
+                              const int time)
   {
-    onBoard.push_back(passenger);
-    
-    if (this->requestFloor == this->currentFloor)
-    {
-//      std::cout << "request handled!!" << std::endl;
-      this->requestHandled();
-    }
-    
+    passenger.setBoardTime(time);
+    onBoard.push_back(passenger);    
   }
 
   /*============================================================================
@@ -311,8 +315,8 @@ namespace hw6
   *///==========================================================================
   //                                     requested floor
   inline Elevator& Elevator::takeRequest(const int floor, 
-					 // requested direction
-					 const Direction& direction)
+                                         // requested direction
+                                         const Direction& direction)
   {
     this->requestFloor = floor;
     this->requestDirection = direction;
