@@ -23,6 +23,8 @@
 
 #include "Passenger.hpp"
 
+#include <iostream>
+
 namespace hw6
 {   
   class Elevator
@@ -31,7 +33,8 @@ namespace hw6
   public:
     enum class State {MOVE, STOP, UNLOAD, LOAD};
     
-    Elevator(const int timeToFloor = 10,
+    Elevator(const int id = 0,
+	     const int timeToFloor = 10,
              const int startFloor = 0,
              const int stopTime = 2,
 	     const int capacity = 8); // constructor
@@ -46,26 +49,27 @@ namespace hw6
     int getCurrentFloor() const;
     int getGoalFloor() const;
     int getRequestFloor() const;
-    bool getGoalSet() const;
     bool getHandlingRequest() const;
     Group getOnBoard() const;
     State getState() const;
     Direction getMoveDirection() const;
     Direction getGoalDirection() const;
     int getMomentum() const;
-    
+    int getID() const;
+
     void move(); // move elevator one unit in it's current direction
     void slowDown(); // what to do when stopping
-    void requestHandled(); // request handled
+    void requestHandled(); // clear the request handling flag and data
     
     // setters
     Elevator& setGoal(const int floor, const Direction& direction);
-    Elevator& setRequest(const int floor, const Direction& direction);
+    Elevator& takeRequest(const int floor, const Direction& direction);
     Elevator& setMovingDirection(const Direction& direction);
     Elevator& setState(const Elevator::State state);
     void updateGoalFloor(); // given current riders, finds closest desired floor
     
   private:
+    int id; // id number of the elevator
     int timeToFloor; // time it takes to move to an adjacent floor
     int stopTime; // time it takes to come to complete stop
     int capacity; // maximum number of passengers allowed on
@@ -84,7 +88,6 @@ namespace hw6
     Direction requestDirection = Direction::NONE;
     Group onBoard; // people that are on the elevator
     State state = State::STOP; // current state of the elevator
-    bool goalSet = false; // does the elevator have a goal  
     bool handlingRequest = false; // is elevator handling a request
 
   }; // Elevator
@@ -105,6 +108,13 @@ namespace hw6
   inline void Elevator::board(const Passenger& passenger)
   {
     onBoard.push_back(passenger);
+    
+    if (this->requestFloor == this->currentFloor)
+    {
+//      std::cout << "request handled!!" << std::endl;
+      this->requestHandled();
+    }
+    
   }
 
   /*============================================================================
@@ -155,16 +165,17 @@ namespace hw6
     return this->goalFloor;
   }
   
+
   /*============================================================================
-    getGoalSet
-        returns value of goalSet data member
+    getID
+        returns value of id data member
         
     Revision History
-        14 July 2015 - Function created
+        16 July 2015 - Function created
   *///==========================================================================
-  inline bool Elevator::getGoalSet() const
+  inline int Elevator::getID() const
   {
-    return this->goalSet;
+    return this->id;
   }
   
   /*============================================================================
@@ -228,8 +239,8 @@ namespace hw6
   }
   
   /*============================================================================
-    hasRequest
-        returns true if the elevator is handling a request
+    getHandlingRequest
+        returns value of the handlingRequest data member
 
     Revision History
         16 July 2015 - Function created
@@ -237,20 +248,6 @@ namespace hw6
   inline bool Elevator::getHandlingRequest() const
   {
     return this->handlingRequest;
-  }
-  
-  /*============================================================================
-    requestHandled
-        alerts elevator that request has been handled
-    
-    Revision History
-        16 July 2015 - Function created
-  *///==========================================================================
-  inline void Elevator::requestHandled()
-  {
-    this->requestFloor = 0;
-    this->requestDirection = Direction::NONE;
-    this->handlingRequest = false;
   }
 
   /*============================================================================
@@ -276,6 +273,20 @@ namespace hw6
   {
     return this->onBoard.size() == 0;
   }
+
+  /*============================================================================
+    requestHandled
+        alerts elevator that request has been handled
+    
+    Revision History
+        16 July 2015 - Function created
+  *///==========================================================================
+  inline void Elevator::requestHandled()
+  {
+    this->requestFloor = 0;
+    this->requestDirection = Direction::NONE;
+    this->handlingRequest = false;
+  }
   
   /*============================================================================
     setState
@@ -291,17 +302,17 @@ namespace hw6
   }
   
   /*============================================================================
-    setRequest
+    takeRequest
         set the value of the requestFloor, requestDirection, and hasRequest data
         members
         
     Revision History
         16 July 2015 - Function created
   *///==========================================================================
-  //                                    requested floor
-  inline Elevator& Elevator::setRequest(const int floor, 
-                                        // requested direction
-                                        const Direction& direction)
+  //                                     requested floor
+  inline Elevator& Elevator::takeRequest(const int floor, 
+					 // requested direction
+					 const Direction& direction)
   {
     this->requestFloor = floor;
     this->requestDirection = direction;

@@ -1,6 +1,6 @@
 // Elevator.cpp
 
-#include <algorithm> // for_each
+#include <algorithm> // for_each, swap
 
 #include "Elevator.hpp"
 
@@ -15,10 +15,12 @@ namespace hw6
     Revision History
         8 July 2015 - Function created
   *///==========================================================================
-  Elevator::Elevator(const int timeToFloor, // time to move between floor
+  Elevator::Elevator(const int id, // id number of the elevator
+		     const int timeToFloor, // time to move between floor
                      const int startFloor, // starting location of the elevator
                      const int stopTime, // time to stop completely
 		     const int capacity): // how many people elevator can hold
+    id(id),
     timeToFloor(timeToFloor),
     currentFloor(startFloor),
     stopTime(stopTime),
@@ -43,15 +45,17 @@ namespace hw6
     {
       Group::iterator iter;
       // for all occupents on board
-      for (iter = this->onBoard.begin(); iter != this->onBoard.end(); ++iter)
+      for (iter = this->onBoard.end()-1; iter != this->onBoard.begin()-1; --iter)
       {
-        std::cout << "foo: " << iter->getEndFloor() << " " << this->currentFloor << std::endl;
+//        std::cout << "foo: " << iter->getEndFloor() << " " << this->currentFloor << std::endl;
         if (iter->getEndFloor() == this->currentFloor)
         {
-          leaving.push_back(*iter);
-          this->onBoard.erase(iter);
+	  leaving.push_back(*iter);
+	  std::swap(*iter, this->onBoard.back());
+	  this->onBoard.pop_back();
         }
       }
+
     }
     
     return leaving;
@@ -111,27 +115,27 @@ namespace hw6
     Revision History
         16 July 2015 - Function created
   *///==========================================================================
-  std::ostream& operator<<(std::ostream& out, const Elevator& e)
+  std::ostream& operator<<(std::ostream& out, const Elevator& elevator)
   {
     out << std::boolalpha;
     
-    out << "Elevator" << "\n";
+    out << "Elevator " << elevator.getID() << "\n";
     
-    out << "state: " << e.getState() << ", "
-        << "floor: " << e.getCurrentFloor() << ", "
-        << "align: " << e.getAlignment() << ", "
-        << "speed: " << e.getMomentum() << ", "
-        << "isEmpty: " << e.isEmpty()  << ", "
-        << "move dir: " << e.getMoveDirection() << "\n";
+    out << "state: " << elevator.getState() << ", "
+        << "floor: " << elevator.getCurrentFloor() << ", "
+        << "align: " << elevator.getAlignment() << ", "
+        << "speed: " << elevator.getMomentum() << ", "
+        << "isEmpty: " << elevator.isEmpty()  << ", "
+        << "move dir: " << elevator.getMoveDirection() << "\n";
     
-    out << "hasGoal: " << std::boolalpha << e.getGoalSet() << ", "
-        << "Goal floor: " << e.getGoalFloor() << ", "
-        << "Goal dir: " << e.getGoalDirection() << "\n";
+    out << "handlingRequest: " << std::boolalpha << elevator.getHandlingRequest() << ", "
+        << "Goal floor: " << elevator.getGoalFloor() << ", "
+        << "Goal dir: " << elevator.getGoalDirection() << "\n";
       
     out << std::noboolalpha;
     
     out << "On board" << "\n";
-    for (auto & person : e.getOnBoard())
+    for (auto & person : elevator.getOnBoard())
     {
       out << person << " ";
     }
@@ -183,7 +187,6 @@ namespace hw6
   {
     this->goalFloor = floor;
     this->goalDirection = direction;
-    this->goalSet = true;
     this->state = State::MOVE;
     this->momentum = this->stopTime;
     
@@ -225,6 +228,7 @@ namespace hw6
   void Elevator::updateGoalFloor()
   {
     int newFloorNumber;
+    
     // find the minimum floor
     if (this->goalDirection == Direction::UP)
     {

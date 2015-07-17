@@ -55,7 +55,7 @@ namespace hw6
       goalDirection = Direction::DOWN;
     }
     
-    std::cout << "Making new request!" << std::endl;
+    //std::cout << "Making new request!" << std::endl;
     Request request = std::make_tuple(person.getStartTime(),
 				      person.getStartFloor(),
 				      goalDirection);
@@ -75,14 +75,14 @@ namespace hw6
   void Building::advance(int time)
   {
     
-    std::cout << std::string(80, '=') << std::endl;
+    //std::cout << std::string(80, '=') << std::endl;
     
     
     // for each elevator, run it's state machine
     for (auto & elevator : this->elevators)
     {
-      std::cout << elevator << std::endl;
-      std::cout << this->floors[4] << std::endl;
+      //std::cout << elevator << std::endl;
+      //std::cout << this->floors[4] << std::endl;
       
       // run through the elevator state machine
       switch (elevator.getState())
@@ -142,7 +142,7 @@ namespace hw6
                                              elevator.getGoalDirection());
       this->requests.update(resubmission);
     }
-    
+
     if (!elevator.isEmpty())
     {
       elevator.updateGoalFloor();
@@ -225,18 +225,19 @@ namespace hw6
     else
     {
       // if elevator wants work and there is work
-      if (elevator.isEmpty() && !elevator.getGoalSet() &&
+      if (elevator.isEmpty() && !elevator.getHandlingRequest() &&
 	  this->requests.size() != 0)
       {
 	int floor;
 	Direction direction;
         
-        std::cout << "Fetching request!" << std::endl;
+        //std::cout << "Fetching request!" << std::endl;
         
         std::tie(std::ignore, floor, direction) = this->requests.front();
         this->requests.pop();
 	
-        elevator.setGoal(floor, direction);        
+        elevator.takeRequest(floor, direction);
+	elevator.setGoal(floor, direction);        
       }
       return;
     } 
@@ -250,11 +251,10 @@ namespace hw6
   {
     // lets passengers off if they desire
     Group leaving = elevator.exit();
-    std::cout << "size of leaving: " << leaving.size() << std::endl;
+    //std::cout << "size of leaving: " << leaving.size() << std::endl;
     for (auto & passenger : leaving)
     {
-      std::cout << "Passenger: " << passenger << " is leaving"
-                << std::endl;
+      //std::cout << "Passenger: " << passenger << " is leaving" << std::endl;
       passenger.setEndTime(time);
       this->exitResults.push_back(passenger);
     }

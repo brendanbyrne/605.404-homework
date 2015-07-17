@@ -47,6 +47,12 @@ namespace hw6
   *///==========================================================================
   double Simulator::calculateResults()
   {
+    // If no exit data return 0
+    if (this->building.getExitResults().size() == 0)
+    {
+      return 0.0;
+    }
+
     Group results = this->building.getExitResults();
     int sum = 0;
     std::for_each(results.begin(), results.end(),
@@ -79,15 +85,20 @@ namespace hw6
       this->simTime = 0;
 
       // run simulation till its termination condition has been reached
-      int watchdog = 78;
-      while (this->stillSimulating() && this->simTime < watchdog)
+      while (this->stillSimulating())
       {
-        std::cout << "Current time: " << this->simTime << std::endl;
+        //std::cout << "Current time: " << this->simTime << std::endl;
         tick();
 	++this->simTime;
       }
-      
     }
+    
+//    std::cout << "Final elevator state" << std::endl;
+    for (auto e : this->building.getElevators())
+    {
+      //std::cout << e << std::endl;
+    }
+    
   }
     
   /*============================================================================
@@ -105,8 +116,7 @@ namespace hw6
     Group assignToFloor;
     while (people.front().getStartTime() == this->simTime &&
            people.size() > 0)
-    {
-      
+    { 
       this->building.addPerson(people.front());
       people.pop();
     }
